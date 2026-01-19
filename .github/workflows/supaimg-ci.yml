@@ -48,10 +48,10 @@ jobs:
       - run: |
           mkdir -p apps/supaimg-desktop/src-tauri/models/onnx
           if [ ! -f apps/supaimg-desktop/src-tauri/models/onnx/model_quantized.onnx ]; then
-            curl -L -o apps/supaimg-desktop/src-tauri/models/onnx/model_quantized.onnx https://appcast.supaimg.app/supaimg/assets/onnx/model_quantized.onnx
+            curl -L -o apps/supaimg-desktop/src-tauri/models/onnx/model_quantized.onnx https://github.com/supabitapp/supaimg/releases/download/models/v1/model_quantized.onnx
           fi
           if [ ! -f apps/supaimg-desktop/src-tauri/models/onnx/pp-ocrv5-server-det.onnx ]; then
-            curl -L -o apps/supaimg-desktop/src-tauri/models/onnx/pp-ocrv5-server-det.onnx https://appcast.supaimg.app/supaimg/assets/onnx/pp-ocrv5-server-det/det.onnx
+            curl -L -o apps/supaimg-desktop/src-tauri/models/onnx/pp-ocrv5-server-det.onnx https://github.com/supabitapp/supaimg/releases/download/models/v1/pp-ocrv5-server-det.onnx
           fi
           mkdir -p apps/supaimg-desktop/src-tauri/models/onnxruntime-ci
           if [ ! -f apps/supaimg-desktop/src-tauri/models/onnxruntime-ci/libonnxruntime.so.1.22.0 ]; then
