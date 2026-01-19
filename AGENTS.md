@@ -34,3 +34,7 @@ UI package exports: `@repo/ui/components/ui/button`, `@repo/ui/lib/utils`
 - Tauri docs https://tauri.app/llms.txt
 - Shadcn https://ui.shadcn.com/llms.txt
 - Turborepo https://turborepo.dev/llms.txt
+
+## PR Descriptions
+
+When creating or updating PRs, do not add a templated Summary/Testing block unless explicitly requested. Keep the PR description to a single concise sentence or use text provided by khoi.

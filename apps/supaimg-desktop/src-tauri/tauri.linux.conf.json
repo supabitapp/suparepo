@@ -1,0 +1,7 @@
+{
+  "bundle": {
+    "resources": {
+      "models/onnxruntime/linux/**/*": "models/onnxruntime/linux/"
+    }
+  }
+}

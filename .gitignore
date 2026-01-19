@@ -29,6 +29,7 @@ out/
 build
 dist
 apps/desktop/src-tauri/target
+apps/supaimg-desktop/src-tauri/target
 
 
 # Debug
@@ -39,3 +40,4 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
+apps/supaimg-desktop/src-tauri/models/onnx/**

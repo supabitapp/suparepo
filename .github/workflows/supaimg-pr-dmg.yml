@@ -1,0 +1,125 @@
+name: supaimg-pr-dmg
+on:
+  workflow_call:
+    inputs:
+      pr_number:
+        required: false
+        type: string
+      is_fork:
+        required: false
+        type: string
+
+concurrency:
+  group: supaimg-pr-dmg-${{ inputs.pr_number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  build-macos-dmg:
+    if: ${{ inputs.is_fork != 'true' }}
+    runs-on: [self-hosted, macOS, ARM64]
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      pull-requests: write
+      actions: write
+      issues: write
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          lfs: true
+      - uses: dtolnay/rust-toolchain@4be9e76fd7c4901c61fb841f559994984270fce7
+        with:
+          targets: aarch64-apple-darwin
+      - uses: oven-sh/setup-bun@735343b667d3e6f658f44d0eca948eb6282f2b76
+      - run: brew install nasm pkg-config gh jq ripgrep
+      - run: bun install
+      - name: Setup ONNX runtime (macOS only)
+        run: rm -rf apps/supaimg-desktop/src-tauri/models/onnxruntime/windows apps/supaimg-desktop/src-tauri/models/onnxruntime/linux
+      - name: Build app
+        env:
+          TAURI_BUNDLER_DMG_IGNORE_CI: "false"
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          cd apps/supaimg-desktop
+          max_attempts=3
+          attempt=1
+          while [ "$attempt" -le "$max_attempts" ]; do
+            echo "Tauri build attempt $attempt/$max_attempts"
+            if bun run tauri build --target aarch64-apple-darwin; then
+              break
+            fi
+            if [ "$attempt" -eq "$max_attempts" ]; then
+              echo "Tauri build failed after $max_attempts attempts"
+              exit 1
+            fi
+            sleep $((attempt * 20))
+            attempt=$((attempt + 1))
+          done
+      - name: Notarize and staple DMG
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          set -euo pipefail
+          retry() {
+            local max_attempts=3
+            local attempt=1
+            while [ "$attempt" -le "$max_attempts" ]; do
+              echo "Attempt $attempt/$max_attempts: $*"
+              if "$@"; then
+                return 0
+              fi
+              if [ "$attempt" -eq "$max_attempts" ]; then
+                return 1
+              fi
+              sleep $((attempt * 20))
+              attempt=$((attempt + 1))
+            done
+          }
+          for dmg in apps/supaimg-desktop/src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg; do
+            retry xcrun notarytool submit "$dmg" --apple-id "$APPLE_ID" --password "$APPLE_PASSWORD" --team-id "$APPLE_TEAM_ID" --wait
+            retry xcrun stapler staple "$dmg"
+          done
+      - name: Resolve DMG
+        id: dmg
+        run: |
+          DMG=$(ls apps/supaimg-desktop/src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg | head -1)
+          echo "path=$DMG" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: supaimg-macos-dmg
+          path: ${{ steps.dmg.outputs.path }}
+          if-no-files-found: error
+      - name: Comment on PR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUMBER="${{ inputs.pr_number }}"
+          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          ARTIFACT_ID=$(gh api "repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" | jq -r '.artifacts[] | select(.name=="supaimg-macos-dmg") | .id' | head -1)
+          if [ -n "$ARTIFACT_ID" ] && [ "$ARTIFACT_ID" != "null" ]; then
+            DOWNLOAD_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${ARTIFACT_ID}"
+          else
+            DOWNLOAD_URL="$RUN_URL"
+          fi
+          MARKER="<!-- supaimg-pr-dmg -->"
+          BODY=$(printf "%s\n%s\n\n%s\n" "$MARKER" "macOS DMG build is ready." "Download: ${DOWNLOAD_URL}")
+          COMMENTS=$(gh api --paginate "repos/${{ github.repository }}/issues/${PR_NUMBER}/comments")
+          NEW_ID=$(gh api -X POST "repos/${{ github.repository }}/issues/${PR_NUMBER}/comments" -f body="$BODY" --jq '.id')
+          echo "$COMMENTS" | jq -r --arg marker "$MARKER" --argjson new_id "$NEW_ID" '.[] | select(.user.login=="github-actions[bot]" and (.body|contains($marker)) and (.id != $new_id)) | .id' | while read -r ID; do
+            OLD_BODY=$(echo "$COMMENTS" | jq -r --argjson id "$ID" '.[] | select(.id==$id) | .body')
+            if echo "$OLD_BODY" | rg -q "Stale:"; then
+              continue
+            fi
+            UPDATED_BODY=$(printf "%s\n\n%s\n" "$OLD_BODY" "Stale: superseded by latest build.")
+            gh api -X PATCH "repos/${{ github.repository }}/issues/comments/${ID}" -f body="$UPDATED_BODY" >/dev/null
+          done

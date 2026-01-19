@@ -1,0 +1,55 @@
+[package]
+name = "supaimg"
+version = "0.1.0"
+description = "A Tauri App"
+authors = ["you"]
+edition = "2021"
+default-run = "supaimg"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+# The `_lib` suffix may seem redundant but it is necessary
+# to make the lib name unique and wouldn't conflict with the bin name.
+# This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
+name = "compress_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["protocol-asset", "tray-icon", "image-png"] }
+tauri-plugin-autostart = "2"
+better-posthog = "0.2.2"
+tauri-plugin-dialog = "2"
+tauri-plugin-log = "2"
+tauri-plugin-opener = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+dirs = "5"
+image = { version = "0.25", default-features = false, features = ["gif", "jpeg", "png", "webp"] }
+mozjpeg-sys = { version = "2.2", features = ["jpegtran"] }
+libc = "0.2"
+oxipng = { version = "9", default-features = false }
+gif = "0.13"
+webp = "0.3"
+color_quant = "1"
+thiserror = "1"
+tempfile = "3"
+ort = { version = "2.0.0-rc.10", default-features = false, features = ["load-dynamic", "ndarray"] }
+ndarray = "0.16"
+reqwest = { version = "0.12", default-features = false, features = ["blocking", "rustls-tls"] }
+tauri-plugin-better-posthog = "0.1.2"
+
+[dev-dependencies]
+image = { version = "0.25", default-features = false, features = ["jpeg"] }
+
+[target.'cfg(any(target_os = "macos", windows, target_os = "linux"))'.dependencies]
+tauri-plugin-updater = "2"
+tauri-plugin-process = "2"
+
+[target."cfg(target_os = \"macos\")".dependencies]
+objc2 = "0.6"
+objc2-app-kit = { version = "0.3", features = ["NSColor", "NSWindow", "NSResponder"] }
+objc2-foundation = "0.3"
