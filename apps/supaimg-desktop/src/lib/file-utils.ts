@@ -2,9 +2,16 @@ import { type ConvertOutputFormat, getWorkflow, type Workflow } from "@/lib/work
 
 const isRetinaSuffix = (value: string) => /^\d+x$/u.test(value) && /\d/u.test(value);
 
+const lastSeparatorIndex = (path: string) =>
+  Math.max(path.lastIndexOf("/"), path.lastIndexOf("\\"));
+
+export const fileNameFromPath = (path: string) => {
+  const lastSlash = lastSeparatorIndex(path);
+  return lastSlash >= 0 ? path.slice(lastSlash + 1) : path;
+};
+
 const getStem = (path: string) => {
-  const lastSlash = Math.max(path.lastIndexOf("/"), path.lastIndexOf("\\"));
-  const filename = lastSlash >= 0 ? path.slice(lastSlash + 1) : path;
+  const filename = fileNameFromPath(path);
   const dotIndex = filename.lastIndexOf(".");
   return dotIndex > 0 ? filename.slice(0, dotIndex) : filename;
 };
@@ -63,9 +70,9 @@ export function outputPath(path: string, workflow: Workflow, extensionOverride?:
 }
 
 function outputPathWithSuffix(path: string, tag: string, extensionOverride?: string): string {
-  const lastSlash = Math.max(path.lastIndexOf("/"), path.lastIndexOf("\\"));
+  const lastSlash = lastSeparatorIndex(path);
   const dir = lastSlash >= 0 ? path.slice(0, lastSlash + 1) : "";
-  const filename = lastSlash >= 0 ? path.slice(lastSlash + 1) : path;
+  const filename = fileNameFromPath(path);
   const dotIndex = filename.lastIndexOf(".");
   const stem = dotIndex > 0 ? filename.slice(0, dotIndex) : filename;
   const ext = extensionOverride ?? (dotIndex > 0 ? filename.slice(dotIndex + 1) : "");

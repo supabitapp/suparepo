@@ -1,7 +1,13 @@
 import { describe, expect, test } from "vitest";
 import type { Workflow } from "@/lib/workflows";
 import fixtures from "../../output-path-fixtures.json";
-import { isOutputPath, isSupportedPath, outputPath, skipProcessingReason } from "./file-utils";
+import {
+  fileNameFromPath,
+  isOutputPath,
+  isSupportedPath,
+  outputPath,
+  skipProcessingReason,
+} from "./file-utils";
 
 describe("isSupportedPath", () => {
   test("accepts supported", () => {
@@ -73,4 +79,12 @@ describe("outputPath", () => {
       );
     });
   }
+});
+
+describe("fileNameFromPath", () => {
+  test("handles posix and windows separators", () => {
+    expect(fileNameFromPath("/path/to/file.png")).toBe("file.png");
+    expect(fileNameFromPath("C:\\images\\file.png")).toBe("file.png");
+    expect(fileNameFromPath("file.png")).toBe("file.png");
+  });
 });

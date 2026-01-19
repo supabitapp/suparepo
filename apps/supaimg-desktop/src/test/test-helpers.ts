@@ -1,3 +1,4 @@
+import { fileNameFromPath } from "@/lib/file-utils";
 import { createDefaultSettings } from "@/lib/settings";
 import { type FileItem, type Platform, useStore } from "@/store";
 
@@ -20,7 +21,7 @@ type FileInput = Pick<FileItem, "id" | "path" | "status" | "originalSize" | "wor
 export const makeFile = (input: FileInput): FileItem => ({
   id: input.id,
   path: input.path,
-  name: input.name ?? input.path.split("/").pop() ?? input.path,
+  name: input.name ?? fileNameFromPath(input.path),
   workflow: input.workflow,
   originalSize: input.originalSize,
   status: input.status,
