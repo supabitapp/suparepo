@@ -1,9 +1,14 @@
 use compress_lib::background_removal;
 use compress_lib::compression::output::{compressed_output_path, output_path_with_suffix};
 use compress_lib::compression::{compress_auto, compress_path, CompressionOptions, ImageFormat};
+use compress_lib::generated::workflow_settings::{
+    BLUR_TEXT_BLUR_MODE_DEFAULT, BLUR_TEXT_BLUR_STRENGTH_DEFAULT,
+    BLUR_TEXT_CONFIDENCE_THRESHOLD_DEFAULT, BLUR_TEXT_MIN_BOX_SIZE_DEFAULT,
+    BLUR_TEXT_OVERRIDE_ORIGINAL_DEFAULT, BLUR_TEXT_PADDING_DEFAULT,
+};
 use compress_lib::onnx_runtime;
 use compress_lib::text_blur;
-use compress_lib::{BlurMode, BlurTextOptions};
+use compress_lib::BlurTextOptions;
 use std::error::Error;
 use std::path::Path;
 
@@ -106,12 +111,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         let model_path = text_blur::resolve_model_path_cli()?;
         let onnxruntime_path = onnx_runtime::resolve_onnxruntime_path_cli()?;
         let options = BlurTextOptions {
-            override_original: false,
-            blur_mode: BlurMode::Gaussian,
-            blur_strength: 12,
-            padding: 6,
-            confidence_threshold: 0.6,
-            min_box_size: 8,
+            override_original: BLUR_TEXT_OVERRIDE_ORIGINAL_DEFAULT,
+            blur_mode: BLUR_TEXT_BLUR_MODE_DEFAULT,
+            blur_strength: BLUR_TEXT_BLUR_STRENGTH_DEFAULT,
+            padding: BLUR_TEXT_PADDING_DEFAULT,
+            confidence_threshold: BLUR_TEXT_CONFIDENCE_THRESHOLD_DEFAULT,
+            min_box_size: BLUR_TEXT_MIN_BOX_SIZE_DEFAULT,
         };
         for path in &paths {
             let output_path = output_path_with_suffix(Path::new(path), "blurred", None);

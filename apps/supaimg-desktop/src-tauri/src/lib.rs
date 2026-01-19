@@ -2,6 +2,7 @@
 pub mod background_removal;
 pub mod compression;
 mod conversion;
+pub mod generated;
 mod image_utils;
 mod model_download;
 pub mod onnx_runtime;
@@ -12,7 +13,7 @@ mod analytics_events {
 }
 
 use compression::{CompressionError, CompressionOptions, ImageFormat, ImageResult};
-use conversion::{ConvertOptions, ConvertOutputFormat};
+use conversion::ConvertOptions;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
@@ -38,6 +39,7 @@ use workflow::{
 };
 
 mod workflow_generated;
+pub use generated::workflow_settings::{BlurMode, ConvertOutputFormat, RemoveBgOutputFormat};
 
 #[cfg(desktop)]
 const TRAY_ICON_BYTES: &[u8] = include_bytes!("../icons/32x32.png");
@@ -806,21 +808,6 @@ struct CompressOptions {
 }
 
 #[derive(Debug, Clone, Deserialize)]
-#[serde(rename_all = "lowercase")]
-enum RemoveBgOutputFormat {
-    Png,
-    Webp,
-}
-
-#[derive(Debug, Clone, Deserialize)]
-#[serde(rename_all = "lowercase")]
-pub enum BlurMode {
-    Gaussian,
-    Pixelate,
-    Solid,
-}
-
-#[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct RemoveBgOptions {
     output_format: RemoveBgOutputFormat,
@@ -951,7 +938,7 @@ async fn process_file(
                 let png_compression_level = options.png_compression_level;
                 let webp_lossless = options.webp_lossless;
                 let webp_quality = options.webp_quality;
-                let output_format = options.output_format.clone();
+                let output_format = options.output_format;
                 let progress_file_id_for_convert = progress_file_id.clone();
                 let app_handle_for_convert = app_handle.clone();
                 let convert_result = conversion::convert_path_with_progress(
@@ -1272,11 +1259,11 @@ pub fn run() {
 mod tests {
     use super::{
         build_label, count_drag_items, error_kind, expand_paths, workflow_label,
-        workflow_properties, BlurMode, BlurTextOptions, CompressOptions, ProcessOptions,
-        RemoveBgOptions, RemoveBgOutputFormat,
+        workflow_properties, BlurMode, BlurTextOptions, CompressOptions, ConvertOutputFormat,
+        ProcessOptions, RemoveBgOptions, RemoveBgOutputFormat,
     };
     use crate::compression::CompressionError;
-    use crate::conversion::{ConvertOptions, ConvertOutputFormat};
+    use crate::conversion::ConvertOptions;
     use crate::workflow::Workflow;
     use std::collections::HashSet;
     use std::fs;

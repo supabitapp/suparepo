@@ -1,6 +1,11 @@
 use crate::compression::{
     self, output, CompressionError, CompressionOptions, ImageFormat, ImageResult,
 };
+use crate::generated::workflow_settings::{
+    BLUR_TEXT_BLUR_STRENGTH_MAX, BLUR_TEXT_BLUR_STRENGTH_MIN, BLUR_TEXT_CONFIDENCE_THRESHOLD_MAX,
+    BLUR_TEXT_CONFIDENCE_THRESHOLD_MIN, BLUR_TEXT_MIN_BOX_SIZE_MAX, BLUR_TEXT_MIN_BOX_SIZE_MIN,
+    BLUR_TEXT_PADDING_MAX, BLUR_TEXT_PADDING_MIN,
+};
 use crate::image_utils::load_oriented_image;
 use crate::model_download::download_file;
 use crate::onnx_runtime::{ensure_ort_initialized, resolve_onnxruntime_path};
@@ -97,13 +102,20 @@ pub fn blur_text_with_progress_paths<F: FnMut(f64) + Send>(
     on_progress(0.5);
 
     let (scores, mask_w, mask_h) = extract_score_map(output)?;
-    let threshold = options.confidence_threshold.clamp(0.1, 0.9);
+    let threshold = options.confidence_threshold.clamp(
+        BLUR_TEXT_CONFIDENCE_THRESHOLD_MIN,
+        BLUR_TEXT_CONFIDENCE_THRESHOLD_MAX,
+    );
     let mask = scores
         .iter()
         .map(|&value| if value >= threshold { 1u8 } else { 0u8 })
         .collect::<Vec<u8>>();
-    let min_box = options.min_box_size.max(1) as u32;
-    let padding = options.padding as u32;
+    let min_box = options
+        .min_box_size
+        .clamp(BLUR_TEXT_MIN_BOX_SIZE_MIN, BLUR_TEXT_MIN_BOX_SIZE_MAX) as u32;
+    let padding = options
+        .padding
+        .clamp(BLUR_TEXT_PADDING_MIN, BLUR_TEXT_PADDING_MAX) as u32;
     let mut boxes = extract_boxes(&mask, mask_w, mask_h, min_box, padding);
     let scale_x = input_w as f32 / mask_w.max(1) as f32;
     let scale_y = input_h as f32 / mask_h.max(1) as f32;
@@ -563,7 +575,9 @@ fn scale_rect_to_input(
 }
 
 fn apply_blur(image: &mut RgbaImage, boxes: &[Rect], options: &BlurTextOptions) {
-    let strength = options.blur_strength.max(1) as u32;
+    let strength = options
+        .blur_strength
+        .clamp(BLUR_TEXT_BLUR_STRENGTH_MIN, BLUR_TEXT_BLUR_STRENGTH_MAX) as u32;
     for rect in boxes {
         let width = rect.x1.saturating_sub(rect.x0).saturating_add(1);
         let height = rect.y1.saturating_sub(rect.y0).saturating_add(1);
@@ -679,8 +693,13 @@ fn flatten_to_rgb(image: DynamicImage) -> image::RgbImage {
 mod tests {
     use super::{blur_text_with_progress_paths, resolve_model_path_cli};
     use crate::compression::ImageFormat;
+    use crate::generated::workflow_settings::{
+        BLUR_TEXT_BLUR_MODE_DEFAULT, BLUR_TEXT_BLUR_STRENGTH_DEFAULT,
+        BLUR_TEXT_CONFIDENCE_THRESHOLD_DEFAULT, BLUR_TEXT_MIN_BOX_SIZE_DEFAULT,
+        BLUR_TEXT_OVERRIDE_ORIGINAL_DEFAULT, BLUR_TEXT_PADDING_DEFAULT,
+    };
     use crate::onnx_runtime::resolve_onnxruntime_path_cli;
-    use crate::{BlurMode, BlurTextOptions};
+    use crate::BlurTextOptions;
     use image::GenericImageView;
     use std::path::{Path, PathBuf};
     use tempfile::tempdir;
@@ -695,12 +714,12 @@ mod tests {
 
     fn blur_options() -> BlurTextOptions {
         BlurTextOptions {
-            override_original: false,
-            blur_mode: BlurMode::Gaussian,
-            blur_strength: 12,
-            padding: 6,
-            confidence_threshold: 0.6,
-            min_box_size: 8,
+            override_original: BLUR_TEXT_OVERRIDE_ORIGINAL_DEFAULT,
+            blur_mode: BLUR_TEXT_BLUR_MODE_DEFAULT,
+            blur_strength: BLUR_TEXT_BLUR_STRENGTH_DEFAULT,
+            padding: BLUR_TEXT_PADDING_DEFAULT,
+            confidence_threshold: BLUR_TEXT_CONFIDENCE_THRESHOLD_DEFAULT,
+            min_box_size: BLUR_TEXT_MIN_BOX_SIZE_DEFAULT,
         }
     }
 
