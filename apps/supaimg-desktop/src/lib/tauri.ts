@@ -5,36 +5,39 @@ import {
   enable as enableAutostart,
   isEnabled as isAutostartEnabled,
 } from "@tauri-apps/plugin-autostart";
+import { COMMANDS as COMMAND_NAMES, EVENTS as EVENT_NAMES } from "./tauri.manifest";
 
-export const COMMANDS = {
-  processFile: "process_file",
-  countDragItems: "count_drag_items",
-  expandPaths: "expand_paths",
-  getPlatform: "get_platform",
-  revealInFinder: "reveal_in_finder",
-  setMenuBarIconVisible: "set_menu_bar_icon_visible",
-  setTitlebarColor: "set_titlebar_color",
-  setPosthogEnabled: "set_posthog_enabled",
-  prepareRemoveBgModels: "prepare_remove_bg_models",
-  prepareBlurTextModels: "prepare_blur_text_models",
-  downloadUpdateToCache: "download_update_to_cache",
-  installCachedUpdate: "install_cached_update",
-  getCachedUpdateVersion: "get_cached_update_version",
-  clearUpdateCache: "clear_update_cache",
-} as const;
+type StripPrefix<S extends string> = S extends `tauri://${infer Rest}` ? Rest : S;
 
-export const EVENTS = {
-  imageProgress: "image-progress",
-  modelDownloadProgress: "model-download-progress",
-  textModelDownloadProgress: "text-model-download-progress",
-  updateDownloadProgress: "update-download-progress",
-  dragEnter: "tauri://drag-enter",
-  dragLeave: "tauri://drag-leave",
-  dragDrop: "tauri://drag-drop",
-} as const;
+type CamelCase<S extends string> = S extends `${infer Head}_${infer Tail}`
+  ? `${Head}${Capitalize<CamelCase<Tail>>}`
+  : S extends `${infer Head}-${infer Tail}`
+    ? `${Head}${Capitalize<CamelCase<Tail>>}`
+    : S;
 
-export type CommandName = (typeof COMMANDS)[keyof typeof COMMANDS];
-export type EventName = (typeof EVENTS)[keyof typeof EVENTS];
+export type CommandName = (typeof COMMAND_NAMES)[number];
+export type EventName = (typeof EVENT_NAMES)[number];
+
+type CommandKey = CamelCase<CommandName>;
+type EventKey = CamelCase<StripPrefix<EventName>>;
+
+type CommandMap = { [Key in CommandKey]: CommandName };
+type EventMap = { [Key in EventKey]: EventName };
+
+const toCamelKey = (value: string) => {
+  const normalized = value.startsWith("tauri://") ? value.slice("tauri://".length) : value;
+  return normalized.replace(/[-_]+(.)?/g, (_, chr: string | undefined) =>
+    chr ? chr.toUpperCase() : "",
+  );
+};
+
+export const COMMANDS = Object.fromEntries(
+  COMMAND_NAMES.map((command) => [toCamelKey(command), command]),
+) as CommandMap;
+
+export const EVENTS = Object.fromEntries(
+  EVENT_NAMES.map((event) => [toCamelKey(event), event]),
+) as EventMap;
 
 export const isTauri = () =>
   typeof window !== "undefined" &&

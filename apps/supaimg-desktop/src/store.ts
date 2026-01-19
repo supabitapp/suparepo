@@ -9,7 +9,7 @@ import {
   setupCompressionProgressListener,
 } from "@/compression";
 import { createTaskScheduler } from "@/compression/queue";
-import { skipProcessingReason } from "@/lib/file-utils";
+import { fileNameFromPath, skipProcessingReason } from "@/lib/file-utils";
 import { setPosthogEnabled as setPosthogClientEnabled } from "@/lib/posthog";
 import {
   createDefaultSettings,
@@ -323,7 +323,7 @@ export const useStore = create<AppState>()(
             return {
               id: crypto.randomUUID(),
               path,
-              name: path.split("/").pop() ?? path,
+              name: fileNameFromPath(path),
               workflow,
               originalSize: 0,
               status: skipReason ? "skipped" : "pending",
