@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "check-types": "next typegen && tsc --noEmit",
-    "pages:build": "next build && bunx @cloudflare/next-on-pages"
+    "pages:build": "next build"
   },
   "dependencies": {
     "@repo/ui": "*",
@@ -20,7 +20,6 @@
     "react-dom": "^19.2.3"
   },
   "devDependencies": {
-    "@cloudflare/next-on-pages": "^1.12.3",
     "@repo/typescript-config": "*",
     "@types/node": "^22.15.3",
     "@types/react": "19.2.8",

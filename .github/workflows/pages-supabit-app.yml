@@ -50,4 +50,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy apps/supabit.app/.vercel/output/static --project-name ${{ secrets.CLOUDFLARE_PAGES_SUPABIT_PROJECT }} --branch ${{ github.head_ref || github.ref_name }}
+          command: pages deploy apps/supabit.app/out --project-name ${{ secrets.CLOUDFLARE_PAGES_SUPABIT_PROJECT }} --branch ${{ github.head_ref || github.ref_name }}
