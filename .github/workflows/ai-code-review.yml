@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run AI code review
-        uses: khoi/ai-code-review-github-action@main
+        uses: supabitapp/ai-code-review-github-action@main
         with:
           github-token: ${{ github.token }}
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
