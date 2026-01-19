@@ -1,0 +1,4 @@
+@import "@repo/ui/index.css";
+
+@source "./**/*.{ts,tsx,js,jsx,html}";
+@source "../index.html";
