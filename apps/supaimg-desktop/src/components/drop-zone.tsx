@@ -17,6 +17,7 @@ const formatCount = (count: number, label: string) =>
 export function DropZone({ workflow }: DropZoneProps) {
   const addFiles = useStore((s) => s.addFiles);
   const convertOutputFormat = useStore((s) => s.settings.workflowSettings.convert.outputFormat);
+  const platform = useStore((s) => s.platform);
   const iconRef = useRef<LayersIconHandle>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragCounts, setDragCounts] = useState<{
@@ -25,6 +26,12 @@ export function DropZone({ workflow }: DropZoneProps) {
     skipped: number;
   } | null>(null);
   const config = getWorkflow(workflow);
+  const isMac =
+    platform === "macos" ||
+    (platform === "unknown" &&
+      typeof navigator !== "undefined" &&
+      /macos|macintosh|mac os/i.test(navigator.platform));
+  const shortcutLabel = isMac ? "⌘O" : "Ctrl+O";
 
   const handleSelectFiles = useCallback(async () => {
     const selected = await open({
@@ -69,14 +76,15 @@ export function DropZone({ workflow }: DropZoneProps) {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.metaKey && e.key === "o") {
+      const modifier = isMac ? e.metaKey : e.ctrlKey;
+      if (modifier && e.key === "o") {
         e.preventDefault();
         handleSelectFiles();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleSelectFiles]);
+  }, [handleSelectFiles, isMac]);
 
   useEffect(() => {
     const unlistenEnter = listenEvent<{ paths?: string[] }>(EVENTS.dragEnter, (event) => {
@@ -131,7 +139,7 @@ export function DropZone({ workflow }: DropZoneProps) {
           onClick={handleSelectFiles}
           tabIndex={isDragging ? -1 : undefined}
         >
-          Select Files <kbd className="ml-2 text-xs text-muted-foreground">⌘O</kbd>
+          Select Files <kbd className="ml-2 text-xs text-muted-foreground">{shortcutLabel}</kbd>
         </Button>
       </div>
     </div>
