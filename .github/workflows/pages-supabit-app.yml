@@ -1,4 +1,4 @@
-name: Deploy supabit.app
+name: Deploy supabit.app (Workers)
 on:
   push:
     branches:
@@ -45,9 +45,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}-
       - run: bun install --frozen-lockfile
-      - run: bun run --filter supabit.app pages:build
-      - uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy apps/supabit.app/out --project-name ${{ secrets.CLOUDFLARE_PAGES_SUPABIT_PROJECT }} --branch ${{ github.head_ref || github.ref_name }}
+      - run: bun run deploy
+        working-directory: apps/supabit.app
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

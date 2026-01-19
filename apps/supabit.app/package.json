@@ -6,11 +6,15 @@
   "scripts": {
     "dev": "next dev --port 3001",
     "build": "next build",
+    "preview": "opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare deploy",
+    "upload": "opennextjs-cloudflare upload",
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv env.d.ts",
     "start": "next start",
-    "check-types": "next typegen && tsc --noEmit",
-    "pages:build": "next build"
+    "check-types": "next typegen && tsc --noEmit"
   },
   "dependencies": {
+    "@opennextjs/cloudflare": "^1.14.9",
     "@repo/ui": "*",
     "@tailwindcss/postcss": "^4.1.18",
     "lucide-react": "^0.562.0",
@@ -24,6 +28,7 @@
     "@types/node": "^22.15.3",
     "@types/react": "19.2.8",
     "@types/react-dom": "19.2.3",
-    "typescript": "5.9.2"
+    "typescript": "5.9.2",
+    "wrangler": "^4.59.2"
   }
 }
