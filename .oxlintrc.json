@@ -18,10 +18,6 @@
   "ignorePatterns": ["dist", "node_modules", "src-tauri/target", ".next"],
   "overrides": [
     {
-      "files": ["apps/web/**/*.{ts,tsx}"],
-      "plugins": ["nextjs"]
-    },
-    {
       "files": ["apps/supabit.app/**/*.{ts,tsx}"],
       "plugins": ["nextjs"]
     }
