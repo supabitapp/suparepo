@@ -14,8 +14,8 @@ SupaIMG currently downloads desktop updates and ML models from Cloudflare R2 (th
 - [x] (2026-01-19 17:52Z) Created supabitapp/supaimg repo with an initial commit and published models/v1 release assets.
 - [x] (2026-01-19 17:52Z) Replaced Cloudflare R2 URLs and endpoints in application code and CI with GitHub Releases URLs.
 - [x] (2026-01-19 17:52Z) Updated the SupaIMG release workflow to publish assets and update metadata to supabitapp/supaimg GitHub Releases.
-- [ ] (2026-01-19 17:52Z) Validate downloads, update metadata, and model fetches work against GitHub Releases.
-- [ ] (2026-01-19 18:02Z) Create a release tag matching the updated app version and verify assets upload in the new workflow.
+- [x] (2026-01-19 18:27Z) Create a release tag matching the updated app version and verify assets upload in the new workflow.
+- [x] (2026-01-19 18:28Z) Validate downloads, update metadata, and model fetches work against GitHub Releases.
 
 ## Surprises & Discoveries
 
@@ -23,6 +23,8 @@ SupaIMG currently downloads desktop updates and ML models from Cloudflare R2 (th
   Evidence: apps/supaimg-desktop/src-tauri/tauri.conf.json, apps/supaimg-desktop/src-tauri/src/background_removal.rs, apps/supaimg-desktop/src-tauri/src/text_blur.rs, .github/workflows/supaimg-release.yml.
 - Observation: GitHub releases cannot be published from a repository with zero commits; an initial commit (README) was required before publishing models/v1.
   Evidence: gh release edit models/v1 returned HTTP 422 "Repository is empty" until a README commit was pushed.
+- Observation: The supaimg-release workflow requires a GH token for the target releases repo; SUPAIMG_RELEASE_TOKEN must be present as a secret for gh commands to work.
+  Evidence: build-macos failed in the initial run with "set the GH_TOKEN environment variable" until the secret was added.
 
 ## Decision Log
 
@@ -48,7 +50,7 @@ SupaIMG currently downloads desktop updates and ML models from Cloudflare R2 (th
 
 ## Outcomes & Retrospective
 
-- Pending. This will be completed after implementation and validation.
+- Completed. SupaIMG release artifacts, update metadata, and model downloads are now served from GitHub Releases in supabitapp/supaimg, and the release workflow publishes assets and update.json without R2.
 
 ## Context and Orientation
 
@@ -168,3 +170,4 @@ Expected update.json shape (example):
 Change log: 2026-01-19 17:30Z - Initial ExecPlan created.
 Change log: 2026-01-19 17:52Z - Updated progress, recorded models asset names, and noted GitHub release requirement for an initial commit.
 Change log: 2026-01-19 18:02Z - Noted version bump decision to enable a new release tag.
+Change log: 2026-01-19 18:28Z - Marked validation complete and documented release token requirement.
