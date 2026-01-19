@@ -11,7 +11,7 @@
     "import/no-unassigned-import": [
       "warn",
       {
-        "allow": ["**/*.css", "**/next-env.d.ts"]
+        "allow": ["**/*.css", "**/next-env.d.ts", "**/.next/**"]
       }
     ]
   },
