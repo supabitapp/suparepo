@@ -1,5 +1,5 @@
 import Image, { type ImageProps } from "next/image";
-import { Button } from "@repo/ui/components/ui/button";
+import { AlertButton } from "./alert-button";
 
 type Props = Omit<ImageProps, "src"> & {
   srcLight: string;
@@ -56,7 +56,7 @@ export default function Home() {
             Read our docs
           </a>
         </div>
-        <Button onClick={() => alert("Hello from web!")}>Open alert</Button>
+        <AlertButton />
       </main>
       <footer className="flex gap-6 text-sm text-muted-foreground">
         <a

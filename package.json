@@ -1,5 +1,5 @@
 {
-  "name": "supatemplate",
+  "name": "suparepo",
   "private": true,
   "workspaces": [
     "apps/*",

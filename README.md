@@ -1,4 +1,4 @@
-# Supatemplate
+# Suparepo
 
 A monorepo template for desktop apps that use Tauri.
 

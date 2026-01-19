@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Supatemplate",
+  "productName": "Suparepo",
   "version": "0.1.0",
-  "identifier": "app.supabit.supatemplate",
+  "identifier": "app.supabit.suparepo",
   "build": {
     "beforeDevCommand": "bun run dev",
     "devUrl": "http://localhost:1420",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Supatemplate",
+        "title": "Suparepo",
         "width": 800,
         "height": 600
       }

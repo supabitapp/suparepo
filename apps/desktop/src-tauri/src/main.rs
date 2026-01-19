@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    supatemplate_desktop_lib::run()
+    suparepo_desktop_lib::run()
 }
