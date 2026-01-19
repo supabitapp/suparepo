@@ -1,17 +1,21 @@
 name: supaimg-pr-web-preview
 on:
-  pull_request:
-    paths:
-      - apps/supaimg.app/**
-      - packages/ui/**
+  workflow_call:
+    inputs:
+      pr_number:
+        required: false
+        type: string
+      is_fork:
+        required: false
+        type: string
 
 concurrency:
-  group: pr-web-preview-${{ github.event.pull_request.number }}
+  group: supaimg-pr-web-preview-${{ inputs.pr_number || github.run_id }}
   cancel-in-progress: true
 
 jobs:
   deploy-preview:
-    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    if: ${{ inputs.is_fork != 'true' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -33,13 +37,13 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy apps/supaimg.app/dist --project-name=supaimg --branch pr-${{ github.event.pull_request.number }}
+          command: pages deploy apps/supaimg.app/dist --project-name=supaimg --branch pr-${{ inputs.pr_number }}
       - name: Comment on PR
         if: ${{ steps.deploy.outputs.deployment-url != '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          PR_NUMBER="${{ github.event.pull_request.number }}"
+          PR_NUMBER="${{ inputs.pr_number }}"
           DEPLOY_URL="${{ steps.deploy.outputs.pages-deployment-alias-url }}"
           if [ -z "$DEPLOY_URL" ]; then
             DEPLOY_URL="${{ steps.deploy.outputs.deployment-url }}"

@@ -1,9 +1,6 @@
 name: supaimg-benchmark
-
 on:
-  pull_request:
-    paths:
-      - "apps/supaimg-desktop/src-tauri/src/compression/**"
+  workflow_call:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

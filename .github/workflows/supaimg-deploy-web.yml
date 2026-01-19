@@ -1,11 +1,6 @@
 name: supaimg-deploy-web
 on:
-  workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - apps/supaimg.app/**
-      - packages/ui/**
+  workflow_call:
 
 jobs:
   deploy:

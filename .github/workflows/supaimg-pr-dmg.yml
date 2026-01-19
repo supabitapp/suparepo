@@ -1,14 +1,21 @@
 name: supaimg-pr-dmg
 on:
-  pull_request:
+  workflow_call:
+    inputs:
+      pr_number:
+        required: false
+        type: string
+      is_fork:
+        required: false
+        type: string
 
 concurrency:
-  group: pr-dmg-${{ github.event.pull_request.number }}
+  group: supaimg-pr-dmg-${{ inputs.pr_number || github.run_id }}
   cancel-in-progress: true
 
 jobs:
   build-macos-dmg:
-    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    if: ${{ inputs.is_fork != 'true' }}
     runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 60
     permissions:
@@ -96,7 +103,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          PR_NUMBER="${{ github.event.pull_request.number }}"
+          PR_NUMBER="${{ inputs.pr_number }}"
           RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           ARTIFACT_ID=$(gh api "repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" | jq -r '.artifacts[] | select(.name=="supaimg-macos-dmg") | .id' | head -1)
           if [ -n "$ARTIFACT_ID" ] && [ "$ARTIFACT_ID" != "null" ]; then
