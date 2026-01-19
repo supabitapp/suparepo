@@ -272,7 +272,7 @@ const buildDefaults = (schema: readonly WorkflowSettingField[]) =>
     return acc;
   }, {});
 
-const baseWorkflows = workflowsData.workflows as WorkflowConfigBase[];
+const baseWorkflows = workflowsData.workflows as readonly WorkflowConfigBase[];
 
 export const workflows = baseWorkflows.reduce<Record<Workflow, WorkflowConfig>>(
   (acc, workflow) => {

@@ -11,7 +11,38 @@ const data = JSON.parse(raw) as { workflows: Array<Record<string, unknown>> };
 if (!Array.isArray(data.workflows)) {
   throw new Error("workflows.json missing workflows array");
 }
-const workflows = data.workflows;
+const expectString = (value: unknown, label: string) => {
+  if (typeof value !== "string" || value.length === 0) {
+    throw new Error(`${label} must be a non-empty string`);
+  }
+  return value;
+};
+
+const expectStringArray = (value: unknown, label: string) => {
+  if (!Array.isArray(value)) {
+    throw new Error(`${label} must be an array`);
+  }
+  return value.map((item, index) => expectString(item, `${label}[${index}]`));
+};
+
+const workflows = data.workflows.map((workflow, index) => ({
+  id: expectString(workflow.id, `workflows[${index}].id`),
+  title: expectString(workflow.title, `workflows[${index}].title`),
+  actionLabel: expectString(workflow.actionLabel, `workflows[${index}].actionLabel`),
+  processingLabel: expectString(workflow.processingLabel, `workflows[${index}].processingLabel`),
+  inputExtensions: expectStringArray(
+    workflow.inputExtensions,
+    `workflows[${index}].inputExtensions`,
+  ),
+  outputSuffix: expectString(workflow.outputSuffix, `workflows[${index}].outputSuffix`),
+  outputExtension:
+    workflow.outputExtension === null
+      ? null
+      : expectString(workflow.outputExtension, `workflows[${index}].outputExtension`),
+  outputBehavior: expectString(workflow.outputBehavior, `workflows[${index}].outputBehavior`),
+  task: expectString(workflow.task, `workflows[${index}].task`),
+  route: expectString(workflow.route, `workflows[${index}].route`),
+}));
 
 const unique = (values: string[]) => {
   const seen = new Set<string>();
@@ -25,24 +56,9 @@ const unique = (values: string[]) => {
   return out;
 };
 
-const expectString = (value: unknown, label: string) => {
-  if (typeof value !== "string" || value.length === 0) {
-    throw new Error(`${label} must be a non-empty string`);
-  }
-  return value;
-};
-
-const workflowIds = workflows.map((workflow, index) =>
-  expectString(workflow.id, `workflows[${index}].id`),
-);
-const workflowTasks = unique(
-  workflows.map((workflow, index) => expectString(workflow.task, `workflows[${index}].task`)),
-);
-const outputBehaviors = unique(
-  workflows.map((workflow, index) =>
-    expectString(workflow.outputBehavior, `workflows[${index}].outputBehavior`),
-  ),
-);
+const workflowIds = workflows.map((workflow) => workflow.id);
+const workflowTasks = unique(workflows.map((workflow) => workflow.task));
+const outputBehaviors = unique(workflows.map((workflow) => workflow.outputBehavior));
 
 const toPascalCase = (value: string) =>
   value
@@ -54,12 +70,41 @@ const toPascalCase = (value: string) =>
 const workflowVariants = workflowIds.map(toPascalCase);
 const taskVariants = workflowTasks.map(toPascalCase);
 
+const formatString = (value: string) => JSON.stringify(value);
+
+const formatInlineArray = (values: string[]) =>
+  `[${values.map((value) => formatString(value)).join(", ")}]`;
+
+const formatWorkflowsData = () => {
+  const lines = ["export const workflowsData = {", "  workflows: ["];
+  for (const workflow of workflows) {
+    lines.push(
+      "    {",
+      `      id: ${formatString(workflow.id)},`,
+      `      title: ${formatString(workflow.title)},`,
+      `      actionLabel: ${formatString(workflow.actionLabel)},`,
+      `      processingLabel: ${formatString(workflow.processingLabel)},`,
+      `      inputExtensions: ${formatInlineArray(workflow.inputExtensions)},`,
+      `      outputSuffix: ${formatString(workflow.outputSuffix)},`,
+      `      outputExtension: ${
+        workflow.outputExtension === null ? "null" : formatString(workflow.outputExtension)
+      },`,
+      `      outputBehavior: ${formatString(workflow.outputBehavior)},`,
+      `      task: ${formatString(workflow.task)},`,
+      `      route: ${formatString(workflow.route)},`,
+      "    },",
+    );
+  }
+  lines.push("  ],", "} as const;");
+  return `${lines.join("\n")}\n`;
+};
+
 const tsContent =
-  `export const workflowsData = ${JSON.stringify(data, null, 2)} as const;\n` +
+  formatWorkflowsData() +
   `\n` +
-  `export const workflowIds = ${JSON.stringify(workflowIds, null, 2)} as const;\n` +
-  `export const workflowTaskIds = ${JSON.stringify(workflowTasks, null, 2)} as const;\n` +
-  `export const outputBehaviors = ${JSON.stringify(outputBehaviors, null, 2)} as const;\n` +
+  `export const workflowIds = ${formatInlineArray(workflowIds)} as const;\n` +
+  `export const workflowTaskIds = ${formatInlineArray(workflowTasks)} as const;\n` +
+  `export const outputBehaviors = ${formatInlineArray(outputBehaviors)} as const;\n` +
   `\n` +
   `export type Workflow = (typeof workflowIds)[number];\n` +
   `export type WorkflowTask = (typeof workflowTaskIds)[number];\n` +
