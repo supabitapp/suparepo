@@ -30,16 +30,17 @@ jobs:
         with:
           targets: aarch64-apple-darwin
       - uses: oven-sh/setup-bun@735343b667d3e6f658f44d0eca948eb6282f2b76
-      - run: brew install nasm pkg-config awscli
+      - run: brew install nasm pkg-config
       - run: bun install
 
       - name: Ensure release draft
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.SUPAIMG_RELEASE_TOKEN }}
+          SUPAIMG_RELEASE_REPO: supabitapp/supaimg
         run: |
           TAG="${{ github.ref_name }}"
-          if ! gh release view "$TAG" >/dev/null 2>&1; then
-            gh release create "$TAG" --title "$TAG" --generate-notes --draft
+          if ! gh release view "$TAG" --repo "$SUPAIMG_RELEASE_REPO" >/dev/null 2>&1; then
+            gh release create "$TAG" --title "$TAG" --generate-notes --draft --repo "$SUPAIMG_RELEASE_REPO"
           fi
 
       - name: Build app
@@ -70,42 +71,22 @@ jobs:
 
       - name: Upload artifacts to release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.SUPAIMG_RELEASE_TOKEN }}
+          SUPAIMG_RELEASE_REPO: supabitapp/supaimg
         run: |
           TAG="${{ github.ref_name }}"
-          for asset in apps/supaimg-desktop/src-tauri/target/aarch64-apple-darwin/release/bundle/macos/*.app.tar.gz*; do
-            gh release upload "$TAG" "$asset" --clobber
-          done
-          for dmg in apps/supaimg-desktop/src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg; do
-            gh release upload "$TAG" "$dmg" --clobber
-          done
-
-      - name: Upload artifacts to R2
-        env:
-          R2_ACCESS_KEY_ID: ${{ secrets.SUPAIMG_R2_ACCESS_KEY_ID }}
-          R2_SECRET_ACCESS_KEY: ${{ secrets.SUPAIMG_R2_SECRET_ACCESS_KEY }}
-          R2_ACCOUNT_ID: ${{ secrets.SUPAIMG_R2_ACCOUNT_ID }}
-          R2_BUCKET: ${{ secrets.SUPAIMG_R2_BUCKET }}
-          R2_PUBLIC_URL: ${{ secrets.SUPAIMG_R2_PUBLIC_URL }}
-        run: |
-          TAG="${{ github.ref_name }}"
-          VERSION="${TAG#supaimg/v}"
-          PUB_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          R2_ENDPOINT="https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
-
-          aws configure set aws_access_key_id "$R2_ACCESS_KEY_ID"
-          aws configure set aws_secret_access_key "$R2_SECRET_ACCESS_KEY"
-          aws configure set region auto
-
+          ASSET_DIR="/tmp/supaimg-release-assets"
+          mkdir -p "$ASSET_DIR"
           TAR="apps/supaimg-desktop/src-tauri/target/aarch64-apple-darwin/release/bundle/macos/SupaIMG.app.tar.gz"
           DMG=$(ls apps/supaimg-desktop/src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg | head -1)
-          SIG=$(cat "${TAR}.sig")
 
-          aws s3 cp "$TAR" "s3://${R2_BUCKET}/supaimg/${VERSION}/supaimg_aarch64.app.tar.gz" --endpoint-url "$R2_ENDPOINT"
-          aws s3 cp "${TAR}.sig" "s3://${R2_BUCKET}/supaimg/${VERSION}/supaimg_aarch64.app.tar.gz.sig" --endpoint-url "$R2_ENDPOINT"
-          aws s3 cp "$DMG" "s3://${R2_BUCKET}/supaimg/${VERSION}/supaimg_aarch64.dmg" --endpoint-url "$R2_ENDPOINT"
-          aws s3 cp "$TAR" "s3://${R2_BUCKET}/supaimg/supaimg_aarch64_latest.app.tar.gz" --endpoint-url "$R2_ENDPOINT"
-          aws s3 cp "${TAR}.sig" "s3://${R2_BUCKET}/supaimg/supaimg_aarch64_latest.app.tar.gz.sig" --endpoint-url "$R2_ENDPOINT"
+          cp "$TAR" "$ASSET_DIR/supaimg_aarch64.app.tar.gz"
+          cp "${TAR}.sig" "$ASSET_DIR/supaimg_aarch64.app.tar.gz.sig"
+          cp "$DMG" "$ASSET_DIR/supaimg_aarch64.dmg"
+
+          gh release upload "$TAG" "$ASSET_DIR/supaimg_aarch64.app.tar.gz" --repo "$SUPAIMG_RELEASE_REPO" --clobber
+          gh release upload "$TAG" "$ASSET_DIR/supaimg_aarch64.app.tar.gz.sig" --repo "$SUPAIMG_RELEASE_REPO" --clobber
+          gh release upload "$TAG" "$ASSET_DIR/supaimg_aarch64.dmg" --repo "$SUPAIMG_RELEASE_REPO" --clobber
 
   build-windows:
     runs-on: windows-latest
@@ -132,12 +113,13 @@ jobs:
 
       - name: Ensure release draft
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.SUPAIMG_RELEASE_TOKEN }}
+          SUPAIMG_RELEASE_REPO: supabitapp/supaimg
         shell: pwsh
         run: |
           $TAG = "${{ github.ref_name }}"
-          $exists = gh release view $TAG 2>&1
-          if ($LASTEXITCODE -ne 0) { gh release create $TAG --title $TAG --draft }
+          $exists = gh release view $TAG --repo $env:SUPAIMG_RELEASE_REPO 2>&1
+          if ($LASTEXITCODE -ne 0) { gh release create $TAG --title $TAG --draft --repo $env:SUPAIMG_RELEASE_REPO }
 
       - name: Build app
         env:
@@ -149,32 +131,23 @@ jobs:
 
       - name: Upload artifacts to release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.SUPAIMG_RELEASE_TOKEN }}
+          SUPAIMG_RELEASE_REPO: supabitapp/supaimg
         shell: pwsh
         run: |
           $TAG = "${{ github.ref_name }}"
-          Get-ChildItem "apps/supaimg-desktop/src-tauri/target/x86_64-pc-windows-msvc/release/bundle/msi/*.msi" | ForEach-Object { gh release upload $TAG $_.FullName --clobber }
-          Get-ChildItem "apps/supaimg-desktop/src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe" | ForEach-Object { gh release upload $TAG $_.FullName --clobber }
-
-      - name: Upload to R2
-        env:
-          R2_ACCESS_KEY_ID: ${{ secrets.SUPAIMG_R2_ACCESS_KEY_ID }}
-          R2_SECRET_ACCESS_KEY: ${{ secrets.SUPAIMG_R2_SECRET_ACCESS_KEY }}
-          R2_ACCOUNT_ID: ${{ secrets.SUPAIMG_R2_ACCOUNT_ID }}
-          R2_BUCKET: ${{ secrets.SUPAIMG_R2_BUCKET }}
-        shell: pwsh
-        run: |
-          $TAG = "${{ github.ref_name }}"
-          $VERSION = $TAG -replace '^supaimg/v',''
-          $R2_ENDPOINT = "https://$env:R2_ACCOUNT_ID.r2.cloudflarestorage.com"
-          aws configure set aws_access_key_id $env:R2_ACCESS_KEY_ID
-          aws configure set aws_secret_access_key $env:R2_SECRET_ACCESS_KEY
-          aws configure set region auto
+          $AssetDir = Join-Path $env:RUNNER_TEMP "supaimg-release-assets"
+          New-Item -ItemType Directory -Force -Path $AssetDir | Out-Null
           $NSIS = Get-ChildItem "apps/supaimg-desktop/src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe" | Select-Object -First 1
           $MSI = Get-ChildItem "apps/supaimg-desktop/src-tauri/target/x86_64-pc-windows-msvc/release/bundle/msi/*.msi" | Select-Object -First 1
-          aws s3 cp $NSIS.FullName "s3://$env:R2_BUCKET/supaimg/$VERSION/supaimg_x64-setup.exe" --endpoint-url $R2_ENDPOINT
-          aws s3 cp "$($NSIS.FullName).sig" "s3://$env:R2_BUCKET/supaimg/$VERSION/supaimg_x64-setup.exe.sig" --endpoint-url $R2_ENDPOINT
-          aws s3 cp $MSI.FullName "s3://$env:R2_BUCKET/supaimg/$VERSION/supaimg_x64.msi" --endpoint-url $R2_ENDPOINT
+
+          Copy-Item $NSIS.FullName (Join-Path $AssetDir "supaimg_x64-setup.exe")
+          Copy-Item "$($NSIS.FullName).sig" (Join-Path $AssetDir "supaimg_x64-setup.exe.sig")
+          Copy-Item $MSI.FullName (Join-Path $AssetDir "supaimg_x64.msi")
+
+          gh release upload $TAG (Join-Path $AssetDir "supaimg_x64-setup.exe") --repo $env:SUPAIMG_RELEASE_REPO --clobber
+          gh release upload $TAG (Join-Path $AssetDir "supaimg_x64-setup.exe.sig") --repo $env:SUPAIMG_RELEASE_REPO --clobber
+          gh release upload $TAG (Join-Path $AssetDir "supaimg_x64.msi") --repo $env:SUPAIMG_RELEASE_REPO --clobber
 
   publish-release:
     needs: [build-macos, build-windows]
@@ -188,22 +161,20 @@ jobs:
 
       - name: Generate combined update.json
         env:
-          R2_ACCESS_KEY_ID: ${{ secrets.SUPAIMG_R2_ACCESS_KEY_ID }}
-          R2_SECRET_ACCESS_KEY: ${{ secrets.SUPAIMG_R2_SECRET_ACCESS_KEY }}
-          R2_ACCOUNT_ID: ${{ secrets.SUPAIMG_R2_ACCOUNT_ID }}
-          R2_BUCKET: ${{ secrets.SUPAIMG_R2_BUCKET }}
-          R2_PUBLIC_URL: ${{ secrets.SUPAIMG_R2_PUBLIC_URL }}
+          GH_TOKEN: ${{ secrets.SUPAIMG_RELEASE_TOKEN }}
+          SUPAIMG_RELEASE_REPO: supabitapp/supaimg
         run: |
           TAG="${{ github.ref_name }}"
           VERSION="${TAG#supaimg/v}"
           PUB_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          R2_ENDPOINT="https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
-          aws configure set aws_access_key_id "$R2_ACCESS_KEY_ID"
-          aws configure set aws_secret_access_key "$R2_SECRET_ACCESS_KEY"
-          aws configure set region auto
-
-          MACOS_SIG=$(aws s3 cp "s3://${R2_BUCKET}/supaimg/${VERSION}/supaimg_aarch64.app.tar.gz.sig" - --endpoint-url "$R2_ENDPOINT")
-          WINDOWS_SIG=$(aws s3 cp "s3://${R2_BUCKET}/supaimg/${VERSION}/supaimg_x64-setup.exe.sig" - --endpoint-url "$R2_ENDPOINT")
+          SIG_DIR="/tmp/supaimg-release-sigs"
+          mkdir -p "$SIG_DIR"
+          gh release download "$TAG" --repo "$SUPAIMG_RELEASE_REPO" \
+            --pattern "supaimg_aarch64.app.tar.gz.sig" \
+            --pattern "supaimg_x64-setup.exe.sig" \
+            --dir "$SIG_DIR"
+          MACOS_SIG=$(cat "$SIG_DIR/supaimg_aarch64.app.tar.gz.sig")
+          WINDOWS_SIG=$(cat "$SIG_DIR/supaimg_x64-setup.exe.sig")
 
           cat > update.json << EOF
           {
@@ -213,18 +184,19 @@ jobs:
             "platforms": {
               "darwin-aarch64": {
                 "signature": "${MACOS_SIG}",
-                "url": "${R2_PUBLIC_URL}/supaimg/${VERSION}/supaimg_aarch64.app.tar.gz"
+                "url": "https://github.com/supabitapp/supaimg/releases/download/${TAG}/supaimg_aarch64.app.tar.gz"
               },
               "windows-x86_64": {
                 "signature": "${WINDOWS_SIG}",
-                "url": "${R2_PUBLIC_URL}/supaimg/${VERSION}/supaimg_x64-setup.exe"
+                "url": "https://github.com/supabitapp/supaimg/releases/download/${TAG}/supaimg_x64-setup.exe"
               }
             }
           }
           EOF
-          aws s3 cp update.json "s3://${R2_BUCKET}/supaimg/update.json" --endpoint-url "$R2_ENDPOINT"
+          gh release upload "$TAG" update.json --repo "$SUPAIMG_RELEASE_REPO" --clobber
 
       - name: Publish release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release edit ${{ github.ref_name }} --draft=false --repo ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.SUPAIMG_RELEASE_TOKEN }}
+          SUPAIMG_RELEASE_REPO: supabitapp/supaimg
+        run: gh release edit ${{ github.ref_name }} --draft=false --repo $SUPAIMG_RELEASE_REPO
