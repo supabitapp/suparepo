@@ -7,6 +7,9 @@ mod model_download;
 pub mod onnx_runtime;
 pub mod text_blur;
 mod workflow;
+mod tauri_manifest {
+    include!(concat!(env!("OUT_DIR"), "/tauri_manifest.rs"));
+}
 
 use compression::{CompressionError, CompressionOptions, ImageFormat, ImageResult};
 use conversion::{ConvertOptions, ConvertOutputFormat};
@@ -1186,22 +1189,7 @@ pub fn run() {
     }
 
     builder
-        .invoke_handler(tauri::generate_handler![
-            process_file,
-            count_drag_items,
-            expand_paths,
-            get_platform,
-            set_posthog_enabled,
-            set_menu_bar_icon_visible,
-            reveal_in_finder,
-            set_titlebar_color,
-            prepare_remove_bg_models,
-            prepare_blur_text_models,
-            download_update_to_cache,
-            install_cached_update,
-            get_cached_update_version,
-            clear_update_cache
-        ])
+        .invoke_handler(tauri_manifest::invoke_handler())
         .setup(move |app| {
             app.manage(PostHogControl {
                 enabled: Arc::clone(&posthog_enabled),
