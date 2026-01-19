@@ -7,8 +7,6 @@
   ],
   "scripts": {
     "build": "turbo run build",
-    "desktop:build": "cd apps/desktop && bun run tauri -- build",
-    "desktop:dev": "cd apps/desktop && bun run tauri -- dev",
     "dev": "turbo run dev",
     "supaimg.desktop:dev": "cd apps/supaimg-desktop && bun run tauri -- dev",
     "supaimg.desktop:build": "cd apps/supaimg-desktop && bun run tauri -- build",
@@ -34,10 +32,6 @@
   "lint-staged": {
     "*": "oxfmt --no-error-on-unmatched-pattern",
     "*.{js,jsx,ts,tsx,mjs,cjs}": "bun run lint",
-    "apps/desktop/src-tauri/**/*.rs": [
-      "bash -c 'cargo fmt --manifest-path apps/desktop/src-tauri/Cargo.toml --all -- --check'",
-      "bash -c 'cargo clippy --manifest-path apps/desktop/src-tauri/Cargo.toml --all -- -D warnings'"
-    ],
     "apps/supaimg-desktop/src-tauri/**/*.rs": [
       "bash -c 'cargo fmt --manifest-path apps/supaimg-desktop/src-tauri/Cargo.toml --all -- --check'",
       "bash -c 'cargo clippy --manifest-path apps/supaimg-desktop/src-tauri/Cargo.toml --all -- -D warnings'"

@@ -174,7 +174,7 @@ pub fn resolve_model_path_cli() -> Result<PathBuf, CompressionError> {
     let cwd = std::env::current_dir()?;
     let candidates = [
         cwd.join("models/onnx"),
-        cwd.join("apps/desktop/src-tauri/models/onnx"),
+        cwd.join("apps/supaimg-desktop/src-tauri/models/onnx"),
     ];
     for dir in candidates {
         if let Some(found) = resolve_model_path_from_dir(&dir) {
