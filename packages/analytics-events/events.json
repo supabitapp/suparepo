@@ -1,0 +1,75 @@
+{
+  "events": [
+    {
+      "name": "workflow_error",
+      "payload": {
+        "workflow": "string",
+        "elapsed_ms": "number",
+        "build": "string",
+        "override_original?": "boolean",
+        "strip_png_metadata?": "boolean",
+        "strip_jpeg_metadata?": "boolean",
+        "output_format?": "string",
+        "jpeg_quality?": "number",
+        "png_compression_level?": "number",
+        "webp_quality?": "number",
+        "webp_lossless?": "boolean",
+        "gif_colors?": "number",
+        "blur_mode?": "string",
+        "blur_strength?": "number",
+        "padding?": "number",
+        "confidence_threshold?": "number",
+        "min_box_size?": "number",
+        "error_kind": "string"
+      }
+    },
+    {
+      "name": "workflow_failure",
+      "payload": {
+        "workflow": "string",
+        "elapsed_ms": "number",
+        "build": "string",
+        "override_original?": "boolean",
+        "strip_png_metadata?": "boolean",
+        "strip_jpeg_metadata?": "boolean",
+        "output_format?": "string",
+        "jpeg_quality?": "number",
+        "png_compression_level?": "number",
+        "webp_quality?": "number",
+        "webp_lossless?": "boolean",
+        "gif_colors?": "number",
+        "blur_mode?": "string",
+        "blur_strength?": "number",
+        "padding?": "number",
+        "confidence_threshold?": "number",
+        "min_box_size?": "number",
+        "failure_kind": "string"
+      }
+    },
+    {
+      "name": "workflow_success",
+      "payload": {
+        "workflow": "string",
+        "elapsed_ms": "number",
+        "build": "string",
+        "override_original?": "boolean",
+        "strip_png_metadata?": "boolean",
+        "strip_jpeg_metadata?": "boolean",
+        "output_format?": "string",
+        "jpeg_quality?": "number",
+        "png_compression_level?": "number",
+        "webp_quality?": "number",
+        "webp_lossless?": "boolean",
+        "gif_colors?": "number",
+        "blur_mode?": "string",
+        "blur_strength?": "number",
+        "padding?": "number",
+        "confidence_threshold?": "number",
+        "min_box_size?": "number",
+        "input_size_bytes": "number",
+        "output_size_bytes": "number",
+        "format": "string"
+      }
+    }
+  ]
+}

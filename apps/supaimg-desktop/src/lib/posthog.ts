@@ -1,6 +1,10 @@
 import { error as logError } from "@tauri-apps/plugin-log";
 import { captureEvent } from "tauri-plugin-better-posthog";
 import { isTauri } from "@/lib/tauri";
+import type {
+  AnalyticsEventName,
+  AnalyticsEventPayload
+} from "@/lib/analytics-events";
 
 type PosthogClient = (typeof import("posthog-js"))["default"];
 
@@ -82,4 +86,14 @@ export const setPosthogEnabled = (enabled: boolean) => {
   } else {
     posthogClient.opt_out_capturing();
   }
+};
+
+export const captureAnalyticsEvent = <E extends AnalyticsEventName>(
+  event: E,
+  payload: AnalyticsEventPayload<E>
+) => {
+  if (!isTauri()) return;
+  void captureEvent(event, payload as Record<string, unknown>).catch((err) => {
+    void logError(`[posthog] capture failed: ${String(err)}`);
+  });
 };

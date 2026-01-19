@@ -7,6 +7,9 @@ mod model_download;
 pub mod onnx_runtime;
 pub mod text_blur;
 mod workflow;
+pub mod analytics_events {
+    include!(concat!(env!("OUT_DIR"), "/analytics_events.rs"));
+}
 
 use compression::{CompressionError, CompressionOptions, ImageFormat, ImageResult};
 use conversion::{ConvertOptions, ConvertOutputFormat};
@@ -41,45 +44,52 @@ struct PostHogControl {
     enabled: Arc<AtomicBool>,
 }
 
+fn payload_to_properties<T: Serialize>(payload: &T) -> HashMap<String, serde_json::Value> {
+    match serde_json::to_value(payload).unwrap() {
+        serde_json::Value::Object(map) => map.into_iter().collect(),
+        _ => HashMap::new(),
+    }
+}
+
 struct WorkflowErrorEvent {
-    properties: HashMap<String, serde_json::Value>,
+    payload: analytics_events::WorkflowErrorPayload,
 }
 
 impl PostHogEvent for WorkflowErrorEvent {
     fn name(&self) -> &str {
-        "workflow_error"
+        analytics_events::AnalyticsEventName::WorkflowError.as_str()
     }
 
     fn properties(&self) -> HashMap<String, serde_json::Value> {
-        self.properties.clone()
+        payload_to_properties(&self.payload)
     }
 }
 
 struct WorkflowFailureEvent {
-    properties: HashMap<String, serde_json::Value>,
+    payload: analytics_events::WorkflowFailurePayload,
 }
 
 impl PostHogEvent for WorkflowFailureEvent {
     fn name(&self) -> &str {
-        "workflow_failure"
+        analytics_events::AnalyticsEventName::WorkflowFailure.as_str()
     }
 
     fn properties(&self) -> HashMap<String, serde_json::Value> {
-        self.properties.clone()
+        payload_to_properties(&self.payload)
     }
 }
 
 struct WorkflowSuccessEvent {
-    properties: HashMap<String, serde_json::Value>,
+    payload: analytics_events::WorkflowSuccessPayload,
 }
 
 impl PostHogEvent for WorkflowSuccessEvent {
     fn name(&self) -> &str {
-        "workflow_success"
+        analytics_events::AnalyticsEventName::WorkflowSuccess.as_str()
     }
 
     fn properties(&self) -> HashMap<String, serde_json::Value> {
-        self.properties.clone()
+        payload_to_properties(&self.payload)
     }
 }
 
@@ -141,69 +151,158 @@ fn blur_mode_label(mode: &BlurMode) -> &'static str {
     }
 }
 
-fn workflow_properties(
+struct WorkflowPayloadParts {
+    workflow: String,
+    elapsed_ms: f64,
+    build: String,
+    override_original: Option<bool>,
+    strip_png_metadata: Option<bool>,
+    strip_jpeg_metadata: Option<bool>,
+    output_format: Option<String>,
+    jpeg_quality: Option<f64>,
+    png_compression_level: Option<f64>,
+    webp_quality: Option<f64>,
+    webp_lossless: Option<bool>,
+    gif_colors: Option<f64>,
+    blur_mode: Option<String>,
+    blur_strength: Option<f64>,
+    padding: Option<f64>,
+    confidence_threshold: Option<f64>,
+    min_box_size: Option<f64>,
+}
+
+impl WorkflowPayloadParts {
+    fn into_error(self, error_kind: &str) -> analytics_events::WorkflowErrorPayload {
+        analytics_events::WorkflowErrorPayload {
+            workflow: self.workflow,
+            elapsed_ms: self.elapsed_ms,
+            build: self.build,
+            override_original: self.override_original,
+            strip_png_metadata: self.strip_png_metadata,
+            strip_jpeg_metadata: self.strip_jpeg_metadata,
+            output_format: self.output_format,
+            jpeg_quality: self.jpeg_quality,
+            png_compression_level: self.png_compression_level,
+            webp_quality: self.webp_quality,
+            webp_lossless: self.webp_lossless,
+            gif_colors: self.gif_colors,
+            blur_mode: self.blur_mode,
+            blur_strength: self.blur_strength,
+            padding: self.padding,
+            confidence_threshold: self.confidence_threshold,
+            min_box_size: self.min_box_size,
+            error_kind: error_kind.to_string(),
+        }
+    }
+
+    fn into_failure(self, failure_kind: &str) -> analytics_events::WorkflowFailurePayload {
+        analytics_events::WorkflowFailurePayload {
+            workflow: self.workflow,
+            elapsed_ms: self.elapsed_ms,
+            build: self.build,
+            override_original: self.override_original,
+            strip_png_metadata: self.strip_png_metadata,
+            strip_jpeg_metadata: self.strip_jpeg_metadata,
+            output_format: self.output_format,
+            jpeg_quality: self.jpeg_quality,
+            png_compression_level: self.png_compression_level,
+            webp_quality: self.webp_quality,
+            webp_lossless: self.webp_lossless,
+            gif_colors: self.gif_colors,
+            blur_mode: self.blur_mode,
+            blur_strength: self.blur_strength,
+            padding: self.padding,
+            confidence_threshold: self.confidence_threshold,
+            min_box_size: self.min_box_size,
+            failure_kind: failure_kind.to_string(),
+        }
+    }
+
+    fn into_success(
+        self,
+        input_size_bytes: u64,
+        output_size_bytes: u64,
+        format: &str,
+    ) -> analytics_events::WorkflowSuccessPayload {
+        analytics_events::WorkflowSuccessPayload {
+            workflow: self.workflow,
+            elapsed_ms: self.elapsed_ms,
+            build: self.build,
+            override_original: self.override_original,
+            strip_png_metadata: self.strip_png_metadata,
+            strip_jpeg_metadata: self.strip_jpeg_metadata,
+            output_format: self.output_format,
+            jpeg_quality: self.jpeg_quality,
+            png_compression_level: self.png_compression_level,
+            webp_quality: self.webp_quality,
+            webp_lossless: self.webp_lossless,
+            gif_colors: self.gif_colors,
+            blur_mode: self.blur_mode,
+            blur_strength: self.blur_strength,
+            padding: self.padding,
+            confidence_threshold: self.confidence_threshold,
+            min_box_size: self.min_box_size,
+            input_size_bytes: input_size_bytes as f64,
+            output_size_bytes: output_size_bytes as f64,
+            format: format.to_string(),
+        }
+    }
+}
+
+fn workflow_payload_parts(
     workflow: Workflow,
     options: &ProcessOptions,
     elapsed_ms: u128,
-) -> HashMap<String, serde_json::Value> {
-    let mut properties = HashMap::new();
-    properties.insert("workflow".to_string(), workflow_label(workflow).into());
-    properties.insert("elapsed_ms".to_string(), (elapsed_ms as u64).into());
-    properties.insert("build".to_string(), build_label().into());
+) -> WorkflowPayloadParts {
+    let mut payload = WorkflowPayloadParts {
+        workflow: workflow_label(workflow).to_string(),
+        elapsed_ms: elapsed_ms as f64,
+        build: build_label().to_string(),
+        override_original: None,
+        strip_png_metadata: None,
+        strip_jpeg_metadata: None,
+        output_format: None,
+        jpeg_quality: None,
+        png_compression_level: None,
+        webp_quality: None,
+        webp_lossless: None,
+        gif_colors: None,
+        blur_mode: None,
+        blur_strength: None,
+        padding: None,
+        confidence_threshold: None,
+        min_box_size: None,
+    };
+
     match options {
         ProcessOptions::Compress(options) => {
-            properties.insert(
-                "override_original".to_string(),
-                options.override_original.into(),
-            );
-            properties.insert(
-                "strip_png_metadata".to_string(),
-                options.strip_png_metadata.into(),
-            );
-            properties.insert(
-                "strip_jpeg_metadata".to_string(),
-                options.strip_jpeg_metadata.into(),
-            );
+            payload.override_original = Some(options.override_original);
+            payload.strip_png_metadata = Some(options.strip_png_metadata);
+            payload.strip_jpeg_metadata = Some(options.strip_jpeg_metadata);
         }
         ProcessOptions::Convert(options) => {
-            properties.insert(
-                "output_format".to_string(),
-                convert_output_label(&options.output_format).into(),
-            );
-            properties.insert("jpeg_quality".to_string(), options.jpeg_quality.into());
-            properties.insert(
-                "png_compression_level".to_string(),
-                options.png_compression_level.into(),
-            );
-            properties.insert("webp_quality".to_string(), options.webp_quality.into());
-            properties.insert("webp_lossless".to_string(), options.webp_lossless.into());
-            properties.insert("gif_colors".to_string(), options.gif_colors.into());
+            payload.output_format = Some(convert_output_label(&options.output_format).to_string());
+            payload.jpeg_quality = Some(options.jpeg_quality as f64);
+            payload.png_compression_level = Some(options.png_compression_level as f64);
+            payload.webp_quality = Some(options.webp_quality as f64);
+            payload.webp_lossless = Some(options.webp_lossless);
+            payload.gif_colors = Some(options.gif_colors as f64);
         }
         ProcessOptions::RemoveBg(options) => {
-            properties.insert(
-                "output_format".to_string(),
-                remove_bg_output_label(&options.output_format).into(),
-            );
+            payload.output_format =
+                Some(remove_bg_output_label(&options.output_format).to_string());
         }
         ProcessOptions::BlurText(options) => {
-            properties.insert(
-                "override_original".to_string(),
-                options.override_original.into(),
-            );
-            properties.insert(
-                "blur_mode".to_string(),
-                blur_mode_label(&options.blur_mode).into(),
-            );
-            properties.insert("blur_strength".to_string(), options.blur_strength.into());
-            properties.insert("padding".to_string(), options.padding.into());
-            properties.insert(
-                "confidence_threshold".to_string(),
-                options.confidence_threshold.into(),
-            );
-            properties.insert("min_box_size".to_string(), options.min_box_size.into());
+            payload.override_original = Some(options.override_original);
+            payload.blur_mode = Some(blur_mode_label(&options.blur_mode).to_string());
+            payload.blur_strength = Some(options.blur_strength as f64);
+            payload.padding = Some(options.padding as f64);
+            payload.confidence_threshold = Some(options.confidence_threshold as f64);
+            payload.min_box_size = Some(options.min_box_size as f64);
         }
     }
-    properties
+
+    payload
 }
 
 fn report_task_error(
@@ -213,9 +312,9 @@ fn report_task_error(
     elapsed_ms: u128,
     err: &CompressionError,
 ) {
-    let mut properties = workflow_properties(workflow, options, elapsed_ms);
-    properties.insert("error_kind".to_string(), error_kind(err).into());
-    app.capture_event(WorkflowErrorEvent { properties });
+    let payload = workflow_payload_parts(workflow, options, elapsed_ms)
+        .into_error(error_kind(err));
+    app.capture_event(WorkflowErrorEvent { payload });
 }
 
 fn report_task_failure(
@@ -225,9 +324,9 @@ fn report_task_failure(
     elapsed_ms: u128,
     err: &tauri::Error,
 ) {
-    let mut properties = workflow_properties(workflow, options, elapsed_ms);
-    properties.insert("failure_kind".to_string(), failure_kind(err).into());
-    app.capture_event(WorkflowFailureEvent { properties });
+    let payload = workflow_payload_parts(workflow, options, elapsed_ms)
+        .into_failure(failure_kind(err));
+    app.capture_event(WorkflowFailureEvent { payload });
 }
 
 fn format_label(format: ImageFormat) -> &'static str {
@@ -246,17 +345,12 @@ fn report_task_success(
     elapsed_ms: u128,
     result: &ImageResult,
 ) {
-    let mut properties = workflow_properties(workflow, options, elapsed_ms);
-    properties.insert(
-        "input_size_bytes".to_string(),
-        (result.original_size as u64).into(),
+    let payload = workflow_payload_parts(workflow, options, elapsed_ms).into_success(
+        result.original_size as u64,
+        result.output_size as u64,
+        format_label(result.format),
     );
-    properties.insert(
-        "output_size_bytes".to_string(),
-        (result.output_size as u64).into(),
-    );
-    properties.insert("format".to_string(), format_label(result.format).into());
-    app.capture_event(WorkflowSuccessEvent { properties });
+    app.capture_event(WorkflowSuccessEvent { payload });
 }
 
 fn convert_output_extension(format: &ConvertOutputFormat) -> &'static str {
