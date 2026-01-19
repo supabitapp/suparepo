@@ -5,7 +5,6 @@ import {
   BlurIcon,
   DragDropVerticalIcon,
   Image01Icon,
-  Moon02Icon,
   Sun03Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -50,30 +49,6 @@ const FEATURES: {
       "Automatically detect and blur sensitive text in your images with adjustable strength.",
     icon: BlurIcon,
     action: "blur_text",
-  },
-  {
-    id: "resize",
-    title: "Resize IMAGE",
-    description:
-      "Define your dimensions, by percent or pixel, and resize your JPG, PNG, SVG, and GIF images.",
-    icon: Sun03Icon,
-    comingSoon: true,
-  },
-  {
-    id: "crop",
-    title: "Crop IMAGE",
-    description:
-      "Crop JPG, PNG, or GIFs with ease; choose pixels to define your rectangle or use our visual editor.",
-    icon: Moon02Icon,
-    comingSoon: true,
-  },
-  {
-    id: "convert-from-jpg",
-    title: "Convert from JPG",
-    description:
-      "Turn JPG images to PNG and GIF. Choose several JPGs to create an animated GIF in seconds!",
-    icon: Sun03Icon,
-    comingSoon: true,
   },
   {
     id: "upscale",
