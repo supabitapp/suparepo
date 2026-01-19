@@ -1,0 +1,53 @@
+name: Deploy supabit.app
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - apps/supabit.app/**
+      - packages/ui/**
+      - packages/typescript-config/**
+      - bun.lock
+      - package.json
+      - turbo.json
+      - .github/workflows/pages-supabit-app.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - apps/supabit.app/**
+      - packages/ui/**
+      - packages/typescript-config/**
+      - bun.lock
+      - package.json
+      - turbo.json
+      - .github/workflows/pages-supabit-app.yml
+concurrency:
+  group: pages-supabit-app-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.2
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            ~/.cache/turbo
+            .turbo
+            apps/**/.next/cache
+            apps/**/node_modules/.vite
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}-turbo-${{ hashFiles('turbo.json') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}-
+      - run: bun install --frozen-lockfile
+      - run: bun run --filter supabit.app pages:build
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy apps/supabit.app/.vercel/output/static --project-name ${{ secrets.CLOUDFLARE_PAGES_SUPABIT_PROJECT }} --branch ${{ github.head_ref || github.ref_name }}
