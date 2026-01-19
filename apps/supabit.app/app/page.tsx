@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FileIcon, FileTextIcon, ImageIcon } from "lucide-react";
+import { FileIcon, FileTextIcon, ImageIcon } from "@repo/ui/icons/lucide";
 import { Separator } from "@repo/ui/components/ui/separator";
 
 const team = [

@@ -91,7 +91,7 @@ import {
   HelpCircleIcon,
   FileTextIcon,
   LogOutIcon,
-} from "lucide-react";
+} from "../icons/lucide";
 
 export function ComponentExample() {
   return (

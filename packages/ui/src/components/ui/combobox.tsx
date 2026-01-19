@@ -9,7 +9,7 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@repo/ui/components/ui/input-group";
-import { ChevronDownIcon, XIcon, CheckIcon } from "lucide-react";
+import { ChevronDownIcon, XIcon, CheckIcon } from "../../icons/lucide";
 
 const Combobox = ComboboxPrimitive.Root;
 
