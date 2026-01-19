@@ -8,7 +8,8 @@
     "./lib/*": "./src/lib/*.ts",
     "./hooks/*": "./src/hooks/*.ts",
     "./index.css": "./src/index.css",
-    "./supaimg/*": "./src/supaimg/*"
+    "./supaimg/logo.png": "./src/supaimg/logo.png",
+    "./supaimg/use-image-compare": "./src/supaimg/use-image-compare.ts"
   },
   "scripts": {
     "generate:component": "turbo gen react-component",
