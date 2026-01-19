@@ -13,11 +13,13 @@
     "supaimg.app:dev": "bun run --filter supaimg.app dev",
     "supaimg.app:build": "bun run --filter supaimg.app build",
     "supabit.app:dev": "bun run --filter supabit.app dev",
-    "lint": "oxlint .",
+    "lint": "bun run workflows:check && oxlint .",
     "lint:fix": "oxlint --fix .",
     "fmt": "oxfmt .",
     "fmt:check": "oxfmt --check .",
     "check-types": "turbo run check-types",
+    "workflows:gen": "bun scripts/generate-workflows.ts --write",
+    "workflows:check": "bun scripts/generate-workflows.ts --check",
     "prepare": "husky"
   },
   "devDependencies": {

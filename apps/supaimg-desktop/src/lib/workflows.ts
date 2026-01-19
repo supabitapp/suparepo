@@ -1,10 +1,5 @@
 import workflowsData from "../../workflows.json";
-
-export type Workflow = "compress" | "convert" | "remove_bg" | "blur_text";
-
-export type WorkflowTask = "compress" | "convert" | "remove_bg" | "blur_text";
-
-export type OutputBehavior = "always_copy" | "allow_override";
+import type { OutputBehavior, Workflow, WorkflowTask } from "./workflows.generated";
 
 export type RemoveBgOutputFormat = "png" | "webp";
 

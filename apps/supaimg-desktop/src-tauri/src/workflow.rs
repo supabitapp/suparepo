@@ -1,26 +1,9 @@
 use crate::compression::output;
-use serde::{Deserialize, Serialize};
+use crate::workflow_generated::{workflow_from_str, Workflow, WorkflowTask};
+use serde::Deserialize;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::OnceLock;
-
-#[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
-#[serde(rename_all = "snake_case")]
-pub enum Workflow {
-    Compress,
-    Convert,
-    RemoveBg,
-    BlurText,
-}
-
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum WorkflowTask {
-    Compress,
-    Convert,
-    RemoveBg,
-    BlurText,
-}
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -38,16 +21,6 @@ pub struct WorkflowConfig {
     pub output_extension: Option<String>,
     pub input_extensions: Vec<String>,
     pub task: WorkflowTask,
-}
-
-fn workflow_from_str(value: &str) -> Option<Workflow> {
-    match value {
-        "compress" => Some(Workflow::Compress),
-        "convert" => Some(Workflow::Convert),
-        "remove_bg" => Some(Workflow::RemoveBg),
-        "blur_text" => Some(Workflow::BlurText),
-        _ => None,
-    }
 }
 
 fn workflow_configs() -> &'static HashMap<Workflow, WorkflowConfig> {

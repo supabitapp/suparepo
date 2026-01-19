@@ -7,6 +7,7 @@ mod model_download;
 pub mod onnx_runtime;
 pub mod text_blur;
 mod workflow;
+mod workflow_generated;
 
 use compression::{CompressionError, CompressionOptions, ImageFormat, ImageResult};
 use conversion::{ConvertOptions, ConvertOutputFormat};
