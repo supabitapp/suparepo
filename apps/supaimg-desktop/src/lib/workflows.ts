@@ -7,13 +7,8 @@ import {
 import {
   workflowSettingsDefaults,
   workflowSettingsSchema,
-  type BlurMode,
-  type ConvertOutputFormat,
-  type RemoveBgOutputFormat,
-  type WorkflowSettingField,
-  type WorkflowSettingType,
-  type WorkflowSettingsMap,
 } from "@/lib/generated/workflow-settings";
+import type { ConvertOutputFormat, WorkflowSettingField } from "@/lib/generated/workflow-settings";
 
 export type { OutputBehavior, Workflow, WorkflowTask } from "./workflows.generated";
 export type {
