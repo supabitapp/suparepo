@@ -3,12 +3,12 @@
   "version": "0.0.0",
   "private": true,
   "exports": {
-    "./assets/*": "./src/assets/*",
     "./components/*": "./src/components/*.tsx",
     "./components/ui/*": "./src/components/ui/*.tsx",
     "./lib/*": "./src/lib/*.ts",
     "./hooks/*": "./src/hooks/*.ts",
-    "./index.css": "./src/index.css"
+    "./index.css": "./src/index.css",
+    "./supaimg/*": "./src/supaimg/*"
   },
   "scripts": {
     "generate:component": "turbo gen react-component",

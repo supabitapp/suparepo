@@ -1,4 +1,4 @@
-import logoUrl from "@repo/ui/assets/logo.png";
+import logoUrl from "@repo/ui/supaimg/logo.png";
 import { Button } from "@repo/ui/components/ui/button";
 import {
   DropdownMenu,
@@ -6,7 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@repo/ui/components/ui/dropdown-menu";
-import { useImageCompareDrag } from "@repo/ui/lib/use-image-compare";
+import { useImageCompareDrag } from "@repo/ui/supaimg/use-image-compare";
 import {
   Apple,
   AppWindow,
