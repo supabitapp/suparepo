@@ -15,6 +15,7 @@ SupaIMG currently downloads desktop updates and ML models from Cloudflare R2 (th
 - [x] (2026-01-19 17:52Z) Replaced Cloudflare R2 URLs and endpoints in application code and CI with GitHub Releases URLs.
 - [x] (2026-01-19 17:52Z) Updated the SupaIMG release workflow to publish assets and update metadata to supabitapp/supaimg GitHub Releases.
 - [ ] (2026-01-19 17:52Z) Validate downloads, update metadata, and model fetches work against GitHub Releases.
+- [ ] (2026-01-19 18:02Z) Create a release tag matching the updated app version and verify assets upload in the new workflow.
 
 ## Surprises & Discoveries
 
@@ -40,6 +41,10 @@ SupaIMG currently downloads desktop updates and ML models from Cloudflare R2 (th
 - Decision: Use the models tag models/v1 with asset names model_quantized.onnx and pp-ocrv5-server-det.onnx.
   Rationale: Keeps filenames short, matches existing local filenames, and avoids path-based asset names that GitHub Releases do not support.
   Date: 2026-01-19 17:52Z
+
+- Decision: Bump SupaIMG version to 1.4.1 so the release tag can be created without reusing the existing supaimg/v1.4.0 tag.
+  Rationale: The release workflow requires the tag to match the app version; 1.4.0 already exists.
+  Date: 2026-01-19 18:02Z
 
 ## Outcomes & Retrospective
 
@@ -162,3 +167,4 @@ Expected update.json shape (example):
 ---
 Change log: 2026-01-19 17:30Z - Initial ExecPlan created.
 Change log: 2026-01-19 17:52Z - Updated progress, recorded models asset names, and noted GitHub release requirement for an initial commit.
+Change log: 2026-01-19 18:02Z - Noted version bump decision to enable a new release tag.
