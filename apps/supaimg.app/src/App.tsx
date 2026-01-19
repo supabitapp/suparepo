@@ -18,7 +18,7 @@ import {
   Moon,
   Paintbrush,
   Sun,
-} from "lucide-react";
+} from "@repo/ui/icons/lucide";
 import type { CSSProperties } from "react";
 import { useEffect, useMemo, useState } from "react";
 
