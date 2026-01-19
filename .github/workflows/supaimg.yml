@@ -1,10 +1,6 @@
 name: supaimg
 on:
   workflow_dispatch:
-    inputs:
-      run_all:
-        type: boolean
-        default: true
   push:
     branches:
       - main
@@ -62,7 +58,7 @@ jobs:
           echo "web=${RUN_ALL}" >> "$GITHUB_OUTPUT"
           echo "compression=${RUN_ALL}" >> "$GITHUB_OUTPUT"
         env:
-          RUN_ALL: ${{ github.event_name == 'workflow_dispatch' && inputs.run_all && 'true' || '' }}
+          RUN_ALL: ${{ github.event_name == 'workflow_dispatch' && 'true' || '' }}
       - uses: dorny/paths-filter@v3
         id: filter
         with:
