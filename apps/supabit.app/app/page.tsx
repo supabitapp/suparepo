@@ -34,7 +34,7 @@ const projects = [
   {
     name: "SupaPDF",
     href: "https://supapdf.app",
-    description: "A local PDF toolbox",
+    description: "A local PDF toolbox - Coming soon",
     icon: FileIcon,
   },
 ];
