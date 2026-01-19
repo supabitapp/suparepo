@@ -1,0 +1,60 @@
+export const workflowsData = {
+  workflows: [
+    {
+      id: "compress",
+      title: "Compress Image",
+      actionLabel: "compress",
+      processingLabel: "Compressing",
+      inputExtensions: ["png", "jpg", "jpeg", "gif", "webp"],
+      outputSuffix: "compressed",
+      outputExtension: null,
+      outputBehavior: "allow_override",
+      task: "compress",
+      route: "/compress",
+    },
+    {
+      id: "convert",
+      title: "Convert Images",
+      actionLabel: "convert",
+      processingLabel: "Converting",
+      inputExtensions: ["png", "jpg", "jpeg", "gif", "webp"],
+      outputSuffix: "converted",
+      outputExtension: null,
+      outputBehavior: "always_copy",
+      task: "convert",
+      route: "/convert",
+    },
+    {
+      id: "remove_bg",
+      title: "Remove Background",
+      actionLabel: "remove background",
+      processingLabel: "Removing background",
+      inputExtensions: ["png", "jpg", "jpeg", "webp"],
+      outputSuffix: "nobg",
+      outputExtension: "png",
+      outputBehavior: "always_copy",
+      task: "remove_bg",
+      route: "/remove-background",
+    },
+    {
+      id: "blur_text",
+      title: "Blur Text",
+      actionLabel: "blur",
+      processingLabel: "Blurring text",
+      inputExtensions: ["png", "jpg", "jpeg", "webp"],
+      outputSuffix: "blurred",
+      outputExtension: null,
+      outputBehavior: "allow_override",
+      task: "blur_text",
+      route: "/blur-text",
+    },
+  ],
+} as const;
+
+export const workflowIds = ["compress", "convert", "remove_bg", "blur_text"] as const;
+export const workflowTaskIds = ["compress", "convert", "remove_bg", "blur_text"] as const;
+export const outputBehaviors = ["allow_override", "always_copy"] as const;
+
+export type Workflow = (typeof workflowIds)[number];
+export type WorkflowTask = (typeof workflowTaskIds)[number];
+export type OutputBehavior = (typeof outputBehaviors)[number];
