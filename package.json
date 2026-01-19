@@ -10,6 +10,7 @@
     "desktop:build": "cd apps/desktop && bun run tauri -- build",
     "desktop:dev": "cd apps/desktop && bun run tauri -- dev",
     "dev": "turbo run dev",
+    "supabit.app:dev": "bun run --filter supabit.app dev",
     "lint": "oxlint .",
     "lint:fix": "oxlint --fix .",
     "fmt": "oxfmt .",

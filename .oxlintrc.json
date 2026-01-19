@@ -20,6 +20,10 @@
     {
       "files": ["apps/web/**/*.{ts,tsx}"],
       "plugins": ["nextjs"]
+    },
+    {
+      "files": ["apps/supabit.app/**/*.{ts,tsx}"],
+      "plugins": ["nextjs"]
     }
   ]
 }
