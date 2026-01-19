@@ -6,13 +6,13 @@ import { Separator } from "@repo/ui/components/ui/separator";
 const team = [
   {
     name: "khoi",
-    job: "Software Engineer",
+    job: "Founder",
     href: "https://twitter.com/khoi",
     avatar: "/avatars/khoi.png",
   },
   {
     name: "Quan",
-    job: "UI Designer",
+    job: "Principal Engineer",
     href: "#",
     avatar: "/avatars/quan.png",
   },
