@@ -7,6 +7,9 @@ mod model_download;
 pub mod onnx_runtime;
 pub mod text_blur;
 mod workflow;
+mod analytics_events {
+    include!(concat!(env!("OUT_DIR"), "/analytics_events.rs"));
+}
 
 use compression::{CompressionError, CompressionOptions, ImageFormat, ImageResult};
 use conversion::{ConvertOptions, ConvertOutputFormat};
@@ -49,7 +52,7 @@ struct WorkflowErrorEvent {
 
 impl PostHogEvent for WorkflowErrorEvent {
     fn name(&self) -> &str {
-        "workflow_error"
+        analytics_events::WORKFLOW_ERROR
     }
 
     fn properties(&self) -> HashMap<String, serde_json::Value> {
@@ -63,7 +66,7 @@ struct WorkflowFailureEvent {
 
 impl PostHogEvent for WorkflowFailureEvent {
     fn name(&self) -> &str {
-        "workflow_failure"
+        analytics_events::WORKFLOW_FAILURE
     }
 
     fn properties(&self) -> HashMap<String, serde_json::Value> {
@@ -77,7 +80,7 @@ struct WorkflowSuccessEvent {
 
 impl PostHogEvent for WorkflowSuccessEvent {
     fn name(&self) -> &str {
-        "workflow_success"
+        analytics_events::WORKFLOW_SUCCESS
     }
 
     fn properties(&self) -> HashMap<String, serde_json::Value> {
@@ -139,7 +142,11 @@ fn workflow_properties(
     options: &ProcessOptions,
     elapsed_ms: u128,
 ) -> HashMap<String, serde_json::Value> {
-    let mut properties = HashMap::new();
+    let mut properties = HashMap::with_capacity(
+        analytics_events::workflow_definition(workflow_label(workflow))
+            .map(|definition| definition.properties.len())
+            .unwrap_or(0),
+    );
     properties.insert("workflow".to_string(), workflow_label(workflow).into());
     properties.insert("elapsed_ms".to_string(), (elapsed_ms as u64).into());
     properties.insert("build".to_string(), build_label().into());
@@ -199,6 +206,20 @@ fn workflow_properties(
     properties
 }
 
+fn sanitize_event_properties(
+    name: &str,
+    mut properties: HashMap<String, serde_json::Value>,
+) -> HashMap<String, serde_json::Value> {
+    let Some(definition) = analytics_events::event_definition(name) else {
+        return HashMap::new();
+    };
+    properties.retain(|key, _| {
+        let key = key.as_str();
+        definition.required.contains(&key) || definition.optional.contains(&key)
+    });
+    properties
+}
+
 fn report_task_error(
     app: &tauri::AppHandle,
     workflow: Workflow,
@@ -208,6 +229,7 @@ fn report_task_error(
 ) {
     let mut properties = workflow_properties(workflow, options, elapsed_ms);
     properties.insert("error_kind".to_string(), error_kind(err).into());
+    let properties = sanitize_event_properties(analytics_events::WORKFLOW_ERROR, properties);
     app.capture_event(WorkflowErrorEvent { properties });
 }
 
@@ -220,6 +242,7 @@ fn report_task_failure(
 ) {
     let mut properties = workflow_properties(workflow, options, elapsed_ms);
     properties.insert("failure_kind".to_string(), failure_kind(err).into());
+    let properties = sanitize_event_properties(analytics_events::WORKFLOW_FAILURE, properties);
     app.capture_event(WorkflowFailureEvent { properties });
 }
 
@@ -249,6 +272,7 @@ fn report_task_success(
         (result.output_size as u64).into(),
     );
     properties.insert("format".to_string(), format_label(result.format).into());
+    let properties = sanitize_event_properties(analytics_events::WORKFLOW_SUCCESS, properties);
     app.capture_event(WorkflowSuccessEvent { properties });
 }
 
@@ -1247,8 +1271,9 @@ pub fn run() {
 #[cfg(test)]
 mod tests {
     use super::{
-        build_label, count_drag_items, error_kind, expand_paths, workflow_properties, BlurMode,
-        BlurTextOptions, CompressOptions, ProcessOptions, RemoveBgOptions, RemoveBgOutputFormat,
+        build_label, count_drag_items, error_kind, expand_paths, workflow_label,
+        workflow_properties, BlurMode, BlurTextOptions, CompressOptions, ProcessOptions,
+        RemoveBgOptions, RemoveBgOutputFormat,
     };
     use crate::compression::CompressionError;
     use crate::conversion::{ConvertOptions, ConvertOutputFormat};
@@ -1365,17 +1390,13 @@ mod tests {
             Some(true)
         );
         let keys: HashSet<String> = properties.keys().cloned().collect();
-        let expected: HashSet<String> = [
-            "workflow",
-            "elapsed_ms",
-            "build",
-            "override_original",
-            "strip_png_metadata",
-            "strip_jpeg_metadata",
-        ]
-        .iter()
-        .map(|value| value.to_string())
-        .collect();
+        let expected: HashSet<String> =
+            analytics_events::workflow_definition(workflow_label(Workflow::Compress))
+                .expect("workflow definition")
+                .properties
+                .iter()
+                .map(|value| value.to_string())
+                .collect();
         assert_eq!(keys, expected);
     }
 
@@ -1429,20 +1450,13 @@ mod tests {
             Some(128)
         );
         let keys: HashSet<String> = properties.keys().cloned().collect();
-        let expected: HashSet<String> = [
-            "workflow",
-            "elapsed_ms",
-            "build",
-            "output_format",
-            "jpeg_quality",
-            "png_compression_level",
-            "webp_quality",
-            "webp_lossless",
-            "gif_colors",
-        ]
-        .iter()
-        .map(|value| value.to_string())
-        .collect();
+        let expected: HashSet<String> =
+            analytics_events::workflow_definition(workflow_label(Workflow::Convert))
+                .expect("workflow definition")
+                .properties
+                .iter()
+                .map(|value| value.to_string())
+                .collect();
         assert_eq!(keys, expected);
     }
 
@@ -1469,10 +1483,13 @@ mod tests {
             Some("webp")
         );
         let keys: HashSet<String> = properties.keys().cloned().collect();
-        let expected: HashSet<String> = ["workflow", "elapsed_ms", "build", "output_format"]
-            .iter()
-            .map(|value| value.to_string())
-            .collect();
+        let expected: HashSet<String> =
+            analytics_events::workflow_definition(workflow_label(Workflow::RemoveBg))
+                .expect("workflow definition")
+                .properties
+                .iter()
+                .map(|value| value.to_string())
+                .collect();
         assert_eq!(keys, expected);
     }
 
@@ -1524,20 +1541,13 @@ mod tests {
             Some(10)
         );
         let keys: HashSet<String> = properties.keys().cloned().collect();
-        let expected: HashSet<String> = [
-            "workflow",
-            "elapsed_ms",
-            "build",
-            "override_original",
-            "blur_mode",
-            "blur_strength",
-            "padding",
-            "confidence_threshold",
-            "min_box_size",
-        ]
-        .iter()
-        .map(|value| value.to_string())
-        .collect();
+        let expected: HashSet<String> =
+            analytics_events::workflow_definition(workflow_label(Workflow::BlurText))
+                .expect("workflow definition")
+                .properties
+                .iter()
+                .map(|value| value.to_string())
+                .collect();
         assert_eq!(keys, expected);
     }
 

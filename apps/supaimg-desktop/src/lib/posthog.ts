@@ -1,5 +1,6 @@
 import { error as logError } from "@tauri-apps/plugin-log";
 import { captureEvent } from "tauri-plugin-better-posthog";
+import { isPosthogEventName, sanitizeEventProperties } from "@/analytics/events";
 import { isTauri } from "@/lib/tauri";
 
 type PosthogClient = (typeof import("posthog-js"))["default"];
@@ -30,7 +31,12 @@ const ensureInit = async () => {
         (captureResult) => {
           if (captureResult) {
             const { event, properties } = captureResult;
-            void captureEvent(event, properties).catch((err) => {
+            if (!isPosthogEventName(event)) {
+              void logError(`[posthog] unknown event: ${event}`);
+              return null;
+            }
+            const sanitized = sanitizeEventProperties(event, properties as Record<string, unknown>);
+            void captureEvent(event, sanitized).catch((err) => {
               void logError(`[posthog] capture failed: ${String(err)}`);
             });
           }
