@@ -31,8 +31,10 @@ use tauri_plugin_log::log;
 use tauri_plugin_updater::UpdaterExt;
 use workflow::{
     is_supported_extension, output_path as workflow_output_path, output_path_with_extension,
-    workflow_config, Workflow, WorkflowTask,
+    workflow_config, workflow_label, Workflow, WorkflowTask,
 };
+
+mod workflow_generated;
 
 #[cfg(desktop)]
 const TRAY_ICON_BYTES: &[u8] = include_bytes!("../icons/32x32.png");
@@ -80,15 +82,6 @@ impl PostHogEvent for WorkflowSuccessEvent {
 
     fn properties(&self) -> HashMap<String, serde_json::Value> {
         self.properties.clone()
-    }
-}
-
-fn workflow_label(workflow: Workflow) -> &'static str {
-    match workflow {
-        Workflow::Compress => "compress",
-        Workflow::Convert => "convert",
-        Workflow::RemoveBg => "remove_bg",
-        Workflow::BlurText => "blur_text",
     }
 }
 

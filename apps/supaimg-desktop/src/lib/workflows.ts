@@ -1,10 +1,11 @@
-import workflowsData from "../../workflows.json";
+import {
+  workflowsData,
+  type OutputBehavior,
+  type Workflow,
+  type WorkflowTask,
+} from "./workflows.generated";
 
-export type Workflow = "compress" | "convert" | "remove_bg" | "blur_text";
-
-export type WorkflowTask = "compress" | "convert" | "remove_bg" | "blur_text";
-
-export type OutputBehavior = "always_copy" | "allow_override";
+export type { OutputBehavior, Workflow, WorkflowTask } from "./workflows.generated";
 
 export type RemoveBgOutputFormat = "png" | "webp";
 
@@ -271,7 +272,7 @@ const buildDefaults = (schema: readonly WorkflowSettingField[]) =>
     return acc;
   }, {});
 
-const baseWorkflows = workflowsData.workflows as WorkflowConfigBase[];
+const baseWorkflows = workflowsData.workflows as readonly WorkflowConfigBase[];
 
 export const workflows = baseWorkflows.reduce<Record<Workflow, WorkflowConfig>>(
   (acc, workflow) => {
