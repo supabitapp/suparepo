@@ -6,7 +6,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const schemaPath = resolve(root, "packages/settings/settings.schema.json");
 const defaultsPath = resolve(root, "packages/settings/settings.defaults.json");
 const tsPath = resolve(root, "packages/settings/src/index.ts");
-const rustPath = resolve(root, "apps/desktop/src-tauri/src/settings.rs");
+const rustPath = resolve(root, "apps/supaimg-desktop/src-tauri/src/settings.rs");
 
 const schema = JSON.parse(readFileSync(schemaPath, "utf8"));
 
@@ -59,6 +59,11 @@ function renderTs(rootSchema, rootDefaults, rootName, objectDefs, enumDefs, obje
     return `export type ${def.name} = ${values};`;
   });
 
+  const enumValueBlocks = enumDefs.map((def) => {
+    const values = def.node.enum.map((value) => JSON.stringify(value)).join(", ");
+    return `const ${def.name}Values = [${values}] as const;`;
+  });
+
   const objectBlocks = objectDefs.map((def) => {
     const properties = def.node.properties || {};
     const lines = Object.entries(properties).map(([prop, child]) => {
@@ -69,7 +74,10 @@ function renderTs(rootSchema, rootDefaults, rootName, objectDefs, enumDefs, obje
   });
 
   const defaultsLiteral = JSON.stringify(rootDefaults, null, 2);
-  const normalizeBody = renderTsNormalize(rootSchema, "input", "settingsDefaults", objectByPath, enumByPath);
+  const normalizeBlocks = objectDefs.map((def) => {
+    const inputType = def.name === rootName ? "SettingsInput" : "unknown";
+    return renderTsNormalizer(def, objectByPath, enumByPath, inputType);
+  });
 
   return [
     ...enumBlocks,
@@ -79,46 +87,61 @@ function renderTs(rootSchema, rootDefaults, rootName, objectDefs, enumDefs, obje
     "};",
     `export type SettingsInput = DeepPartial<${rootName}>;`,
     `export const settingsDefaults: ${rootName} = ${defaultsLiteral};`,
-    "const clamp = (value: number, min: number, max: number) =>",
-    "  Math.min(max, Math.max(min, value));",
-    `export const normalizeSettings = (input?: SettingsInput): ${rootName} => ${normalizeBody};`,
+    "const isRecord = (value: unknown): value is Record<string, unknown> =>",
+    "  typeof value === \"object\" && value !== null && !Array.isArray(value);",
+    "const coerceBoolean = (value: unknown, fallback: boolean) =>",
+    "  typeof value === \"boolean\" ? value : fallback;",
+    "const coerceNumber = (value: unknown, fallback: number, min?: number, max?: number) => {",
+    "  if (typeof value !== \"number\" || Number.isNaN(value)) return fallback;",
+    "  let next = value;",
+    "  if (typeof min === \"number\") next = Math.max(min, next);",
+    "  if (typeof max === \"number\") next = Math.min(max, next);",
+    "  return next;",
+    "};",
+    "const coerceEnum = <T extends string>(value: unknown, options: readonly T[], fallback: T) => {",
+    "  if (typeof value !== \"string\") return fallback;",
+    "  return options.includes(value as T) ? (value as T) : fallback;",
+    "};",
+    ...enumValueBlocks,
+    ...normalizeBlocks,
     "",
   ].join("\n");
 }
 
-function renderTsNormalize(rootSchema, inputRef, defaultsRef, objectByPath, enumByPath) {
-  if (rootSchema.type !== "object") {
-    throw new Error("Root schema must be an object");
-  }
-  return renderTsObjectExpression(rootSchema, inputRef, defaultsRef, 0, objectByPath, enumByPath);
-}
-
-function renderTsObjectExpression(node, inputRef, defaultsRef, indentLevel, objectByPath, enumByPath) {
-  const indent = "  ".repeat(indentLevel);
-  const innerIndent = "  ".repeat(indentLevel + 1);
-  const properties = node.properties || {};
+function renderTsNormalizer(def, objectByPath, enumByPath, inputType) {
+  const properties = def.node.properties || {};
+  const defaultBase = ["settingsDefaults", ...def.path].join(".");
   const lines = Object.entries(properties).map(([prop, child]) => {
     if (child.type === "object") {
-      const expr = renderTsObjectExpression(
-        child,
-        `${inputRef}?.${prop}`,
-        `${defaultsRef}.${prop}`,
-        indentLevel + 1,
-        objectByPath,
-        enumByPath,
-      );
-      return `${innerIndent}${prop}: ${expr},`;
+      const childType = objectByPath.get(pathKey([...def.path, prop])) || "unknown";
+      return `    ${prop}: normalize${childType}(value.${prop}),`;
     }
-    const base = `${inputRef}?.${prop} ?? ${defaultsRef}.${prop}`;
+    const defaultRef = `${defaultBase}.${prop}`;
+    if (Array.isArray(child.enum)) {
+      const enumName = enumByPath.get(pathKey([...def.path, prop])) || "string";
+      return `    ${prop}: coerceEnum(value.${prop}, ${enumName}Values, ${defaultRef}),`;
+    }
+    if (child.type === "boolean") {
+      return `    ${prop}: coerceBoolean(value.${prop}, ${defaultRef}),`;
+    }
     if (child.type === "integer" || child.type === "number") {
-      const min = child.minimum ?? "-Infinity";
-      const max = child.maximum ?? "Infinity";
-      return `${innerIndent}${prop}: clamp(${base}, ${min}, ${max}),`;
+      const min = child.minimum ?? undefined;
+      const max = child.maximum ?? undefined;
+      const minArg = min === undefined ? "undefined" : String(min);
+      const maxArg = max === undefined ? "undefined" : String(max);
+      return `    ${prop}: coerceNumber(value.${prop}, ${defaultRef}, ${minArg}, ${maxArg}),`;
     }
-    return `${innerIndent}${prop}: ${base},`;
+    return `    ${prop}: typeof value.${prop} === \"string\" ? value.${prop} : ${defaultRef},`;
   });
 
-  return `({\n${lines.join("\n")}\n${indent}})`;
+  return [
+    `export const normalize${def.name} = (input?: ${inputType}): ${def.name} => {`,
+    "  const value = isRecord(input) ? input : {};",
+    "  return {",
+    ...lines,
+    "  };",
+    "};",
+  ].join("\n");
 }
 
 function renderRust(rootSchema, rootDefaults, rootName, objectDefs, enumDefs, objectByPath, enumByPath) {

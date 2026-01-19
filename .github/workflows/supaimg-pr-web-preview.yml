@@ -1,0 +1,59 @@
+name: supaimg-pr-web-preview
+on:
+  workflow_call:
+    inputs:
+      pr_number:
+        required: false
+        type: string
+      is_fork:
+        required: false
+        type: string
+
+concurrency:
+  group: supaimg-pr-web-preview-${{ inputs.pr_number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  deploy-preview:
+    if: ${{ inputs.is_fork != 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: oven-sh/setup-bun@735343b667d3e6f658f44d0eca948eb6282f2b76
+      - uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('**/bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - run: bun run supaimg.app:build
+      - name: Deploy preview
+        id: deploy
+        uses: cloudflare/wrangler-action@da0e0dfe58b7a431659754fdf3f186c529afbe65
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy apps/supaimg.app/dist --project-name=supaimg --branch pr-${{ inputs.pr_number }}
+      - name: Comment on PR
+        if: ${{ steps.deploy.outputs.deployment-url != '' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUMBER="${{ inputs.pr_number }}"
+          DEPLOY_URL="${{ steps.deploy.outputs.pages-deployment-alias-url }}"
+          if [ -z "$DEPLOY_URL" ]; then
+            DEPLOY_URL="${{ steps.deploy.outputs.deployment-url }}"
+          fi
+          MARKER="<!-- supaimg-pr-web-preview -->"
+          BODY=$(printf "%s\n%s\n\n%s\n" "$MARKER" "Web preview is ready." "Preview: ${DEPLOY_URL}")
+          COMMENTS=$(gh api --paginate "repos/${{ github.repository }}/issues/${PR_NUMBER}/comments")
+          EXISTING_ID=$(echo "$COMMENTS" | jq -r --arg marker "$MARKER" 'map(select(.user.login=="github-actions[bot]" and (.body|contains($marker)))) | sort_by(.id) | last | .id // empty')
+          if [ -n "$EXISTING_ID" ]; then
+            gh api -X PATCH "repos/${{ github.repository }}/issues/comments/${EXISTING_ID}" -f body="$BODY" >/dev/null
+          else
+            gh api -X POST "repos/${{ github.repository }}/issues/${PR_NUMBER}/comments" -f body="$BODY" >/dev/null
+          fi

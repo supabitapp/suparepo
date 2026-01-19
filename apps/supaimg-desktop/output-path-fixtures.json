@@ -1,0 +1,49 @@
+[
+  {
+    "path": "image.png",
+    "workflow": "compress",
+    "output": "image_compressed.png"
+  },
+  {
+    "path": "/path/to/image.jpg",
+    "workflow": "compress",
+    "output": "/path/to/image_compressed.jpg"
+  },
+  {
+    "path": "icon@2x.png",
+    "workflow": "compress",
+    "output": "icon_compressed@2x.png"
+  },
+  {
+    "path": "icon@3x.png",
+    "workflow": "compress",
+    "output": "icon_compressed@3x.png"
+  },
+  {
+    "path": "archive.tar.gz",
+    "workflow": "compress",
+    "output": "archive.tar_compressed.gz"
+  },
+  {
+    "path": "/path/image.png",
+    "workflow": "convert",
+    "extensionOverride": "jpg",
+    "output": "/path/image_converted.jpg"
+  },
+  {
+    "path": "/path/image.png",
+    "workflow": "remove_bg",
+    "output": "/path/image_nobg.png"
+  },
+  {
+    "path": "/path/image.png",
+    "workflow": "remove_bg",
+    "extensionOverride": "webp",
+    "output": "/path/image_nobg.webp"
+  },
+  {
+    "path": "/path/image.png",
+    "workflow": "blur_text",
+    "output": "/path/image_blurred.png"
+  }
+]

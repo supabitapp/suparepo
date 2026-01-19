@@ -20,6 +20,12 @@
     {
       "files": ["apps/supabit.app/**/*.{ts,tsx}"],
       "plugins": ["nextjs"]
+    },
+    {
+      "files": ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}"],
+      "env": {
+        "vitest": true
+      }
     }
   ]
 }

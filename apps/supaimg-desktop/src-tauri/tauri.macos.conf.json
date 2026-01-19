@@ -1,0 +1,7 @@
+{
+  "bundle": {
+    "macOS": {
+      "frameworks": ["models/onnxruntime/macos/libonnxruntime.dylib"]
+    }
+  }
+}

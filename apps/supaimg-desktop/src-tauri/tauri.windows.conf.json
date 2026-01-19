@@ -1,0 +1,7 @@
+{
+  "bundle": {
+    "resources": {
+      "models/onnxruntime/windows/**/*": "models/onnxruntime/windows/"
+    }
+  }
+}

@@ -10,7 +10,6 @@
     "check": "oxlint ."
   },
   "dependencies": {
-    "@repo/settings": "*",
     "@repo/ui": "*",
     "lucide-react": "^0.562.0",
     "react": "^19.2.3",

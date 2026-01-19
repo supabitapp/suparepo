@@ -1,0 +1,119 @@
+name: supaimg
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - apps/supaimg-desktop/**
+      - apps/supaimg.app/**
+      - packages/ui/**
+      - packages/typescript-config/**
+      - scripts/**
+      - bun.lock
+      - package.json
+      - turbo.json
+      - .github/workflows/supaimg*.yml
+      - .github/workflows/supaimg.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - apps/supaimg-desktop/**
+      - apps/supaimg.app/**
+      - packages/ui/**
+      - packages/typescript-config/**
+      - scripts/**
+      - bun.lock
+      - package.json
+      - turbo.json
+      - .github/workflows/supaimg*.yml
+      - .github/workflows/supaimg.yml
+
+concurrency:
+  group: supaimg-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      desktop: ${{ steps.force.outputs.desktop || steps.filter.outputs.desktop }}
+      web: ${{ steps.force.outputs.web || steps.filter.outputs.web }}
+      compression: ${{ steps.force.outputs.compression || steps.filter.outputs.compression }}
+      pr_number: ${{ steps.meta.outputs.pr_number }}
+      is_fork: ${{ steps.meta.outputs.is_fork }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: meta
+        run: |
+          echo "pr_number=${PR_NUMBER}" >> "$GITHUB_OUTPUT"
+          echo "is_fork=${IS_FORK}" >> "$GITHUB_OUTPUT"
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number || '' }}
+          IS_FORK: ${{ github.event.pull_request.head.repo.fork || false }}
+      - id: force
+        run: |
+          echo "desktop=${RUN_ALL}" >> "$GITHUB_OUTPUT"
+          echo "web=${RUN_ALL}" >> "$GITHUB_OUTPUT"
+          echo "compression=${RUN_ALL}" >> "$GITHUB_OUTPUT"
+        env:
+          RUN_ALL: ${{ github.event_name == 'workflow_dispatch' && 'true' || '' }}
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            desktop:
+              - apps/supaimg-desktop/**
+              - packages/ui/**
+              - packages/typescript-config/**
+              - bun.lock
+              - package.json
+              - turbo.json
+            web:
+              - apps/supaimg.app/**
+              - packages/ui/**
+              - packages/typescript-config/**
+              - bun.lock
+              - package.json
+              - turbo.json
+            compression:
+              - apps/supaimg-desktop/src-tauri/src/compression/**
+              - scripts/benchmark-ci.sh
+              - scripts/benchmark-baseline.json
+
+  supaimg-ci:
+    needs: changes
+    if: ${{ needs.changes.outputs.desktop == 'true' }}
+    uses: ./.github/workflows/supaimg-ci.yml
+    secrets: inherit
+
+  supaimg-benchmark:
+    needs: changes
+    if: ${{ github.event_name == 'pull_request' && needs.changes.outputs.compression == 'true' }}
+    uses: ./.github/workflows/supaimg-benchmark.yml
+    secrets: inherit
+
+  supaimg-pr-dmg:
+    needs: changes
+    if: ${{ github.event_name == 'pull_request' && needs.changes.outputs.desktop == 'true' && needs.changes.outputs.is_fork != 'true' }}
+    uses: ./.github/workflows/supaimg-pr-dmg.yml
+    secrets: inherit
+    with:
+      pr_number: ${{ needs.changes.outputs.pr_number }}
+      is_fork: ${{ needs.changes.outputs.is_fork }}
+
+  supaimg-pr-web-preview:
+    needs: changes
+    if: ${{ github.event_name == 'pull_request' && needs.changes.outputs.web == 'true' && needs.changes.outputs.is_fork != 'true' }}
+    uses: ./.github/workflows/supaimg-pr-web-preview.yml
+    secrets: inherit
+    with:
+      pr_number: ${{ needs.changes.outputs.pr_number }}
+      is_fork: ${{ needs.changes.outputs.is_fork }}
+
+  supaimg-deploy-web:
+    needs: changes
+    if: ${{ github.event_name == 'push' && needs.changes.outputs.web == 'true' }}
+    uses: ./.github/workflows/supaimg-deploy-web.yml
+    secrets: inherit

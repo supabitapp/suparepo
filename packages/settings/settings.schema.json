@@ -3,58 +3,169 @@
   "title": "Settings",
   "type": "object",
   "additionalProperties": false,
-  "required": ["appearance", "blur", "output"],
+  "required": [
+    "workflowSettings",
+    "launchAtLogin",
+    "showMenuBarIcon",
+    "autoUpdate",
+    "analyticsTracking"
+  ],
   "properties": {
-    "appearance": {
-      "title": "AppearanceSettings",
+    "workflowSettings": {
+      "title": "WorkflowSettings",
       "type": "object",
       "additionalProperties": false,
-      "required": ["theme"],
+      "required": ["compress", "convert", "remove_bg", "blur_text"],
       "properties": {
-        "theme": {
-          "type": "string",
-          "enum": ["system", "light", "dark"],
-          "default": "system"
+        "compress": {
+          "title": "CompressSettings",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["overrideOriginal", "stripPngMetadata", "stripJpegMetadata"],
+          "properties": {
+            "overrideOriginal": {
+              "type": "boolean",
+              "default": false
+            },
+            "stripPngMetadata": {
+              "type": "boolean",
+              "default": true
+            },
+            "stripJpegMetadata": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        },
+        "convert": {
+          "title": "ConvertSettings",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "outputFormat",
+            "jpegQuality",
+            "pngCompressionLevel",
+            "webpQuality",
+            "webpLossless",
+            "gifColors"
+          ],
+          "properties": {
+            "outputFormat": {
+              "title": "ConvertOutputFormat",
+              "type": "string",
+              "enum": ["jpeg", "png", "webp", "gif"],
+              "default": "jpeg"
+            },
+            "jpegQuality": {
+              "type": "integer",
+              "minimum": 60,
+              "maximum": 100,
+              "default": 100
+            },
+            "pngCompressionLevel": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9,
+              "default": 6
+            },
+            "webpQuality": {
+              "type": "integer",
+              "minimum": 60,
+              "maximum": 100,
+              "default": 100
+            },
+            "webpLossless": {
+              "type": "boolean",
+              "default": true
+            },
+            "gifColors": {
+              "type": "integer",
+              "minimum": 2,
+              "maximum": 256,
+              "default": 256
+            }
+          }
+        },
+        "remove_bg": {
+          "title": "RemoveBgSettings",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["outputFormat"],
+          "properties": {
+            "outputFormat": {
+              "title": "RemoveBgOutputFormat",
+              "type": "string",
+              "enum": ["png", "webp"],
+              "default": "png"
+            }
+          }
+        },
+        "blur_text": {
+          "title": "BlurTextSettings",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "overrideOriginal",
+            "blurMode",
+            "blurStrength",
+            "padding",
+            "confidenceThreshold",
+            "minBoxSize"
+          ],
+          "properties": {
+            "overrideOriginal": {
+              "type": "boolean",
+              "default": false
+            },
+            "blurMode": {
+              "title": "BlurMode",
+              "type": "string",
+              "enum": ["pixelate", "gaussian", "solid"],
+              "default": "gaussian"
+            },
+            "blurStrength": {
+              "type": "integer",
+              "minimum": 2,
+              "maximum": 40,
+              "default": 12
+            },
+            "padding": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 24,
+              "default": 6
+            },
+            "confidenceThreshold": {
+              "type": "number",
+              "minimum": 0.3,
+              "maximum": 0.9,
+              "default": 0.6
+            },
+            "minBoxSize": {
+              "type": "integer",
+              "minimum": 4,
+              "maximum": 64,
+              "default": 8
+            }
+          }
         }
       }
     },
-    "blur": {
-      "title": "BlurSettings",
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["mode", "radius"],
-      "properties": {
-        "mode": {
-          "type": "string",
-          "enum": ["pixelate", "gaussian"],
-          "default": "pixelate"
-        },
-        "radius": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 64,
-          "default": 16
-        }
-      }
+    "launchAtLogin": {
+      "type": "boolean",
+      "default": false
     },
-    "output": {
-      "title": "OutputSettings",
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["format", "quality"],
-      "properties": {
-        "format": {
-          "type": "string",
-          "enum": ["png", "jpg", "webp"],
-          "default": "png"
-        },
-        "quality": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 100,
-          "default": 85
-        }
-      }
+    "showMenuBarIcon": {
+      "type": "boolean",
+      "default": true
+    },
+    "autoUpdate": {
+      "type": "boolean",
+      "default": true
+    },
+    "analyticsTracking": {
+      "type": "boolean",
+      "default": true
     }
   }
 }

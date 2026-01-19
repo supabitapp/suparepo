@@ -1,9 +1,9 @@
 # Suparepo
 
-A monorepo template for desktop apps that use Tauri.
+A monorepo for Supaimg and Supabit apps.
 
-- A marketing website running NextJS
-- Desktop app
+- Marketing websites
+- Tauri desktop app
 
 ## Stack
 

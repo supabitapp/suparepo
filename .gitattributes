@@ -1,0 +1,4 @@
+apps/supaimg-desktop/src-tauri/models/onnxruntime/**/libonnxruntime.so.* filter=lfs diff=lfs merge=lfs -text
+apps/supaimg-desktop/src-tauri/models/onnxruntime/**/libonnxruntime.dylib filter=lfs diff=lfs merge=lfs -text
+apps/supaimg-desktop/src-tauri/models/onnxruntime/**/onnxruntime.dll filter=lfs diff=lfs merge=lfs -text
+apps/supaimg-desktop/src-tauri/models/onnxruntime/**/libonnxruntime.so.1 -filter -diff -merge text

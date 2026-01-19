@@ -1,13 +1,32 @@
 {
-  "appearance": {
-    "theme": "system"
+  "workflowSettings": {
+    "compress": {
+      "overrideOriginal": false,
+      "stripPngMetadata": true,
+      "stripJpegMetadata": true
+    },
+    "convert": {
+      "outputFormat": "jpeg",
+      "jpegQuality": 100,
+      "pngCompressionLevel": 6,
+      "webpQuality": 100,
+      "webpLossless": true,
+      "gifColors": 256
+    },
+    "remove_bg": {
+      "outputFormat": "png"
+    },
+    "blur_text": {
+      "overrideOriginal": false,
+      "blurMode": "gaussian",
+      "blurStrength": 12,
+      "padding": 6,
+      "confidenceThreshold": 0.6,
+      "minBoxSize": 8
+    }
   },
-  "blur": {
-    "mode": "pixelate",
-    "radius": 16
-  },
-  "output": {
-    "format": "png",
-    "quality": 85
-  }
+  "launchAtLogin": false,
+  "showMenuBarIcon": true,
+  "autoUpdate": true,
+  "analyticsTracking": true
 }

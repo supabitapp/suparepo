@@ -1,0 +1,43 @@
+name: supaimg-benchmark
+on:
+  workflow_call:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    env:
+      SCCACHE_GHA_ENABLED: "true"
+      RUSTC_WRAPPER: "sccache"
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          lfs: true
+      - uses: dtolnay/rust-toolchain@4be9e76fd7c4901c61fb841f559994984270fce7
+      - uses: mozilla-actions/sccache-action@d651010b8da762cde178750d8eda7b5febfe147a
+      - name: Install Tauri deps
+        run: |
+          bash scripts/install-linux-deps.sh
+
+      - name: Run benchmark
+        id: bench
+        run: |
+          chmod +x scripts/benchmark-ci.sh
+          result=$(./scripts/benchmark-ci.sh) || exit_code=$?
+          echo "$result" > benchmark.json
+          exit ${exit_code:-0}
+
+      - name: Upload benchmark artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: compression-benchmark
+          path: benchmark.json
