@@ -34,6 +34,13 @@ concurrency:
   group: supaimg-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  actions: write
+  contents: read
+  deployments: write
+  issues: write
+  pull-requests: write
+
 jobs:
   changes:
     runs-on: ubuntu-latest
