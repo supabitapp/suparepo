@@ -1,5 +1,10 @@
 name: supaimg
 on:
+  workflow_dispatch:
+    inputs:
+      run_all:
+        type: boolean
+        default: true
   push:
     branches:
       - main
@@ -37,9 +42,9 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
-      desktop: ${{ steps.filter.outputs.desktop }}
-      web: ${{ steps.filter.outputs.web }}
-      compression: ${{ steps.filter.outputs.compression }}
+      desktop: ${{ steps.force.outputs.desktop || steps.filter.outputs.desktop }}
+      web: ${{ steps.force.outputs.web || steps.filter.outputs.web }}
+      compression: ${{ steps.force.outputs.compression || steps.filter.outputs.compression }}
       pr_number: ${{ steps.meta.outputs.pr_number }}
       is_fork: ${{ steps.meta.outputs.is_fork }}
     steps:
@@ -51,6 +56,13 @@ jobs:
         env:
           PR_NUMBER: ${{ github.event.pull_request.number || '' }}
           IS_FORK: ${{ github.event.pull_request.head.repo.fork || false }}
+      - id: force
+        run: |
+          echo "desktop=${RUN_ALL}" >> "$GITHUB_OUTPUT"
+          echo "web=${RUN_ALL}" >> "$GITHUB_OUTPUT"
+          echo "compression=${RUN_ALL}" >> "$GITHUB_OUTPUT"
+        env:
+          RUN_ALL: ${{ github.event_name == 'workflow_dispatch' && inputs.run_all && 'true' || '' }}
       - uses: dorny/paths-filter@v3
         id: filter
         with:
