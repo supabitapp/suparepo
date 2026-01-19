@@ -1,4 +1,4 @@
-name: PR DMG
+name: supaimg-pr-dmg
 on:
   pull_request:
 

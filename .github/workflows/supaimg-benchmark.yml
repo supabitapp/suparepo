@@ -1,4 +1,4 @@
-name: Benchmark
+name: supaimg-benchmark
 
 on:
   pull_request:

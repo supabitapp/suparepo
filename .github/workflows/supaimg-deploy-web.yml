@@ -1,4 +1,4 @@
-name: Deploy Web
+name: supaimg-deploy-web
 on:
   workflow_dispatch:
   push:

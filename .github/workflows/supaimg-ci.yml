@@ -1,4 +1,4 @@
-name: SupaIMG CI
+name: supaimg-ci
 on:
   push:
     branches:

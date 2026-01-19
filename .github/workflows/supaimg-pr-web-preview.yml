@@ -1,4 +1,4 @@
-name: PR Web Preview
+name: supaimg-pr-web-preview
 on:
   pull_request:
     paths:

@@ -1,4 +1,4 @@
-name: AI Code Review
+name: supaimg-ai-code-review
 
 on:
   pull_request:
