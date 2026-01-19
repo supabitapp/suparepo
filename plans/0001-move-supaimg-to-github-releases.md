@@ -57,6 +57,7 @@ SupaIMG currently downloads desktop updates and ML models from Cloudflare R2 (th
 This repo is a Turborepo monorepo. SupaIMG has two relevant apps: the desktop app (apps/supaimg-desktop) and the marketing site (apps/supaimg.app). The desktop app uses the Tauri updater plugin; its update endpoint is configured in apps/supaimg-desktop/src-tauri/tauri.conf.json under plugins.updater.endpoints. The marketing site fetches update.json in apps/supaimg.app/src/App.tsx and constructs download URLs for DMG/MSI files. SupaIMG downloads ML models at runtime from hard-coded URLs in apps/supaimg-desktop/src-tauri/src/background_removal.rs and apps/supaimg-desktop/src-tauri/src/text_blur.rs. The CI workflow .github/workflows/supaimg-ci.yml also downloads those model files during tests. The release workflow .github/workflows/supaimg-release.yml builds installers, uploads artifacts to GitHub Releases, and then uploads copies and update.json to Cloudflare R2; we will replace that R2 step with GitHub Releases.
 
 Terms used below:
+
 - Update metadata (update.json): A JSON file used by Tauri updater to discover the latest version and download URLs.
 - Release assets: Files attached to a GitHub Release; accessible via stable download URLs.
 - Models release: A dedicated GitHub Release tag that stores ML model files used by the desktop app.
@@ -73,7 +74,7 @@ Finally, validate that the updater and marketing site can retrieve update.json a
 
 ## Concrete Steps
 
-1) Create or confirm the release repo in the supabitapp GitHub org.
+1. Create or confirm the release repo in the supabitapp GitHub org.
    - From a terminal with GitHub CLI authenticated:
      - Run in any directory:
        - gh repo view supabitapp/supaimg
@@ -82,7 +83,7 @@ Finally, validate that the updater and marketing site can retrieve update.json a
    - Ensure releases are enabled (default for new repos).
    - If the repo is empty, push an initial commit (for example a README) so releases can be published.
 
-2) Create the models release in supabitapp/supaimg and upload model assets.
+2. Create the models release in supabitapp/supaimg and upload model assets.
    - Decide the models tag name, for example models/v1.
    - Download the current model files (from appcast.supaimg.app) and upload them as release assets with stable names.
    - Example with gh (run in a temp directory):
@@ -93,7 +94,7 @@ Finally, validate that the updater and marketing site can retrieve update.json a
      - gh release edit models/v1 --repo supabitapp/supaimg --draft=false
    - Record these asset names; the code will use them.
 
-3) Update code and CI to use GitHub Releases endpoints.
+3. Update code and CI to use GitHub Releases endpoints.
    - Edit apps/supaimg-desktop/src-tauri/tauri.conf.json:
      - Replace plugins.updater.endpoints with the GitHub Releases latest download URL for update.json.
    - Edit apps/supaimg.app/src/App.tsx:
@@ -107,7 +108,7 @@ Finally, validate that the updater and marketing site can retrieve update.json a
    - Edit .github/workflows/supaimg-ci.yml:
      - Replace model download curl URLs with the GitHub Releases download URLs for the models tag.
 
-4) Update the supaimg-release workflow to use GitHub Releases instead of R2.
+4. Update the supaimg-release workflow to use GitHub Releases instead of R2.
    - Edit .github/workflows/supaimg-release.yml:
      - Remove awscli installs and all R2-related env vars and steps.
      - Add a release target repo variable, for example SUPAIMG_RELEASE_REPO=supabitapp/supaimg.
@@ -117,7 +118,7 @@ Finally, validate that the updater and marketing site can retrieve update.json a
      - In publish-release job, use gh release download to fetch the .sig files from the target repo release. Generate update.json with URLs pointing to https://github.com/supabitapp/supaimg/releases/download/${TAG}/<asset-name>.
      - Upload update.json to the target repo release and publish the release.
 
-5) Validation.
+5. Validation.
    - From any machine:
      - curl -L https://github.com/supabitapp/supaimg/releases/latest/download/update.json
      - Verify the JSON includes the expected version and URLs.
@@ -130,6 +131,7 @@ Finally, validate that the updater and marketing site can retrieve update.json a
 ## Validation and Acceptance
 
 Acceptance is met when:
+
 - apps/supaimg.app loads and its download buttons point to GitHub Releases URLs under supabitapp/supaimg.
 - apps/supaimg-desktop checks for updates using update.json from GitHub Releases and can download the update payloads.
 - ML model downloads succeed using the GitHub Releases models tag URLs, both in local app runs and in .github/workflows/supaimg-ci.yml.
@@ -143,21 +145,21 @@ All steps are safe to repeat. Re-running gh release upload with --clobber overwr
 
 Expected update.json shape (example):
 
-  {
-    "version": "1.4.0",
-    "notes": "Release 1.4.0",
-    "pub_date": "2026-01-19T17:30:00Z",
-    "platforms": {
-      "darwin-aarch64": {
-        "signature": "<base64-signature>",
-        "url": "https://github.com/supabitapp/supaimg/releases/download/supaimg/v1.4.0/supaimg_aarch64.app.tar.gz"
-      },
-      "windows-x86_64": {
-        "signature": "<base64-signature>",
-        "url": "https://github.com/supabitapp/supaimg/releases/download/supaimg/v1.4.0/supaimg_x64-setup.exe"
-      }
-    }
-  }
+{
+"version": "1.4.0",
+"notes": "Release 1.4.0",
+"pub_date": "2026-01-19T17:30:00Z",
+"platforms": {
+"darwin-aarch64": {
+"signature": "<base64-signature>",
+"url": "https://github.com/supabitapp/supaimg/releases/download/supaimg/v1.4.0/supaimg_aarch64.app.tar.gz"
+},
+"windows-x86_64": {
+"signature": "<base64-signature>",
+"url": "https://github.com/supabitapp/supaimg/releases/download/supaimg/v1.4.0/supaimg_x64-setup.exe"
+}
+}
+}
 
 ## Interfaces and Dependencies
 
@@ -167,6 +169,7 @@ Expected update.json shape (example):
 - No Cloudflare R2 or awscli dependency after migration.
 
 ---
+
 Change log: 2026-01-19 17:30Z - Initial ExecPlan created.
 Change log: 2026-01-19 17:52Z - Updated progress, recorded models asset names, and noted GitHub release requirement for an initial commit.
 Change log: 2026-01-19 18:02Z - Noted version bump decision to enable a new release tag.
