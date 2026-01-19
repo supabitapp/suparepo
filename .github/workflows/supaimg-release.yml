@@ -40,14 +40,14 @@ jobs:
       - name: Build app
         env:
           TAURI_BUNDLER_DMG_IGNORE_CI: "false"
-          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
-          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_CERTIFICATE: ${{ secrets.SUPAIMG_APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.SUPAIMG_APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.SUPAIMG_APPLE_SIGNING_IDENTITY }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
-          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.SUPAIMG_TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.SUPAIMG_TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         run: |
           cd apps/supaimg-desktop
           bun run tauri build --target aarch64-apple-darwin
@@ -77,11 +77,11 @@ jobs:
 
       - name: Upload artifacts to R2
         env:
-          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
-          R2_BUCKET: ${{ secrets.R2_BUCKET }}
-          R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+          R2_ACCESS_KEY_ID: ${{ secrets.SUPAIMG_R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.SUPAIMG_R2_SECRET_ACCESS_KEY }}
+          R2_ACCOUNT_ID: ${{ secrets.SUPAIMG_R2_ACCOUNT_ID }}
+          R2_BUCKET: ${{ secrets.SUPAIMG_R2_BUCKET }}
+          R2_PUBLIC_URL: ${{ secrets.SUPAIMG_R2_PUBLIC_URL }}
         run: |
           VERSION="${{ github.ref_name }}"
           PUB_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
@@ -133,8 +133,8 @@ jobs:
 
       - name: Build app
         env:
-          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
-          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.SUPAIMG_TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.SUPAIMG_TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         run: |
           cd apps/supaimg-desktop
           bun run tauri build --target x86_64-pc-windows-msvc --bundles msi,nsis
@@ -150,10 +150,10 @@ jobs:
 
       - name: Upload to R2
         env:
-          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
-          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+          R2_ACCESS_KEY_ID: ${{ secrets.SUPAIMG_R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.SUPAIMG_R2_SECRET_ACCESS_KEY }}
+          R2_ACCOUNT_ID: ${{ secrets.SUPAIMG_R2_ACCOUNT_ID }}
+          R2_BUCKET: ${{ secrets.SUPAIMG_R2_BUCKET }}
         shell: pwsh
         run: |
           $VERSION = "${{ github.ref_name }}"
@@ -179,11 +179,11 @@ jobs:
 
       - name: Generate combined update.json
         env:
-          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
-          R2_BUCKET: ${{ secrets.R2_BUCKET }}
-          R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+          R2_ACCESS_KEY_ID: ${{ secrets.SUPAIMG_R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.SUPAIMG_R2_SECRET_ACCESS_KEY }}
+          R2_ACCOUNT_ID: ${{ secrets.SUPAIMG_R2_ACCOUNT_ID }}
+          R2_BUCKET: ${{ secrets.SUPAIMG_R2_BUCKET }}
+          R2_PUBLIC_URL: ${{ secrets.SUPAIMG_R2_PUBLIC_URL }}
         run: |
           VERSION="${{ github.ref_name }}"
           PUB_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
