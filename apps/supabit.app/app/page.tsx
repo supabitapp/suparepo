@@ -60,16 +60,6 @@ export default function Home() {
         <p className="leading-relaxed">
           We are a small team of engineers who are passionate about building truly great products.
         </p>
-        <p>
-          Our latest project is{" "}
-          <a
-            href="https://www.pixenchant.com/"
-            className="text-primary hover:underline whitespace-nowrap"
-          >
-            Pixenchant
-          </a>
-          .
-        </p>
       </section>
 
       <SectionSeparator label="Team" />
