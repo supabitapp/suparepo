@@ -37,7 +37,10 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy apps/supaimg.app/dist --project-name=supaimg --branch pr-${{ inputs.pr_number }}
+          packageManager: npm
+          wranglerVersion: 3.90.0
+          workingDirectory: apps/supaimg.app
+          command: pages deploy dist --project-name=supaimg --branch pr-${{ inputs.pr_number }}
       - name: Comment on PR
         if: ${{ steps.deploy.outputs.deployment-url != '' }}
         env:
