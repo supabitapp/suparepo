@@ -1,7 +1,7 @@
 name: supaimg-release
 on:
   push:
-    tags: ["*.*.*"]
+    tags: ["supaimg/v*.*.*"]
 
 jobs:
   build-macos:
@@ -16,9 +16,14 @@ jobs:
       - name: Check version matches tag
         run: |
           TAG="${{ github.ref_name }}"
-          VERSION=$(jq -r '.version' apps/supaimg-desktop/src-tauri/tauri.conf.json)
-          if [ "$VERSION" != "$TAG" ]; then
-            echo "::error::Version mismatch: tauri.conf.json has '$VERSION' but tag is '$TAG'"
+          VERSION="${TAG#supaimg/v}"
+          if [ "$VERSION" = "$TAG" ]; then
+            echo "::error::Tag must be prefixed with 'supaimg/v'"
+            exit 1
+          fi
+          APP_VERSION=$(jq -r '.version' apps/supaimg-desktop/src-tauri/tauri.conf.json)
+          if [ "$APP_VERSION" != "$VERSION" ]; then
+            echo "::error::Version mismatch: tauri.conf.json has '$APP_VERSION' but tag is '$TAG'"
             exit 1
           fi
       - uses: dtolnay/rust-toolchain@4be9e76fd7c4901c61fb841f559994984270fce7
@@ -83,7 +88,8 @@ jobs:
           R2_BUCKET: ${{ secrets.SUPAIMG_R2_BUCKET }}
           R2_PUBLIC_URL: ${{ secrets.SUPAIMG_R2_PUBLIC_URL }}
         run: |
-          VERSION="${{ github.ref_name }}"
+          TAG="${{ github.ref_name }}"
+          VERSION="${TAG#supaimg/v}"
           PUB_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           R2_ENDPOINT="https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
 
@@ -114,8 +120,10 @@ jobs:
         shell: pwsh
         run: |
           $TAG = "${{ github.ref_name }}"
-          $VERSION = (Get-Content apps/supaimg-desktop/src-tauri/tauri.conf.json | ConvertFrom-Json).version
-          if ($VERSION -ne $TAG) { Write-Error "Version mismatch"; exit 1 }
+          if ($TAG -notmatch '^supaimg/v') { Write-Error "Tag must be prefixed with 'supaimg/v'"; exit 1 }
+          $VERSION = $TAG -replace '^supaimg/v',''
+          $APP_VERSION = (Get-Content apps/supaimg-desktop/src-tauri/tauri.conf.json | ConvertFrom-Json).version
+          if ($APP_VERSION -ne $VERSION) { Write-Error "Version mismatch"; exit 1 }
       - uses: dtolnay/rust-toolchain@4be9e76fd7c4901c61fb841f559994984270fce7
         with:
           targets: x86_64-pc-windows-msvc
@@ -156,7 +164,8 @@ jobs:
           R2_BUCKET: ${{ secrets.SUPAIMG_R2_BUCKET }}
         shell: pwsh
         run: |
-          $VERSION = "${{ github.ref_name }}"
+          $TAG = "${{ github.ref_name }}"
+          $VERSION = $TAG -replace '^supaimg/v',''
           $R2_ENDPOINT = "https://$env:R2_ACCOUNT_ID.r2.cloudflarestorage.com"
           aws configure set aws_access_key_id $env:R2_ACCESS_KEY_ID
           aws configure set aws_secret_access_key $env:R2_SECRET_ACCESS_KEY
@@ -185,7 +194,8 @@ jobs:
           R2_BUCKET: ${{ secrets.SUPAIMG_R2_BUCKET }}
           R2_PUBLIC_URL: ${{ secrets.SUPAIMG_R2_PUBLIC_URL }}
         run: |
-          VERSION="${{ github.ref_name }}"
+          TAG="${{ github.ref_name }}"
+          VERSION="${TAG#supaimg/v}"
           PUB_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           R2_ENDPOINT="https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
           aws configure set aws_access_key_id "$R2_ACCESS_KEY_ID"
