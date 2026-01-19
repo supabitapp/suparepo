@@ -132,6 +132,9 @@ fn main() {
             let rust_field = rust_field(&field);
             let rust_type = rust_type(field_type)
                 .unwrap_or_else(|| panic!("unsupported type {}", field_type));
+            if optional {
+                out.push_str("    #[serde(skip_serializing_if = \"Option::is_none\")]\n");
+            }
             out.push_str("    pub ");
             out.push_str(&rust_field);
             out.push_str(": ");
