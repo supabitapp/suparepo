@@ -1,4 +1,9 @@
 use crate::compression::{encode_png_rgba, CompressionError, ImageFormat, ImageResult};
+use crate::generated::workflow_settings::{
+    ConvertOutputFormat, CONVERT_GIF_COLORS_MAX, CONVERT_GIF_COLORS_MIN, CONVERT_JPEG_QUALITY_MAX,
+    CONVERT_JPEG_QUALITY_MIN, CONVERT_PNG_COMPRESSION_LEVEL_MAX, CONVERT_PNG_COMPRESSION_LEVEL_MIN,
+    CONVERT_WEBP_QUALITY_MAX, CONVERT_WEBP_QUALITY_MIN,
+};
 use color_quant::NeuQuant;
 use gif::Encoder as GifEncoder;
 use image::codecs::jpeg::JpegEncoder;
@@ -7,16 +12,6 @@ use image::{ColorType, DynamicImage, ExtendedColorType, GenericImageView, ImageE
 use serde::Deserialize;
 use std::fs;
 use std::path::Path;
-
-#[derive(Debug, Clone, Deserialize)]
-#[serde(rename_all = "lowercase")]
-pub enum ConvertOutputFormat {
-    Jpeg,
-    Png,
-    #[serde(rename = "webp")]
-    Webp,
-    Gif,
-}
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -43,7 +38,9 @@ pub fn convert_path_with_progress<F: FnMut(f64) + Send>(
 
     let (data, format) = match options.output_format {
         ConvertOutputFormat::Jpeg => {
-            let quality = options.jpeg_quality.clamp(1, 100);
+            let quality = options
+                .jpeg_quality
+                .clamp(CONVERT_JPEG_QUALITY_MIN, CONVERT_JPEG_QUALITY_MAX);
             let rgb = if image.color().has_alpha() {
                 flatten_to_rgb(image)
             } else {
@@ -62,8 +59,11 @@ pub fn convert_path_with_progress<F: FnMut(f64) + Send>(
             let rgba = image.to_rgba8();
             let (width, height) = rgba.dimensions();
             on_progress(0.7);
-            let data =
-                encode_png_rgba(rgba.as_raw(), width, height, options.png_compression_level)?;
+            let compression = options.png_compression_level.clamp(
+                CONVERT_PNG_COMPRESSION_LEVEL_MIN,
+                CONVERT_PNG_COMPRESSION_LEVEL_MAX,
+            );
+            let data = encode_png_rgba(rgba.as_raw(), width, height, compression)?;
             (data, ImageFormat::Png)
         }
         ConvertOutputFormat::Webp => {
@@ -85,7 +85,10 @@ pub fn convert_path_with_progress<F: FnMut(f64) + Send>(
             } else {
                 let encoder = webp::Encoder::from_image(&base)
                     .map_err(|err| CompressionError::EncodeFailed(err.to_string()))?;
-                let quality = options.webp_quality.clamp(0, 100) as f32;
+                let quality = options
+                    .webp_quality
+                    .clamp(CONVERT_WEBP_QUALITY_MIN, CONVERT_WEBP_QUALITY_MAX)
+                    as f32;
                 encoder.encode(quality).to_vec()
             };
             (data, ImageFormat::WebP)
@@ -94,7 +97,10 @@ pub fn convert_path_with_progress<F: FnMut(f64) + Send>(
             let rgba = image.to_rgba8();
             let (width, height) = rgba.dimensions();
             on_progress(0.7);
-            let colors = options.gif_colors.clamp(2, 256) as usize;
+            let colors = options
+                .gif_colors
+                .clamp(CONVERT_GIF_COLORS_MIN, CONVERT_GIF_COLORS_MAX)
+                as usize;
             let pixels = rgba.into_raw();
             let has_alpha = pixels.chunks(4).any(|pixel| pixel[3] < 255);
             let palette_colors = if has_alpha && colors > 1 {

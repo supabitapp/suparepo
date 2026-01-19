@@ -24,6 +24,7 @@ import {
 import { autostart, COMMANDS, invokeCommand, isTauri } from "@/lib/tauri";
 import {
   type ConvertOutputFormat,
+  defaultWorkflowSettings,
   getWorkflow,
   type Workflow,
   type WorkflowSettingsMap,
@@ -311,12 +312,19 @@ export const useStore = create<AppState>()(
             const convertOptions =
               workflow === "convert"
                 ? {
-                    outputFormat: convertSettings?.outputFormat ?? "jpeg",
-                    jpegQuality: convertSettings?.jpegQuality ?? 100,
-                    pngCompressionLevel: convertSettings?.pngCompressionLevel ?? 6,
-                    webpQuality: convertSettings?.webpQuality ?? 100,
-                    webpLossless: convertSettings?.webpLossless ?? true,
-                    gifColors: convertSettings?.gifColors ?? 256,
+                    outputFormat:
+                      convertSettings?.outputFormat ?? defaultWorkflowSettings.convert.outputFormat,
+                    jpegQuality:
+                      convertSettings?.jpegQuality ?? defaultWorkflowSettings.convert.jpegQuality,
+                    pngCompressionLevel:
+                      convertSettings?.pngCompressionLevel ??
+                      defaultWorkflowSettings.convert.pngCompressionLevel,
+                    webpQuality:
+                      convertSettings?.webpQuality ?? defaultWorkflowSettings.convert.webpQuality,
+                    webpLossless:
+                      convertSettings?.webpLossless ?? defaultWorkflowSettings.convert.webpLossless,
+                    gifColors:
+                      convertSettings?.gifColors ?? defaultWorkflowSettings.convert.gifColors,
                   }
                 : undefined;
             const skipReason = skipProcessingReason(path, workflow, convertOutputFormat);

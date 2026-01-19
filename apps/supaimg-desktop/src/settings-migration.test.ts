@@ -5,6 +5,10 @@ import {
   SETTINGS_VERSION,
   sanitizeSettings,
 } from "@/lib/settings";
+import {
+  generalSettingsDefaults,
+  workflowSettingsDefaults,
+} from "@/lib/generated/workflow-settings";
 import { useStore } from "@/store";
 import { resetStore } from "@/test/test-helpers";
 
@@ -33,6 +37,13 @@ describe("settings migration", () => {
 
   test("sanitizeSettings returns defaults for empty input", () => {
     expect(sanitizeSettings()).toEqual(DEFAULT_SETTINGS);
+  });
+
+  test("default settings match generated schema defaults", () => {
+    expect(DEFAULT_SETTINGS).toEqual({
+      workflowSettings: workflowSettingsDefaults,
+      ...generalSettingsDefaults,
+    });
   });
 
   test("sanitizeSettings clamps numbers and fixes invalid types", () => {

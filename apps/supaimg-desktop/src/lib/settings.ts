@@ -1,4 +1,5 @@
 import type { PersistStorage } from "zustand/middleware";
+import { generalSettingsDefaults } from "@/lib/generated/workflow-settings";
 import {
   defaultWorkflowSettings,
   type Workflow,
@@ -55,21 +56,14 @@ const sanitizeWorkflowSetting = (field: WorkflowSettingField, value: unknown) =>
   }
 };
 
-export const createDefaultWorkflowSettings = (): WorkflowSettingsMap => {
-  return {
-    compress: { ...defaultWorkflowSettings.compress },
-    convert: { ...defaultWorkflowSettings.convert },
-    remove_bg: { ...defaultWorkflowSettings.remove_bg },
-    blur_text: { ...defaultWorkflowSettings.blur_text },
-  };
-};
+export const createDefaultWorkflowSettings = (): WorkflowSettingsMap =>
+  Object.fromEntries(
+    Object.entries(defaultWorkflowSettings).map(([key, value]) => [key, { ...value }]),
+  ) as WorkflowSettingsMap;
 
 export const createDefaultSettings = (): SettingsState => ({
   workflowSettings: createDefaultWorkflowSettings(),
-  launchAtLogin: false,
-  showMenuBarIcon: true,
-  autoUpdate: true,
-  analyticsTracking: true,
+  ...generalSettingsDefaults,
 });
 
 export const DEFAULT_SETTINGS = createDefaultSettings();
