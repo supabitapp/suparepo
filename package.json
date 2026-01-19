@@ -10,6 +10,8 @@
     "desktop:build": "cd apps/desktop && bun run tauri -- build",
     "desktop:dev": "cd apps/desktop && bun run tauri -- dev",
     "dev": "turbo run dev",
+    "supaimg.desktop:dev": "cd apps/supaimg-desktop && bun run tauri -- dev",
+    "supaimg.desktop:build": "cd apps/supaimg-desktop && bun run tauri -- build",
     "supaimg.app:dev": "bun run --filter supaimg.app dev",
     "supaimg.app:build": "bun run --filter supaimg.app build",
     "supabit.app:dev": "bun run --filter supabit.app dev",
@@ -35,6 +37,10 @@
     "apps/desktop/src-tauri/**/*.rs": [
       "bash -c 'cargo fmt --manifest-path apps/desktop/src-tauri/Cargo.toml --all -- --check'",
       "bash -c 'cargo clippy --manifest-path apps/desktop/src-tauri/Cargo.toml --all -- -D warnings'"
+    ],
+    "apps/supaimg-desktop/src-tauri/**/*.rs": [
+      "bash -c 'cargo fmt --manifest-path apps/supaimg-desktop/src-tauri/Cargo.toml --all -- --check'",
+      "bash -c 'cargo clippy --manifest-path apps/supaimg-desktop/src-tauri/Cargo.toml --all -- -D warnings'"
     ]
   },
   "engines": {
