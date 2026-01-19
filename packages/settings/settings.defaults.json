@@ -1,0 +1,13 @@
+{
+  "appearance": {
+    "theme": "system"
+  },
+  "blur": {
+    "mode": "pixelate",
+    "radius": 16
+  },
+  "output": {
+    "format": "png",
+    "quality": 85
+  }
+}

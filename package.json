@@ -18,6 +18,7 @@
     "fmt": "oxfmt .",
     "fmt:check": "oxfmt --check .",
     "check-types": "turbo run check-types",
+    "generate:settings": "node tools/generate-settings.mjs",
     "prepare": "husky"
   },
   "devDependencies": {

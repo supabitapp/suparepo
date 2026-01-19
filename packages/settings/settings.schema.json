@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Settings",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["appearance", "blur", "output"],
+  "properties": {
+    "appearance": {
+      "title": "AppearanceSettings",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["theme"],
+      "properties": {
+        "theme": {
+          "type": "string",
+          "enum": ["system", "light", "dark"],
+          "default": "system"
+        }
+      }
+    },
+    "blur": {
+      "title": "BlurSettings",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "radius"],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["pixelate", "gaussian"],
+          "default": "pixelate"
+        },
+        "radius": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 64,
+          "default": 16
+        }
+      }
+    },
+    "output": {
+      "title": "OutputSettings",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "quality"],
+      "properties": {
+        "format": {
+          "type": "string",
+          "enum": ["png", "jpg", "webp"],
+          "default": "png"
+        },
+        "quality": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 85
+        }
+      }
+    }
+  }
+}
