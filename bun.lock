@@ -14,27 +14,6 @@
         "typescript": "5.9.2",
       },
     },
-    "apps/desktop": {
-      "name": "desktop",
-      "version": "0.1.0",
-      "dependencies": {
-        "@repo/ui": "*",
-        "@tailwindcss/vite": "^4.1.18",
-        "@tauri-apps/api": "^2",
-        "@tauri-apps/plugin-opener": "^2",
-        "react": "^19.2.3",
-        "react-dom": "^19.2.3",
-      },
-      "devDependencies": {
-        "@repo/typescript-config": "*",
-        "@tauri-apps/cli": "^2",
-        "@types/react": "19.2.8",
-        "@types/react-dom": "19.2.3",
-        "@vitejs/plugin-react": "^4.6.0",
-        "typescript": "5.9.2",
-        "vite": "^7.0.4",
-      },
-    },
     "apps/supabit.app": {
       "name": "supabit.app",
       "version": "0.1.0",
@@ -1166,8 +1145,6 @@
     "depd": ["depd@2.0.0", "", {}, "sha512-g7nH6P6dyDioJogAAGprGpCtVImJhpPk/roCzdb3fIh61/s/nPsfR6onyMwkCAR/OlC3yBC0lESvUoQEAssIrw=="],
 
     "dequal": ["dequal@2.0.3", "", {}, "sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA=="],
-
-    "desktop": ["desktop@workspace:apps/desktop"],
 
     "detect-libc": ["detect-libc@2.1.2", "", {}, "sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ=="],
 

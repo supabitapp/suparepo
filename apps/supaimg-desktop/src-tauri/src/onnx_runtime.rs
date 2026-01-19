@@ -59,7 +59,7 @@ pub fn resolve_onnxruntime_path_cli() -> Result<PathBuf, CompressionError> {
     let cwd = std::env::current_dir()?;
     let candidates = [
         cwd.join("models/onnxruntime"),
-        cwd.join("apps/desktop/src-tauri/models/onnxruntime"),
+        cwd.join("apps/supaimg-desktop/src-tauri/models/onnxruntime"),
     ];
     for dir in candidates {
         if let Some(found) = resolve_onnxruntime_path_from_dir(&dir) {
