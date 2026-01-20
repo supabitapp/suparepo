@@ -24,7 +24,7 @@ use std::sync::{Mutex, OnceLock};
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 
-const MODEL_BASE_URL: &str = "https://github.com/supabitapp/supaimg/releases/download/models/v1";
+const MODEL_BASE_URL: &str = "https://supaimg.app/models";
 const MODEL_FILE: &str = "pp-ocrv5-server-det.onnx";
 const MODEL_REMOTE_PATH: &str = "pp-ocrv5-server-det.onnx";
 const MAX_SIDE: u32 = 1280;
