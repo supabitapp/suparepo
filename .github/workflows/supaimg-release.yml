@@ -35,7 +35,6 @@ jobs:
             brew list "$pkg" >/dev/null 2>&1 || brew install "$pkg"
           done
       - run: bun install
-
       - name: Ensure release draft
         env:
           GH_TOKEN: ${{ secrets.SUPAIMG_RELEASE_TOKEN }}
