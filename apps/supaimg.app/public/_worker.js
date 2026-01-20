@@ -55,12 +55,8 @@ const rewriteUpdateJson = async (request) => {
     return methodNotAllowed();
   }
 
-  const init = {
-    method: request.method,
-    headers: request.headers,
-  };
-
-  const response = await fetch(UPDATE_URL, init);
+  const isHead = request.method === "HEAD";
+  const response = await fetch(UPDATE_URL, { method: "GET", headers: request.headers });
   if (!response.ok) {
     return new Response(response.body, {
       status: response.status,
@@ -84,12 +80,16 @@ const rewriteUpdateJson = async (request) => {
     }
   }
 
+  const headers = {
+    "content-type": "application/json",
+    "cache-control": "public, max-age=60",
+  };
+  if (isHead) {
+    return new Response(null, { status: 200, headers });
+  }
   return new Response(JSON.stringify(data, null, 2), {
     status: 200,
-    headers: {
-      "content-type": "application/json",
-      "cache-control": "public, max-age=60",
-    },
+    headers,
   });
 };
 
