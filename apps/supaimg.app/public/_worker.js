@@ -50,22 +50,59 @@ const proxyRequest = async (request, target, options = {}) => {
   });
 };
 
+const rewriteUpdateJson = async (request) => {
+  if (request.method !== "GET" && request.method !== "HEAD") {
+    return methodNotAllowed();
+  }
+
+  const init = {
+    method: request.method,
+    headers: request.headers,
+  };
+
+  const response = await fetch(UPDATE_URL, init);
+  if (!response.ok) {
+    return new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: response.headers,
+    });
+  }
+
+  const data = await response.json();
+  const version = data?.version;
+  if (typeof version === "string" && data?.platforms) {
+    const tag = `supaimg/v${version}`;
+    for (const platform of Object.values(data.platforms)) {
+      if (platform && typeof platform === "object" && platform.url) {
+        const parts = String(platform.url).split("/");
+        const filename = parts[parts.length - 1] || "";
+        if (filename) {
+          platform.url = `https://supaimg.app/appcast/${tag}/${filename}`;
+        }
+      }
+    }
+  }
+
+  return new Response(JSON.stringify(data, null, 2), {
+    status: 200,
+    headers: {
+      "content-type": "application/json",
+      "cache-control": "public, max-age=60",
+    },
+  });
+};
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
     if (url.pathname === "/appcast/update.json") {
-      return proxyRequest(request, UPDATE_URL, {
-        cacheTtl: 60,
-        cacheControl: "public, max-age=60",
-      });
+      return rewriteUpdateJson(request);
     }
 
     if (url.pathname === "/update.json") {
-      return proxyRequest(request, UPDATE_URL, {
-        cacheTtl: 60,
-        cacheControl: "public, max-age=60",
-      });
+      return rewriteUpdateJson(request);
     }
 
     if (url.pathname.startsWith("/models/")) {
