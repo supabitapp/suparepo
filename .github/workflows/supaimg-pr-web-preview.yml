@@ -31,13 +31,17 @@ jobs:
           key: bun-${{ runner.os }}-${{ hashFiles('**/bun.lock') }}
       - run: bun install --frozen-lockfile
       - run: bun run supaimg.app:build
+      - name: Stage Pages functions
+        run: |
+          rm -rf apps/supaimg.app/dist/functions
+          cp -R apps/supaimg.app/functions apps/supaimg.app/dist/functions
       - name: Deploy preview
         id: deploy
         uses: cloudflare/wrangler-action@da0e0dfe58b7a431659754fdf3f186c529afbe65
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: --cwd apps/supaimg.app pages deploy dist --project-name=supaimg --branch pr-${{ inputs.pr_number }}
+          command: pages deploy apps/supaimg.app/dist --project-name=supaimg --branch pr-${{ inputs.pr_number }}
       - name: Comment on PR
         if: ${{ steps.deploy.outputs.deployment-url != '' }}
         env:
