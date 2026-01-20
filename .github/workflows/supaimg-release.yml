@@ -184,11 +184,11 @@ jobs:
             "platforms": {
               "darwin-aarch64": {
                 "signature": "${MACOS_SIG}",
-                "url": "https://supaimg.app/downloads/${TAG}/supaimg_aarch64.app.tar.gz"
+                "url": "https://supaimg.app/appcast/${TAG}/supaimg_aarch64.app.tar.gz"
               },
               "windows-x86_64": {
                 "signature": "${WINDOWS_SIG}",
-                "url": "https://supaimg.app/downloads/${TAG}/supaimg_x64-setup.exe"
+                "url": "https://supaimg.app/appcast/${TAG}/supaimg_x64-setup.exe"
               }
             }
           }
