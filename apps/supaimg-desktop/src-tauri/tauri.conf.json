@@ -51,7 +51,7 @@
   "plugins": {
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEY4QTc3RTZFOEFGNDQ1RDkKUldUWlJmU0tibjZuK01vUng3REdxUHRXZmVVM3JORVBUakxsLzZGd3lzUVhYdlRDeFBiNlBOY04K",
-      "endpoints": ["https://supaimg.app/update.json"]
+      "endpoints": ["https://supaimg.app/appcast/update.json"]
     }
   }
 }

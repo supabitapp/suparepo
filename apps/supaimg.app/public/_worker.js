@@ -54,6 +54,13 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
+    if (url.pathname === "/appcast/update.json") {
+      return proxyRequest(request, UPDATE_URL, {
+        cacheTtl: 60,
+        cacheControl: "public, max-age=60",
+      });
+    }
+
     if (url.pathname === "/update.json") {
       return proxyRequest(request, UPDATE_URL, {
         cacheTtl: 60,
@@ -67,6 +74,18 @@ export default {
         return new Response("Not Found", { status: 404 });
       }
       return proxyRequest(request, `${MODELS_BASE}${path}`, {
+        cacheTtl: 31536000,
+        cacheEverything: true,
+        cacheControl: "public, max-age=31536000, immutable",
+      });
+    }
+
+    if (url.pathname.startsWith("/appcast/")) {
+      const path = url.pathname.slice("/appcast/".length);
+      if (!path) {
+        return new Response("Not Found", { status: 404 });
+      }
+      return proxyRequest(request, `${DOWNLOADS_BASE}${path}`, {
         cacheTtl: 31536000,
         cacheEverything: true,
         cacheControl: "public, max-age=31536000, immutable",
