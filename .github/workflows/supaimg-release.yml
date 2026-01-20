@@ -30,7 +30,10 @@ jobs:
         with:
           targets: aarch64-apple-darwin
       - uses: oven-sh/setup-bun@735343b667d3e6f658f44d0eca948eb6282f2b76
-      - run: brew install nasm pkg-config
+      - run: |
+          for pkg in nasm pkgconf; do
+            brew list "$pkg" >/dev/null 2>&1 || brew install "$pkg"
+          done
       - run: bun install
 
       - name: Ensure release draft

@@ -1,6 +1,9 @@
 const UPDATE_URL = "https://github.com/supabitapp/supaimg/releases/latest/download/update.json";
 const MODELS_BASE = "https://github.com/supabitapp/supaimg/releases/download/models/v1/";
 const DOWNLOADS_BASE = "https://github.com/supabitapp/supaimg/releases/download/";
+const LATEST_CACHE_TTL_MS = 5 * 60 * 1000;
+let latestTagCache = { value: null, expiresAt: 0 };
+let latestTagPromise = null;
 
 const methodNotAllowed = () =>
   new Response("Method Not Allowed", {
@@ -44,6 +47,65 @@ const proxyRequest = async (request, target, options = {}) => {
     status: response.status,
     statusText: response.statusText,
     headers: outHeaders,
+  });
+};
+
+const getLatestTag = async (request) => {
+  const now = Date.now();
+  if (latestTagCache.value && now < latestTagCache.expiresAt) {
+    return latestTagCache.value;
+  }
+
+  if (latestTagPromise) {
+    return latestTagPromise;
+  }
+
+  latestTagPromise = (async () => {
+    const response = await fetch(UPDATE_URL, { method: "GET", headers: request.headers });
+    if (!response.ok) {
+      latestTagCache = { value: null, expiresAt: now + 60 * 1000 };
+      return null;
+    }
+
+    const data = await response.json();
+    const version = data?.version;
+    if (typeof version !== "string" || version.length === 0) {
+      latestTagCache = { value: null, expiresAt: now + 60 * 1000 };
+      return null;
+    }
+
+    const tag = `supaimg/v${version}`;
+    latestTagCache = { value: tag, expiresAt: now + LATEST_CACHE_TTL_MS };
+    return tag;
+  })();
+
+  try {
+    return await latestTagPromise;
+  } finally {
+    latestTagPromise = null;
+  }
+};
+
+const redirectToLatestAsset = async (request, filename) => {
+  if (request.method !== "GET" && request.method !== "HEAD") {
+    return methodNotAllowed();
+  }
+
+  const tag = await getLatestTag(request);
+  if (!tag) {
+    return new Response("Latest release not available", { status: 502 });
+  }
+
+  const url = new URL(request.url);
+  const targetUrl = new URL(`/appcast/${tag}/${filename}`, url);
+  targetUrl.search = url.search;
+
+  return new Response(null, {
+    status: 302,
+    headers: {
+      location: targetUrl.toString(),
+      "cache-control": "public, max-age=300",
+    },
   });
 };
 
@@ -101,6 +163,14 @@ export default {
 
     if (url.pathname === "/update.json") {
       return rewriteUpdateJson(request);
+    }
+
+    if (url.pathname.startsWith("/appcast/supaimg/latest/")) {
+      const path = url.pathname.slice("/appcast/supaimg/latest/".length);
+      if (!path) {
+        return new Response("Not Found", { status: 404 });
+      }
+      return redirectToLatestAsset(request, path);
     }
 
     if (url.pathname.startsWith("/appassets/")) {
