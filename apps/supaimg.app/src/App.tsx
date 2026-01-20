@@ -22,8 +22,7 @@ import {
 import type { CSSProperties } from "react";
 import { useEffect, useMemo, useState } from "react";
 
-const UPDATE_JSON_URL =
-  "https://github.com/supabitapp/supaimg/releases/latest/download/update.json";
+const UPDATE_JSON_URL = "https://supaimg.app/update.json";
 
 type Platform = "macos" | "windows" | "unknown";
 type DownloadInfo = { version: string; macosUrl: string; windowsUrl: string };
@@ -43,7 +42,7 @@ function useDownloadInfo(): { info: DownloadInfo | null; platform: Platform } {
     fetch(UPDATE_JSON_URL)
       .then((res) => res.json())
       .then((data: { version: string }) => {
-        const base = `https://github.com/supabitapp/supaimg/releases/download/supaimg/v${data.version}`;
+        const base = `https://supaimg.app/downloads/supaimg/v${data.version}`;
         setInfo({
           version: data.version,
           macosUrl: `${base}/supaimg_aarch64.dmg`,

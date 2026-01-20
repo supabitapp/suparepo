@@ -19,7 +19,7 @@ use tauri::{AppHandle, Manager};
 use webp::Encoder;
 
 const MODEL_SIZE: u32 = 1024;
-const MODEL_BASE_URL: &str = "https://github.com/supabitapp/supaimg/releases/download/models/v1";
+const MODEL_BASE_URL: &str = "https://supaimg.app/models";
 const MODEL_FILE: &str = "model_quantized.onnx";
 const MEAN: [f32; 3] = [0.485, 0.456, 0.406];
 const STD: [f32; 3] = [0.229, 0.224, 0.225];
