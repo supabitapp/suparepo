@@ -103,6 +103,18 @@ export default {
       return rewriteUpdateJson(request);
     }
 
+    if (url.pathname.startsWith("/appassets/")) {
+      const path = url.pathname.slice("/appassets/".length);
+      if (!path) {
+        return new Response("Not Found", { status: 404 });
+      }
+      return proxyRequest(request, `${MODELS_BASE}${path}`, {
+        cacheTtl: 31536000,
+        cacheEverything: true,
+        cacheControl: "public, max-age=31536000, immutable",
+      });
+    }
+
     if (url.pathname.startsWith("/models/")) {
       const path = url.pathname.slice("/models/".length);
       if (!path) {
