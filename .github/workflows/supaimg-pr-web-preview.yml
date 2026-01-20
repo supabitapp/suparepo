@@ -31,10 +31,6 @@ jobs:
           key: bun-${{ runner.os }}-${{ hashFiles('**/bun.lock') }}
       - run: bun install --frozen-lockfile
       - run: bun run supaimg.app:build
-      - name: Stage Pages functions
-        run: |
-          rm -rf apps/supaimg.app/dist/functions
-          cp -R apps/supaimg.app/functions apps/supaimg.app/dist/functions
       - name: Deploy preview
         id: deploy
         uses: cloudflare/wrangler-action@da0e0dfe58b7a431659754fdf3f186c529afbe65

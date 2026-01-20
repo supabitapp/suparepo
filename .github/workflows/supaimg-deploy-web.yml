@@ -13,10 +13,6 @@ jobs:
       - uses: oven-sh/setup-bun@735343b667d3e6f658f44d0eca948eb6282f2b76
       - run: bun install --frozen-lockfile
       - run: bun run supaimg.app:build
-      - name: Stage Pages functions
-        run: |
-          rm -rf apps/supaimg.app/dist/functions
-          cp -R apps/supaimg.app/functions apps/supaimg.app/dist/functions
       - uses: cloudflare/wrangler-action@da0e0dfe58b7a431659754fdf3f186c529afbe65
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
