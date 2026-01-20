@@ -1,9 +1,6 @@
-const UPDATE_URL =
-  "https://github.com/supabitapp/supaimg/releases/latest/download/update.json";
-const MODELS_BASE =
-  "https://github.com/supabitapp/supaimg/releases/download/models/v1/";
-const DOWNLOADS_BASE =
-  "https://github.com/supabitapp/supaimg/releases/download/";
+const UPDATE_URL = "https://github.com/supabitapp/supaimg/releases/latest/download/update.json";
+const MODELS_BASE = "https://github.com/supabitapp/supaimg/releases/download/models/v1/";
+const DOWNLOADS_BASE = "https://github.com/supabitapp/supaimg/releases/download/";
 
 const methodNotAllowed = () =>
   new Response("Method Not Allowed", {
