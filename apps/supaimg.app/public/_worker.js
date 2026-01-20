@@ -1,9 +1,10 @@
-const UPDATE_URL = "https://github.com/supabitapp/supaimg/releases/latest/download/update.json";
+const RELEASES_API = "https://api.github.com/repos/supabitapp/supaimg/releases?per_page=20";
+const UPDATE_ASSET_NAME = "update.json";
 const MODELS_BASE = "https://github.com/supabitapp/supaimg/releases/download/models/v1/";
 const DOWNLOADS_BASE = "https://github.com/supabitapp/supaimg/releases/download/";
 const LATEST_CACHE_TTL_MS = 5 * 60 * 1000;
-let latestTagCache = { value: null, expiresAt: 0 };
-let latestTagPromise = null;
+let latestReleaseCache = { value: null, expiresAt: 0 };
+let latestReleasePromise = null;
 
 const methodNotAllowed = () =>
   new Response("Method Not Allowed", {
@@ -50,39 +51,78 @@ const proxyRequest = async (request, target, options = {}) => {
   });
 };
 
-const getLatestTag = async (request) => {
+const normalizeDownloadPath = (path) => {
+  if (!path) {
+    return path;
+  }
+  const segments = path.split("/");
+  if (segments.length >= 3 && segments[0] === "supaimg" && segments[1].startsWith("v")) {
+    const encodedTag = encodeURIComponent(`${segments[0]}/${segments[1]}`);
+    return [encodedTag, ...segments.slice(2)].join("/");
+  }
+  return path;
+};
+
+const isAppRelease = (release) => {
+  if (!release || typeof release !== "object") {
+    return false;
+  }
+  if (release.draft || release.prerelease) {
+    return false;
+  }
+  if (typeof release.tag_name !== "string" || !release.tag_name.startsWith("supaimg/")) {
+    return false;
+  }
+  if (!Array.isArray(release.assets)) {
+    return false;
+  }
+  return release.assets.some((asset) => asset?.name === UPDATE_ASSET_NAME);
+};
+
+const getLatestRelease = async (request) => {
   const now = Date.now();
-  if (latestTagCache.value && now < latestTagCache.expiresAt) {
-    return latestTagCache.value;
+  if (latestReleaseCache.value && now < latestReleaseCache.expiresAt) {
+    return latestReleaseCache.value;
   }
 
-  if (latestTagPromise) {
-    return latestTagPromise;
+  if (latestReleasePromise) {
+    return latestReleasePromise;
   }
 
-  latestTagPromise = (async () => {
-    const response = await fetch(UPDATE_URL, { method: "GET", headers: request.headers });
+  latestReleasePromise = (async () => {
+    const headers = new Headers(request.headers);
+    headers.set("accept", "application/vnd.github+json");
+    headers.set("user-agent", "supaimg-appcast-worker");
+    const response = await fetch(RELEASES_API, { method: "GET", headers });
     if (!response.ok) {
-      latestTagCache = { value: null, expiresAt: now + 60 * 1000 };
+      latestReleaseCache = { value: null, expiresAt: now + 60 * 1000 };
       return null;
     }
 
-    const data = await response.json();
-    const version = data?.version;
-    if (typeof version !== "string" || version.length === 0) {
-      latestTagCache = { value: null, expiresAt: now + 60 * 1000 };
+    const releases = await response.json();
+    if (!Array.isArray(releases)) {
+      latestReleaseCache = { value: null, expiresAt: now + 60 * 1000 };
       return null;
     }
 
-    const tag = `supaimg/v${version}`;
-    latestTagCache = { value: tag, expiresAt: now + LATEST_CACHE_TTL_MS };
-    return tag;
+    const release = releases.find(isAppRelease);
+    if (!release) {
+      latestReleaseCache = { value: null, expiresAt: now + 60 * 1000 };
+      return null;
+    }
+
+    const tag = release.tag_name;
+    const encodedTag = encodeURIComponent(tag);
+    const updateUrl = `https://github.com/supabitapp/supaimg/releases/download/${encodedTag}/${UPDATE_ASSET_NAME}`;
+    const value = { tag, encodedTag, updateUrl };
+    latestReleaseCache = { value, expiresAt: now + LATEST_CACHE_TTL_MS };
+    return value;
   })();
 
   try {
-    return await latestTagPromise;
+    return await latestReleasePromise;
   } finally {
-    latestTagPromise = null;
+    latestReleasePromise = null;
   }
 };
 
@@ -91,13 +131,13 @@ const redirectToLatestAsset = async (request, filename) => {
     return methodNotAllowed();
   }
 
-  const tag = await getLatestTag(request);
-  if (!tag) {
+  const release = await getLatestRelease(request);
+  if (!release) {
     return new Response("Latest release not available", { status: 502 });
   }
 
   const url = new URL(request.url);
-  const targetUrl = new URL(`/appcast/${tag}/${filename}`, url);
+  const targetUrl = new URL(`/appcast/${release.encodedTag}/${filename}`, url);
   targetUrl.search = url.search;
 
   return new Response(null, {
@@ -115,7 +155,12 @@ const rewriteUpdateJson = async (request) => {
   }
 
   const isHead = request.method === "HEAD";
-  const response = await fetch(UPDATE_URL, { method: "GET", headers: request.headers });
+  const release = await getLatestRelease(request);
+  if (!release) {
+    return new Response("Latest release not available", { status: 502 });
+  }
+
+  const response = await fetch(release.updateUrl, { method: "GET", headers: request.headers });
   if (!response.ok) {
     return new Response(response.body, {
       status: response.status,
@@ -127,14 +172,15 @@ const rewriteUpdateJson = async (request) => {
   const data = await response.json();
   const version = data?.version;
   if (typeof version === "string" && data?.platforms) {
-    const tag = `supaimg/v${version}`;
+    const tag = release.tag || `supaimg/v${version}`;
+    const encodedTag = encodeURIComponent(tag);
     const origin = new URL(request.url).origin;
     for (const platform of Object.values(data.platforms)) {
       if (platform && typeof platform === "object" && platform.url) {
         const parts = String(platform.url).split("/");
         const filename = parts[parts.length - 1] || "";
         if (filename) {
-          platform.url = `${origin}/appcast/${tag}/${filename}`;
+          platform.url = `${origin}/appcast/${encodedTag}/${filename}`;
         }
       }
     }
@@ -198,7 +244,8 @@ export default {
     }
 
     if (url.pathname.startsWith("/appcast/")) {
-      const path = url.pathname.slice("/appcast/".length);
+      const rawPath = url.pathname.slice("/appcast/".length);
+      const path = normalizeDownloadPath(rawPath);
       if (!path) {
         return new Response("Not Found", { status: 404 });
       }
@@ -210,7 +257,8 @@ export default {
     }
 
     if (url.pathname.startsWith("/downloads/")) {
-      const path = url.pathname.slice("/downloads/".length);
+      const rawPath = url.pathname.slice("/downloads/".length);
+      const path = normalizeDownloadPath(rawPath);
       if (!path) {
         return new Response("Not Found", { status: 404 });
       }
