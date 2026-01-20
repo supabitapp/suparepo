@@ -66,12 +66,13 @@ const rewriteUpdateJson = async (request) => {
   const version = data?.version;
   if (typeof version === "string" && data?.platforms) {
     const tag = `supaimg/v${version}`;
+    const origin = new URL(request.url).origin;
     for (const platform of Object.values(data.platforms)) {
       if (platform && typeof platform === "object" && platform.url) {
         const parts = String(platform.url).split("/");
         const filename = parts[parts.length - 1] || "";
         if (filename) {
-          platform.url = `https://supaimg.app/appcast/${tag}/${filename}`;
+          platform.url = `${origin}/appcast/${tag}/${filename}`;
         }
       }
     }
