@@ -1,4 +1,6 @@
 const RELEASES_API = "https://api.github.com/repos/supabitapp/supaimg/releases?per_page=20";
+const FALLBACK_UPDATE_URL =
+  "https://github.com/supabitapp/supaimg/releases/latest/download/update.json";
 const UPDATE_ASSET_NAME = "update.json";
 const MODELS_BASE = "https://github.com/supabitapp/supaimg/releases/download/models/v1/";
 const DOWNLOADS_BASE = "https://github.com/supabitapp/supaimg/releases/download/";
@@ -79,6 +81,21 @@ const isAppRelease = (release) => {
   return release.assets.some((asset) => asset?.name === UPDATE_ASSET_NAME);
 };
 
+const fetchUpdateJsonVersion = async (url, request) => {
+  const response = await fetch(url, { method: "GET", headers: request.headers });
+  if (!response.ok) {
+    return null;
+  }
+
+  const data = await response.json();
+  const version = data?.version;
+  if (typeof version !== "string" || version.length === 0) {
+    return null;
+  }
+
+  return version;
+};
+
 const getLatestRelease = async (request) => {
   const now = Date.now();
   if (latestReleaseCache.value && now < latestReleaseCache.expiresAt) {
@@ -95,8 +112,17 @@ const getLatestRelease = async (request) => {
     headers.set("user-agent", "supaimg-appcast-worker");
     const response = await fetch(RELEASES_API, { method: "GET", headers });
     if (!response.ok) {
-      latestReleaseCache = { value: null, expiresAt: now + 60 * 1000 };
-      return null;
+      const version = await fetchUpdateJsonVersion(FALLBACK_UPDATE_URL, request);
+      if (!version) {
+        latestReleaseCache = { value: null, expiresAt: now + 60 * 1000 };
+        return null;
+      }
+      const tag = `supaimg/v${version}`;
+      const encodedTag = encodeURIComponent(tag);
+      const updateUrl = `https://github.com/supabitapp/supaimg/releases/download/${encodedTag}/${UPDATE_ASSET_NAME}`;
+      const value = { tag, encodedTag, updateUrl };
+      latestReleaseCache = { value, expiresAt: now + LATEST_CACHE_TTL_MS };
+      return value;
     }
 
     const releases = await response.json();
@@ -107,8 +133,17 @@ const getLatestRelease = async (request) => {
 
     const release = releases.find(isAppRelease);
     if (!release) {
-      latestReleaseCache = { value: null, expiresAt: now + 60 * 1000 };
-      return null;
+      const version = await fetchUpdateJsonVersion(FALLBACK_UPDATE_URL, request);
+      if (!version) {
+        latestReleaseCache = { value: null, expiresAt: now + 60 * 1000 };
+        return null;
+      }
+      const tag = `supaimg/v${version}`;
+      const encodedTag = encodeURIComponent(tag);
+      const updateUrl = `https://github.com/supabitapp/supaimg/releases/download/${encodedTag}/${UPDATE_ASSET_NAME}`;
+      const value = { tag, encodedTag, updateUrl };
+      latestReleaseCache = { value, expiresAt: now + LATEST_CACHE_TTL_MS };
+      return value;
     }
 
     const tag = release.tag_name;

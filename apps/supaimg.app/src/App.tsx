@@ -20,12 +20,12 @@ import {
   Sun,
 } from "@repo/ui/icons/lucide";
 import type { CSSProperties } from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
-const UPDATE_JSON_URL = "https://supaimg.app/appcast/update.json";
+const LATEST_DOWNLOAD_BASE = "https://supaimg.app/appcast/supaimg/latest";
 
 type Platform = "macos" | "windows" | "unknown";
-type DownloadInfo = { version: string; macosUrl: string; windowsUrl: string };
+type DownloadInfo = { macosUrl: string; windowsUrl: string };
 
 function detectPlatform(): Platform {
   const ua = navigator.userAgent.toLowerCase();
@@ -35,22 +35,11 @@ function detectPlatform(): Platform {
 }
 
 function useDownloadInfo(): { info: DownloadInfo | null; platform: Platform } {
-  const [info, setInfo] = useState<DownloadInfo | null>(null);
+  const [info] = useState<DownloadInfo | null>({
+    macosUrl: `${LATEST_DOWNLOAD_BASE}/supaimg_aarch64.dmg`,
+    windowsUrl: `${LATEST_DOWNLOAD_BASE}/supaimg_x64.msi`,
+  });
   const platform = detectPlatform();
-
-  useEffect(() => {
-    fetch(UPDATE_JSON_URL)
-      .then((res) => res.json())
-      .then((data: { version: string }) => {
-        const base = `https://supaimg.app/appcast/supaimg/v${data.version}`;
-        setInfo({
-          version: data.version,
-          macosUrl: `${base}/supaimg_aarch64.dmg`,
-          windowsUrl: `${base}/supaimg_x64.msi`,
-        });
-      })
-      .catch(() => {});
-  }, []);
 
   return { info, platform };
 }
