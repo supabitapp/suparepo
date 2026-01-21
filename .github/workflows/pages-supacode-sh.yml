@@ -10,7 +10,7 @@ on:
       - bun.lock
       - package.json
       - turbo.json
-      - .github/workflows/pages-supacode-app.yml
+      - .github/workflows/pages-supacode-sh.yml
   pull_request:
     branches:
       - main
@@ -21,9 +21,9 @@ on:
       - bun.lock
       - package.json
       - turbo.json
-      - .github/workflows/pages-supacode-app.yml
+      - .github/workflows/pages-supacode-sh.yml
 concurrency:
-  group: pages-supacode-app-${{ github.ref }}
+  group: pages-supacode-sh-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   deploy:
