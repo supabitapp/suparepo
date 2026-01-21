@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FileIcon, FileTextIcon, ImageIcon } from "@repo/ui/icons/lucide";
+import { CodeIcon, FileIcon, FileTextIcon, ImageIcon } from "@repo/ui/icons/lucide";
 import { Separator } from "@repo/ui/components/ui/separator";
 
 const team = [
@@ -35,7 +35,7 @@ const projects = [
     name: "Supacode",
     href: "https://supacode.sh",
     description: "A local AI coding companion - Coming soon",
-    icon: FileIcon,
+    icon: CodeIcon,
   },
   {
     name: "SupaPDF",
