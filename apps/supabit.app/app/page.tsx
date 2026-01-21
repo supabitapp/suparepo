@@ -33,7 +33,7 @@ const projects = [
   },
   {
     name: "Supacode",
-    href: "https://supacode.app",
+    href: "https://supacode.sh",
     description: "A local AI coding companion - Coming soon",
     icon: FileIcon,
   },

@@ -1,10 +1,10 @@
-name: Deploy supacode.app (Workers)
+name: Deploy supacode.sh (Workers)
 on:
   push:
     branches:
       - main
     paths:
-      - apps/supacode.app/**
+      - apps/supacode.sh/**
       - packages/ui/**
       - packages/typescript-config/**
       - bun.lock
@@ -15,7 +15,7 @@ on:
     branches:
       - main
     paths:
-      - apps/supacode.app/**
+      - apps/supacode.sh/**
       - packages/ui/**
       - packages/typescript-config/**
       - bun.lock
@@ -46,7 +46,7 @@ jobs:
             ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}-
       - run: bun install --frozen-lockfile
       - run: bun run deploy
-        working-directory: apps/supacode.app
+        working-directory: apps/supacode.sh
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
