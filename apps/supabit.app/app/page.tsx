@@ -32,6 +32,12 @@ const projects = [
     icon: ImageIcon,
   },
   {
+    name: "Supacode",
+    href: "https://supacode.app",
+    description: "A local AI coding companion - Coming soon",
+    icon: FileIcon,
+  },
+  {
     name: "SupaPDF",
     href: "https://supapdf.app",
     description: "A local PDF toolbox - Coming soon",
