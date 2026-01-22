@@ -12,6 +12,7 @@
     "supaimg.desktop:build": "cd apps/supaimg-desktop && bun run tauri -- build",
     "supaimg.app:dev": "bun run --filter supaimg.app dev",
     "supaimg.app:build": "bun run --filter supaimg.app build",
+    "supacode.sh:build": "bun run --filter supacode.sh build",
     "supabit.app:dev": "bun run --filter supabit.app dev",
     "workflows:gen": "bun scripts/generate-workflows.ts",
     "workflows:check": "bun scripts/generate-workflows.ts --check",
