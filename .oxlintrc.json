@@ -15,13 +15,7 @@
       }
     ]
   },
-  "ignorePatterns": [
-    "dist",
-    "node_modules",
-    "src-tauri/target",
-    ".next",
-    "apps/supaimg-desktop/src/routeTree.gen.ts"
-  ],
+  "ignorePatterns": ["dist", "node_modules", "src-tauri/target", ".next", "**/routeTree.gen.ts"],
   "overrides": [
     {
       "files": ["apps/supabit.app/**/*.{ts,tsx}"],
