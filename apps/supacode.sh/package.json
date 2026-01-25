@@ -9,6 +9,8 @@
     "check-types": "next typegen && tsc --noEmit"
   },
   "dependencies": {
+    "@hugeicons/core-free-icons": "^3.1.1",
+    "@hugeicons/react": "^1.1.4",
     "@repo/ui": "*",
     "@tailwindcss/postcss": "^4.1.18",
     "next": "16.1.3",
