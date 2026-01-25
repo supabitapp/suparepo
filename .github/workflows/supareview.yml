@@ -1,0 +1,25 @@
+name: SupaReview
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: supareview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  supareview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: SupaReview
+        uses: supabitapp/supareview-action@main
+        with:
+          openai-api-key: ${{ secrets.REVIEW_OPENAI_API_KEY }}
