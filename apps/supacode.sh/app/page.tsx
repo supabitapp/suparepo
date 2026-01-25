@@ -7,7 +7,7 @@ import { Separator } from "@repo/ui/components/ui/separator";
 const features = [
   {
     title: "Fully native app",
-    description: "A real desktop app, not a web wrapper.",
+    description: "A real native Swift app, not a web wrapper, not Rust.",
   },
   {
     title: "BYOA — Bring your own agents",
@@ -15,7 +15,7 @@ const features = [
   },
   {
     title: "Powered by Ghostty",
-    description: "Ghostty-level terminal performance at the core.",
+    description: "libghostty terminal performance at the core.",
   },
   {
     title: "Worktree integration",
@@ -36,15 +36,14 @@ export default function Home() {
               <img src="/supacode-app-icon.png" alt="Supacode app icon" className="size-12" />
               <span className="text-xs uppercase tracking-[0.35em] text-foreground">supacode</span>
             </div>
-            <h1 className="supacode-type text-4xl font-semibold tracking-tight md:text-6xl">
-              Fully native orchestration for your own agents.
+            <h1 className="text-4xl font-semibold tracking-tight md:text-6xl">
+              Run 50 coding agents in parallel.
             </h1>
             <p
               className="supacode-reveal max-w-2xl text-sm text-muted-foreground md:text-base"
               style={{ animationDelay: "200ms" }}
             >
-              Bring your own agents. No translation layer. Keep full access to the latest model
-              features.
+              Blazing fast native macOS app
             </p>
           </div>
           <div

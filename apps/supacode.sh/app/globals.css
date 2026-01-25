@@ -40,8 +40,10 @@ body {
   position: relative;
   display: inline-block;
   white-space: nowrap;
-  clip-path: inset(0 100% 0 0);
-  animation: supacode-type 1600ms steps(44, end) 220ms forwards;
+  overflow: hidden;
+  width: 0;
+  max-width: var(--type-width, 40ch);
+  animation: supacode-type 2200ms steps(var(--type-steps, 40), end) 120ms forwards;
 }
 
 .supacode-type::after {
@@ -68,10 +70,10 @@ body {
 
 @keyframes supacode-type {
   from {
-    clip-path: inset(0 100% 0 0);
+    width: 0;
   }
   to {
-    clip-path: inset(0 0 0 0);
+    width: var(--type-width, 40ch);
   }
 }
 
@@ -90,7 +92,8 @@ body {
 
   .supacode-type {
     animation: none;
-    clip-path: none;
+    width: auto;
+    max-width: none;
   }
 
   .supacode-type::after {

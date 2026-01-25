@@ -12,6 +12,9 @@ const display = Bricolage_Grotesque({
 export const metadata: Metadata = {
   title: "Supacode",
   description: "Fully native orchestration for your own agents.",
+  icons: {
+    icon: "/supacode-app-icon.png",
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
