@@ -8,170 +8,170 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from "./routes/__root";
-import { Route as SettingsRouteImport } from "./routes/settings";
-import { Route as RemoveBackgroundRouteImport } from "./routes/remove-background";
-import { Route as PlaygroundRouteImport } from "./routes/playground";
-import { Route as ConvertRouteImport } from "./routes/convert";
-import { Route as CompressRouteImport } from "./routes/compress";
-import { Route as BlurTextRouteImport } from "./routes/blur-text";
-import { Route as IndexRouteImport } from "./routes/index";
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as RemoveBackgroundRouteImport } from './routes/remove-background'
+import { Route as PlaygroundRouteImport } from './routes/playground'
+import { Route as ConvertRouteImport } from './routes/convert'
+import { Route as CompressRouteImport } from './routes/compress'
+import { Route as BlurTextRouteImport } from './routes/blur-text'
+import { Route as IndexRouteImport } from './routes/index'
 
 const SettingsRoute = SettingsRouteImport.update({
-  id: "/settings",
-  path: "/settings",
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const RemoveBackgroundRoute = RemoveBackgroundRouteImport.update({
-  id: "/remove-background",
-  path: "/remove-background",
+  id: '/remove-background',
+  path: '/remove-background',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const PlaygroundRoute = PlaygroundRouteImport.update({
-  id: "/playground",
-  path: "/playground",
+  id: '/playground',
+  path: '/playground',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const ConvertRoute = ConvertRouteImport.update({
-  id: "/convert",
-  path: "/convert",
+  id: '/convert',
+  path: '/convert',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const CompressRoute = CompressRouteImport.update({
-  id: "/compress",
-  path: "/compress",
+  id: '/compress',
+  path: '/compress',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const BlurTextRoute = BlurTextRouteImport.update({
-  id: "/blur-text",
-  path: "/blur-text",
+  id: '/blur-text',
+  path: '/blur-text',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const IndexRoute = IndexRouteImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 
 export interface FileRoutesByFullPath {
-  "/": typeof IndexRoute;
-  "/blur-text": typeof BlurTextRoute;
-  "/compress": typeof CompressRoute;
-  "/convert": typeof ConvertRoute;
-  "/playground": typeof PlaygroundRoute;
-  "/remove-background": typeof RemoveBackgroundRoute;
-  "/settings": typeof SettingsRoute;
+  '/': typeof IndexRoute
+  '/blur-text': typeof BlurTextRoute
+  '/compress': typeof CompressRoute
+  '/convert': typeof ConvertRoute
+  '/playground': typeof PlaygroundRoute
+  '/remove-background': typeof RemoveBackgroundRoute
+  '/settings': typeof SettingsRoute
 }
 export interface FileRoutesByTo {
-  "/": typeof IndexRoute;
-  "/blur-text": typeof BlurTextRoute;
-  "/compress": typeof CompressRoute;
-  "/convert": typeof ConvertRoute;
-  "/playground": typeof PlaygroundRoute;
-  "/remove-background": typeof RemoveBackgroundRoute;
-  "/settings": typeof SettingsRoute;
+  '/': typeof IndexRoute
+  '/blur-text': typeof BlurTextRoute
+  '/compress': typeof CompressRoute
+  '/convert': typeof ConvertRoute
+  '/playground': typeof PlaygroundRoute
+  '/remove-background': typeof RemoveBackgroundRoute
+  '/settings': typeof SettingsRoute
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport;
-  "/": typeof IndexRoute;
-  "/blur-text": typeof BlurTextRoute;
-  "/compress": typeof CompressRoute;
-  "/convert": typeof ConvertRoute;
-  "/playground": typeof PlaygroundRoute;
-  "/remove-background": typeof RemoveBackgroundRoute;
-  "/settings": typeof SettingsRoute;
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/blur-text': typeof BlurTextRoute
+  '/compress': typeof CompressRoute
+  '/convert': typeof ConvertRoute
+  '/playground': typeof PlaygroundRoute
+  '/remove-background': typeof RemoveBackgroundRoute
+  '/settings': typeof SettingsRoute
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
+  fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | "/"
-    | "/blur-text"
-    | "/compress"
-    | "/convert"
-    | "/playground"
-    | "/remove-background"
-    | "/settings";
-  fileRoutesByTo: FileRoutesByTo;
+    | '/'
+    | '/blur-text'
+    | '/compress'
+    | '/convert'
+    | '/playground'
+    | '/remove-background'
+    | '/settings'
+  fileRoutesByTo: FileRoutesByTo
   to:
-    | "/"
-    | "/blur-text"
-    | "/compress"
-    | "/convert"
-    | "/playground"
-    | "/remove-background"
-    | "/settings";
+    | '/'
+    | '/blur-text'
+    | '/compress'
+    | '/convert'
+    | '/playground'
+    | '/remove-background'
+    | '/settings'
   id:
-    | "__root__"
-    | "/"
-    | "/blur-text"
-    | "/compress"
-    | "/convert"
-    | "/playground"
-    | "/remove-background"
-    | "/settings";
-  fileRoutesById: FileRoutesById;
+    | '__root__'
+    | '/'
+    | '/blur-text'
+    | '/compress'
+    | '/convert'
+    | '/playground'
+    | '/remove-background'
+    | '/settings'
+  fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute;
-  BlurTextRoute: typeof BlurTextRoute;
-  CompressRoute: typeof CompressRoute;
-  ConvertRoute: typeof ConvertRoute;
-  PlaygroundRoute: typeof PlaygroundRoute;
-  RemoveBackgroundRoute: typeof RemoveBackgroundRoute;
-  SettingsRoute: typeof SettingsRoute;
+  IndexRoute: typeof IndexRoute
+  BlurTextRoute: typeof BlurTextRoute
+  CompressRoute: typeof CompressRoute
+  ConvertRoute: typeof ConvertRoute
+  PlaygroundRoute: typeof PlaygroundRoute
+  RemoveBackgroundRoute: typeof RemoveBackgroundRoute
+  SettingsRoute: typeof SettingsRoute
 }
 
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    "/settings": {
-      id: "/settings";
-      path: "/settings";
-      fullPath: "/settings";
-      preLoaderRoute: typeof SettingsRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/remove-background": {
-      id: "/remove-background";
-      path: "/remove-background";
-      fullPath: "/remove-background";
-      preLoaderRoute: typeof RemoveBackgroundRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/playground": {
-      id: "/playground";
-      path: "/playground";
-      fullPath: "/playground";
-      preLoaderRoute: typeof PlaygroundRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/convert": {
-      id: "/convert";
-      path: "/convert";
-      fullPath: "/convert";
-      preLoaderRoute: typeof ConvertRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/compress": {
-      id: "/compress";
-      path: "/compress";
-      fullPath: "/compress";
-      preLoaderRoute: typeof CompressRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/blur-text": {
-      id: "/blur-text";
-      path: "/blur-text";
-      fullPath: "/blur-text";
-      preLoaderRoute: typeof BlurTextRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/": {
-      id: "/";
-      path: "/";
-      fullPath: "/";
-      preLoaderRoute: typeof IndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/remove-background': {
+      id: '/remove-background'
+      path: '/remove-background'
+      fullPath: '/remove-background'
+      preLoaderRoute: typeof RemoveBackgroundRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/playground': {
+      id: '/playground'
+      path: '/playground'
+      fullPath: '/playground'
+      preLoaderRoute: typeof PlaygroundRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/convert': {
+      id: '/convert'
+      path: '/convert'
+      fullPath: '/convert'
+      preLoaderRoute: typeof ConvertRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/compress': {
+      id: '/compress'
+      path: '/compress'
+      fullPath: '/compress'
+      preLoaderRoute: typeof CompressRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blur-text': {
+      id: '/blur-text'
+      path: '/blur-text'
+      fullPath: '/blur-text'
+      preLoaderRoute: typeof BlurTextRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -183,7 +183,7 @@ const rootRouteChildren: RootRouteChildren = {
   PlaygroundRoute: PlaygroundRoute,
   RemoveBackgroundRoute: RemoveBackgroundRoute,
   SettingsRoute: SettingsRoute,
-};
+}
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>();
+  ._addFileTypes<FileRouteTypes>()
