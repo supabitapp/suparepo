@@ -7,7 +7,7 @@ import { Separator } from "@repo/ui/components/ui/separator";
 const features = [
   {
     title: "Fully native app",
-    description: "A real native Swift app, not a web wrapper, not Rust.",
+    description: "A real native Swift app, not a web wrapper.",
   },
   {
     title: "BYOA — Bring your own agents",
