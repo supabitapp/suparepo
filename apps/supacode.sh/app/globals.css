@@ -36,27 +36,6 @@ body {
   transform: translateY(14px);
 }
 
-.supacode-type {
-  position: relative;
-  display: inline-block;
-  white-space: nowrap;
-  overflow: hidden;
-  width: 0;
-  max-width: var(--type-width, 40ch);
-  animation: supacode-type 2200ms steps(var(--type-steps, 40), end) 120ms forwards;
-}
-
-.supacode-type::after {
-  content: "";
-  position: absolute;
-  top: 0.15em;
-  bottom: 0.15em;
-  right: -0.08em;
-  width: 1px;
-  background: var(--foreground);
-  animation: supacode-caret 800ms steps(1, end) infinite;
-}
-
 @keyframes supacode-reveal {
   from {
     opacity: 0;
@@ -68,35 +47,10 @@ body {
   }
 }
 
-@keyframes supacode-type {
-  from {
-    width: 0;
-  }
-  to {
-    width: var(--type-width, 40ch);
-  }
-}
-
-@keyframes supacode-caret {
-  50% {
-    opacity: 0;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .supacode-reveal {
     animation: none;
     opacity: 1;
     transform: none;
-  }
-
-  .supacode-type {
-    animation: none;
-    width: auto;
-    max-width: none;
-  }
-
-  .supacode-type::after {
-    display: none;
   }
 }
