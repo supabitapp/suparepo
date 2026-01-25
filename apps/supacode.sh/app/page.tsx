@@ -37,7 +37,7 @@ export default function Home() {
               <span className="text-xs uppercase tracking-[0.35em] text-foreground">supacode</span>
             </div>
             <h1 className="text-4xl font-semibold tracking-tight md:text-6xl">
-              Run 50 coding agents in parallel.
+              Run 50+ coding agents in parallel.
             </h1>
             <p
               className="supacode-reveal max-w-2xl text-sm text-muted-foreground md:text-base"
