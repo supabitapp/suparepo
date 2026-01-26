@@ -4,7 +4,7 @@ import { FileIcon, FileTextIcon, ImageIcon } from "@repo/ui/icons/lucide";
 import { Separator } from "@repo/ui/components/ui/separator";
 
 function SupacodeLogo({ className }: { className?: string }) {
-  return <Image src="/supacode-logo.svg" alt="" width={20} height={20} className={className} />;
+  return <Image src="/supacode-logo.png" alt="" width={20} height={20} className={className} />;
 }
 
 const team = [
