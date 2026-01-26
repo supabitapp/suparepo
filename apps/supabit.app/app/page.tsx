@@ -1,7 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
-import { CodeIcon, FileIcon, FileTextIcon, ImageIcon } from "@repo/ui/icons/lucide";
+import { FileIcon, FileTextIcon, ImageIcon } from "@repo/ui/icons/lucide";
 import { Separator } from "@repo/ui/components/ui/separator";
+
+function SupacodeLogo({ className }: { className?: string }) {
+  return <Image src="/supacode-logo.svg" alt="" width={20} height={20} className={className} />;
+}
 
 const team = [
   {
@@ -35,7 +39,7 @@ const projects = [
     name: "Supacode",
     href: "https://supacode.sh",
     description: "A local AI coding companion - Coming soon",
-    icon: CodeIcon,
+    icon: SupacodeLogo,
   },
   {
     name: "SupaPDF",
