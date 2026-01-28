@@ -101,7 +101,7 @@ export default function Home() {
           className="supacode-reveal shrink-0 text-right text-sm text-muted-foreground"
           style={{ animationDelay: "700ms" }}
         >
-          Made with love by{" "}
+          Made with ❤️ by{" "}
           <a href="https://x.com/khoiracle" className="underline hover:text-foreground">
             @khoiracle
           </a>
