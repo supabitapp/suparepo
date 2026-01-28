@@ -98,7 +98,7 @@ export default function Home() {
         </section>
 
         <footer
-          className="supacode-reveal shrink-0 text-center text-sm text-muted-foreground"
+          className="supacode-reveal shrink-0 text-right text-sm text-muted-foreground"
           style={{ animationDelay: "700ms" }}
         >
           Made with love by{" "}
