@@ -25,11 +25,11 @@ const features = [
 
 export default function Home() {
   return (
-    <main className="min-h-screen">
-      <div className="mx-auto flex min-h-screen max-w-[1400px] flex-col gap-10 px-6 py-16 md:py-24">
-        <section className="grid items-center gap-10 lg:grid-cols-[400px_1fr] lg:gap-12">
-          <div className="flex flex-col gap-8">
-            <div className="flex flex-col gap-4">
+    <main className="h-screen overflow-hidden">
+      <div className="mx-auto flex h-full max-w-[1400px] flex-col gap-6 px-6 py-8">
+        <section className="grid flex-1 items-center gap-6 lg:grid-cols-[380px_1fr] lg:gap-10">
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-3">
               <div
                 className="supacode-reveal flex items-center gap-4"
                 style={{ animationDelay: "40ms" }}
@@ -61,13 +61,16 @@ export default function Home() {
               </a>
             </div>
           </div>
-          <div className="supacode-reveal lg:-mr-6" style={{ animationDelay: "340ms" }}>
+          <div
+            className="supacode-reveal flex flex-col lg:-mr-6"
+            style={{ animationDelay: "340ms" }}
+          >
             <img
               src="/screenshot.png"
               alt="Supacode running multiple coding agents in parallel"
-              className="w-full rounded-lg border border-border/50 shadow-2xl"
+              className="max-h-[60vh] w-full rounded-lg border border-border/50 object-contain object-right shadow-2xl"
             />
-            <p className="mt-3 text-center text-sm text-muted-foreground">
+            <p className="mt-2 text-center text-sm text-muted-foreground">
               Actual screenshot of using supacode to develop supacode
             </p>
           </div>
@@ -75,24 +78,34 @@ export default function Home() {
 
         <Separator className="supacode-reveal" style={{ animationDelay: "400ms" }} />
 
-        <section className="grid gap-4 md:grid-cols-2">
+        <section className="grid shrink-0 gap-3 md:grid-cols-4">
           {features.map((feature, index) => (
             <Card
               key={feature.title}
               className="supacode-reveal border-border/70"
               style={{ animationDelay: `${460 + index * 60}ms` }}
             >
-              <CardHeader className="space-y-2">
-                <CardTitle className="text-sm font-semibold uppercase tracking-[0.25em]">
+              <CardHeader className="space-y-1 p-4">
+                <CardTitle className="text-xs font-semibold uppercase tracking-[0.25em]">
                   {feature.title}
                 </CardTitle>
-                <CardDescription className="text-sm leading-relaxed">
+                <CardDescription className="text-xs leading-relaxed">
                   {feature.description}
                 </CardDescription>
               </CardHeader>
             </Card>
           ))}
         </section>
+
+        <footer
+          className="supacode-reveal shrink-0 text-center text-sm text-muted-foreground"
+          style={{ animationDelay: "700ms" }}
+        >
+          Made with love by{" "}
+          <a href="https://x.com/khoiracle" className="underline hover:text-foreground">
+            @khoiracle
+          </a>
+        </footer>
       </div>
     </main>
   );
