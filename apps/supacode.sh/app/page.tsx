@@ -101,6 +101,13 @@ export default function Home() {
           className="supacode-reveal shrink-0 text-right text-sm text-muted-foreground"
           style={{ animationDelay: "700ms" }}
         >
+          <a
+            href="https://github.com/supabitapp/supacode-sh/releases"
+            className="underline hover:text-foreground"
+          >
+            Release Notes
+          </a>
+          <span className="mx-2">·</span>
           Made with ❤️ by{" "}
           <a href="https://x.com/khoiracle" className="underline hover:text-foreground">
             @khoiracle
