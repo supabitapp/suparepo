@@ -49,8 +49,8 @@ const faqs = [
 
 export default function Home() {
   return (
-    <main className="h-screen overflow-hidden">
-      <div className="mx-auto flex h-full max-w-[1400px] flex-col gap-6 px-6 py-8">
+    <main className="min-h-screen">
+      <div className="mx-auto flex max-w-[1400px] flex-col gap-6 px-6 py-8">
         <section className="grid flex-1 items-center gap-6 lg:grid-cols-[380px_1fr] lg:gap-10">
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-3">
