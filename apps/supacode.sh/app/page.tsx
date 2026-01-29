@@ -1,7 +1,12 @@
-import { AppleFinderIcon } from "@hugeicons/core-free-icons";
+import { AppleFinderIcon, ArrowDown01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Button } from "@repo/ui/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@repo/ui/components/ui/card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@repo/ui/components/ui/collapsible";
 import { Separator } from "@repo/ui/components/ui/separator";
 
 const features = [
@@ -20,6 +25,17 @@ const features = [
   {
     title: "GitHub integration",
     description: "Open PRs, see CI checks, fix conflicts, and more.",
+  },
+];
+
+const faqs = [
+  {
+    question: "How do I get proper naming for my worktrees?",
+    answer: "Ask your agent to do it before a task.",
+  },
+  {
+    question: "How do I configure the Terminal?",
+    answer: "Supacode respects your Ghostty config, do your configurations there.",
   },
 ];
 
@@ -97,9 +113,43 @@ export default function Home() {
           ))}
         </section>
 
+        <Separator className="supacode-reveal" style={{ animationDelay: "700ms" }} />
+
+        <section className="shrink-0">
+          <h2
+            className="supacode-reveal mb-3 text-xs font-semibold uppercase tracking-[0.25em]"
+            style={{ animationDelay: "760ms" }}
+          >
+            FAQ
+          </h2>
+          <ul className="space-y-1">
+            {faqs.map((faq, index) => (
+              <li
+                key={faq.question}
+                className="supacode-reveal"
+                style={{ animationDelay: `${820 + index * 60}ms` }}
+              >
+                <Collapsible>
+                  <CollapsibleTrigger className="group flex w-full cursor-pointer items-center gap-2 text-left text-sm font-medium">
+                    <HugeiconsIcon
+                      icon={ArrowDown01Icon}
+                      className="size-4 shrink-0 text-muted-foreground transition-transform group-data-[panel-open]:rotate-180"
+                      strokeWidth={2}
+                    />
+                    {faq.question}
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="overflow-hidden pl-6 text-xs text-muted-foreground data-[ending-style]:animate-collapse-out data-[starting-style]:animate-collapse-out data-[open]:animate-collapse-in">
+                    {faq.answer}
+                  </CollapsibleContent>
+                </Collapsible>
+              </li>
+            ))}
+          </ul>
+        </section>
+
         <footer
           className="supacode-reveal shrink-0 text-right text-sm text-muted-foreground"
-          style={{ animationDelay: "700ms" }}
+          style={{ animationDelay: "940ms" }}
         >
           <a
             href="https://github.com/supabitapp/supacode-sh/releases"
