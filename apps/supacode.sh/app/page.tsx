@@ -37,6 +37,10 @@ const faqs = [
     question: "How do I configure the Terminal?",
     answer: "Supacode respects your Ghostty config, do your configurations there.",
   },
+  {
+    question: "Where is my Git client?",
+    answer: "Opening lazygit as a split works out really well.",
+  },
 ];
 
 export default function Home() {
