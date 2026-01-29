@@ -1,13 +1,6 @@
-import { AppleFinderIcon, ArrowDown01Icon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { Button } from "@repo/ui/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@repo/ui/components/ui/card";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@repo/ui/components/ui/collapsible";
 import { Separator } from "@repo/ui/components/ui/separator";
+import { DownloadButton, FAQItem, TrackedLink } from "./components";
 
 const features = [
   {
@@ -77,12 +70,7 @@ export default function Home() {
               className="supacode-reveal flex flex-wrap items-center gap-3"
               style={{ animationDelay: "280ms" }}
             >
-              <a href="https://supacode.sh/download/latest/supacode.dmg">
-                <Button size="lg" className="gap-2 text-xs uppercase tracking-[0.2em]">
-                  <HugeiconsIcon icon={AppleFinderIcon} className="size-4" strokeWidth={2} />
-                  Download for macOS
-                </Button>
-              </a>
+              <DownloadButton />
             </div>
           </div>
           <div
@@ -137,19 +125,7 @@ export default function Home() {
                 className="supacode-reveal"
                 style={{ animationDelay: `${820 + index * 60}ms` }}
               >
-                <Collapsible>
-                  <CollapsibleTrigger className="group flex w-full cursor-pointer items-center gap-2 text-left text-sm font-medium">
-                    <HugeiconsIcon
-                      icon={ArrowDown01Icon}
-                      className="size-4 shrink-0 text-muted-foreground transition-transform group-data-[panel-open]:rotate-180"
-                      strokeWidth={2}
-                    />
-                    {faq.question}
-                  </CollapsibleTrigger>
-                  <CollapsibleContent className="overflow-hidden pl-6 text-xs text-muted-foreground data-[ending-style]:animate-collapse-out data-[starting-style]:animate-collapse-out data-[open]:animate-collapse-in">
-                    {faq.answer}
-                  </CollapsibleContent>
-                </Collapsible>
+                <FAQItem question={faq.question} answer={faq.answer} />
               </li>
             ))}
           </ul>
@@ -159,17 +135,22 @@ export default function Home() {
           className="supacode-reveal shrink-0 text-right text-sm text-muted-foreground"
           style={{ animationDelay: "940ms" }}
         >
-          <a
+          <TrackedLink
             href="https://github.com/supabitapp/supacode-sh/releases"
+            event="release_notes_clicked"
             className="underline hover:text-foreground"
           >
             Release Notes
-          </a>
+          </TrackedLink>
           <span className="mx-2">·</span>
           Made with ❤️ by{" "}
-          <a href="https://x.com/khoiracle" className="underline hover:text-foreground">
+          <TrackedLink
+            href="https://x.com/khoiracle"
+            event="twitter_clicked"
+            className="underline hover:text-foreground"
+          >
             @khoiracle
-          </a>
+          </TrackedLink>
         </footer>
       </div>
     </main>
