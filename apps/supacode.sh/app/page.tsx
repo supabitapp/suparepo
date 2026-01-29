@@ -41,6 +41,10 @@ const faqs = [
     question: "Where is my Git client?",
     answer: "Opening lazygit as a split works out really well.",
   },
+  {
+    question: "How do I start a coding agent automatically?",
+    answer: "Start it as a setup script for the repo in Settings (⌘,).",
+  },
 ];
 
 export default function Home() {
