@@ -8,7 +8,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@repo/ui/components/ui/collapsible";
-import posthog from "posthog-js";
+import { posthog } from "posthog-js";
 import type { ReactNode } from "react";
 
 export function DownloadButton() {
