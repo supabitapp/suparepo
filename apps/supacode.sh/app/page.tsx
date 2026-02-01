@@ -23,6 +23,11 @@ const features = [
 
 const faqs = [
   {
+    question: "Why macOS 26 Tahoe only?",
+    answer:
+      "Liquid Glass makes it difficult to provide good enough UI/UX on older OS versions, hence the restriction.",
+  },
+  {
     question: "How do I get proper naming for my worktrees?",
     answer: "Ask your agent to do it before a task.",
   },
@@ -71,6 +76,7 @@ export default function Home() {
               style={{ animationDelay: "280ms" }}
             >
               <DownloadButton />
+              <span className="text-[10px] text-muted-foreground">Requires macOS 26 Tahoe</span>
             </div>
           </div>
           <div
