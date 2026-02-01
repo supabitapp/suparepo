@@ -72,7 +72,7 @@ export default function Home() {
               </p>
             </div>
             <div
-              className="supacode-reveal flex flex-wrap items-center gap-3"
+              className="supacode-reveal flex flex-col gap-1"
               style={{ animationDelay: "280ms" }}
             >
               <DownloadButton />
