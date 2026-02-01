@@ -138,6 +138,7 @@ function DownloadButtons({
       >
         Buy SupaIMG
       </Button>
+      <span className="text-[10px] text-muted-foreground">Requires macOS 26 Tahoe</span>
     </div>
   );
 }
@@ -905,6 +906,27 @@ export function App() {
             <p className="mt-4 text-xs text-muted-foreground">
               More workflows shipping throughout the year.
             </p>
+          </div>
+        </section>
+
+        <section id="faq" className="border-b border-border">
+          <div className="mx-auto max-w-6xl px-6 py-16">
+            <div className="mb-8">
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">04</span>
+              <h2 className="mt-1 text-2xl font-bold uppercase tracking-tight text-foreground text-balance">
+                FAQ
+              </h2>
+            </div>
+
+            <div className="border border-border bg-card p-6">
+              <h3 className="mb-2 text-sm font-bold uppercase tracking-wider text-foreground">
+                Why macOS 26 Tahoe only?
+              </h3>
+              <p className="text-xs leading-relaxed text-muted-foreground">
+                Liquid Glass makes it difficult to provide good enough UI/UX on older OS versions,
+                hence the restriction.
+              </p>
+            </div>
           </div>
         </section>
 
