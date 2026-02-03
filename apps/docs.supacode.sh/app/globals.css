@@ -1,6 +1,2 @@
-@import "tailwindcss";
-@import "fumadocs-ui/css/shadcn.css";
+@import "fumadocs-ui/style.css";
 @import "fumadocs-ui/css/preset.css";
-
-@source "./**/*.tsx";
-@source "../../packages/ui/src/**/*.tsx";

@@ -18,15 +18,12 @@
       "name": "docs.supacode.sh",
       "version": "0.1.0",
       "dependencies": {
-        "@repo/ui": "*",
-        "@tailwindcss/postcss": "^4.1.18",
         "fumadocs-core": "^16.5.0",
         "fumadocs-mdx": "^14.2.6",
         "fumadocs-ui": "^16.5.0",
         "next": "16.1.3",
         "react": "19.2.3",
         "react-dom": "19.2.3",
-        "tailwindcss": "^4.1.18",
       },
       "devDependencies": {
         "@repo/typescript-config": "*",
