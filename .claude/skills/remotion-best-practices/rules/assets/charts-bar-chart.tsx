@@ -29,7 +29,7 @@ const YAxis: React.FC<{ steps: number[]; height: number }> = ({ steps, height })
   >
     {steps
       .slice()
-      .reverse()
+      .toReversed()
       .map((step) => (
         <div
           key={step}
