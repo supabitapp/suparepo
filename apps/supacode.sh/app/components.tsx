@@ -19,7 +19,7 @@ export function DownloadButton() {
     >
       <Button size="lg" className="gap-2 text-xs uppercase tracking-[0.2em]">
         <HugeiconsIcon icon={AppleFinderIcon} className="size-4" strokeWidth={2} />
-        Download for macOS
+        Download Free Beta for macOS
       </Button>
     </a>
   );
