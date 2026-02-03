@@ -1,0 +1,43 @@
+name: Deploy docs.supacode.sh (Pages)
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - apps/docs.supacode.sh/**
+      - packages/ui/**
+      - packages/typescript-config/**
+      - bun.lock
+      - package.json
+      - turbo.json
+      - .github/workflows/pages-docs-supacode-sh.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - apps/docs.supacode.sh/**
+      - packages/ui/**
+      - packages/typescript-config/**
+      - bun.lock
+      - package.json
+      - turbo.json
+      - .github/workflows/pages-docs-supacode-sh.yml
+concurrency:
+  group: pages-docs-supacode-sh-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: oven-sh/setup-bun@735343b667d3e6f658f44d0eca948eb6282f2b76
+      - run: bun install --frozen-lockfile
+      - run: bun run docs.supacode.sh:build
+      - uses: cloudflare/wrangler-action@da0e0dfe58b7a431659754fdf3f186c529afbe65
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy apps/docs.supacode.sh/out --project-name=docs-supacode
