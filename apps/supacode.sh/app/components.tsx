@@ -17,7 +17,7 @@ export function DownloadButton() {
       href="https://supacode.sh/download/latest/supacode.dmg"
       onClick={() => posthog.capture("download_clicked")}
     >
-      <Button size="lg" className="gap-2 text-xs uppercase tracking-[0.2em]">
+      <Button size="lg" className="gap-2">
         <HugeiconsIcon icon={AppleFinderIcon} className="size-4" strokeWidth={2} />
         Download Free Beta for macOS
       </Button>
