@@ -5,11 +5,15 @@ import type { ReactNode } from "react";
 import "nextra-theme-docs/style.css";
 
 export const metadata = {
+  metadataBase: new URL("https://docs.supacode.sh"),
   title: {
     default: "Supacode Docs",
     template: "%s | Supacode Docs",
   },
-  description: "Documentation for Supacode",
+  description: "Documentation for Supacode - Run 50+ coding agents in parallel.",
+  icons: {
+    icon: "https://supacode.sh/supacode-app-icon.png",
+  },
 };
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
@@ -20,7 +24,14 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         <Layout
           navbar={<Navbar logo={<span>Supacode</span>} />}
           pageMap={await getPageMap()}
-          footer={<Footer>MIT {new Date().getFullYear()} © Supacode</Footer>}
+          footer={
+            <Footer>
+              MIT {new Date().getFullYear()} © Supacode. Made by{" "}
+              <a href="https://x.com/khoiracle" target="_blank" rel="noopener">
+                @khoiracle
+              </a>
+            </Footer>
+          }
         >
           {children}
         </Layout>
