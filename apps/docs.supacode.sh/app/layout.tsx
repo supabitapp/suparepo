@@ -24,14 +24,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         <Layout
           navbar={<Navbar logo={<span>Supacode</span>} />}
           pageMap={await getPageMap()}
-          footer={
-            <Footer>
-              MIT {new Date().getFullYear()} © Supacode. Made by{" "}
-              <a href="https://x.com/khoiracle" target="_blank" rel="noopener">
-                @khoiracle
-              </a>
-            </Footer>
-          }
+          footer={<Footer />}
         >
           {children}
         </Layout>
