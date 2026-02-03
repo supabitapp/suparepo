@@ -1,0 +1,26 @@
+{
+  "name": "docs.supacode.sh",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --port 3003 --webpack",
+    "build": "next build --webpack",
+    "start": "next start",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "16.1.3",
+    "nextra": "^4.2.0",
+    "nextra-theme-docs": "^4.2.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "*",
+    "@types/node": "^22.15.3",
+    "@types/react": "19.2.8",
+    "@types/react-dom": "19.2.3",
+    "typescript": "5.9.2"
+  }
+}
