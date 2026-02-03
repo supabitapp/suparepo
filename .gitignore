@@ -23,6 +23,7 @@ coverage
 
 # Build Outputs
 .next/
+next-env.d.ts
 .open-next/
 .wrangler/
 out/
