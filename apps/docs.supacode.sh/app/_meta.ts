@@ -7,4 +7,8 @@ export default {
     title: "Getting Started",
     type: "page",
   },
+  faq: {
+    title: "FAQ",
+    type: "page",
+  },
 };
