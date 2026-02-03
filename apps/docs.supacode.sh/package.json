@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev --port 3003 --turbopack",
-    "build": "NODE_OPTIONS=\"--require ./scripts/nextra-git-worktree.cjs --localstorage-file=.next/localstorage\" next build --turbopack",
+    "build": "next build --turbopack",
     "postbuild": "pagefind --site out",
     "start": "next start",
     "check-types": "tsc --noEmit"
