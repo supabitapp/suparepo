@@ -10,10 +10,25 @@ const display = Bricolage_Grotesque({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://supacode.sh"),
   title: "Supacode",
   description: "Fully native orchestration for your own agents.",
   icons: {
     icon: "/supacode-app-icon.png",
+  },
+  openGraph: {
+    title: "Supacode",
+    description: "Run 50+ coding agents in parallel. Blazing fast native macOS app.",
+    url: "https://supacode.sh",
+    siteName: "Supacode",
+    images: ["/screenshot.png"],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Supacode",
+    description: "Run 50+ coding agents in parallel. Blazing fast native macOS app.",
+    images: ["/screenshot.png"],
   },
 };
 
