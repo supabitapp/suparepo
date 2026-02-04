@@ -34,17 +34,16 @@ jobs:
         with:
           bun-version: 1.3.2
       - uses: actions/cache@v4
-        name: Cache bun
         with:
-          path: ~/.bun/install/cache
-          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
-          restore-keys: ${{ runner.os }}-bun-
-      - uses: actions/cache@v4
-        name: Cache turbo
-        with:
-          path: .turbo
-          key: ${{ runner.os }}-turbo-${{ github.sha }}
-          restore-keys: ${{ runner.os }}-turbo-
+          path: |
+            ~/.bun/install/cache
+            ~/.cache/turbo
+            .turbo
+            apps/**/.next/cache
+            apps/**/node_modules/.vite
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}-turbo-${{ hashFiles('turbo.json') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}-
       - run: bun install --frozen-lockfile
       - run: bun run deploy
         working-directory: apps/supabit.app
