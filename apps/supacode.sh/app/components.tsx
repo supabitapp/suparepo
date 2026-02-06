@@ -14,7 +14,7 @@ import type { ReactNode } from "react";
 export function DownloadButton() {
   return (
     <a
-      href="https://github.com/supabitapp/supacode/releases/download/v0.5.1/supacode.dmg"
+      href="https://supacode.sh/download/latest/supacode.dmg"
       onClick={() => posthog.capture("download_clicked")}
     >
       <Button size="lg" className="gap-2">
