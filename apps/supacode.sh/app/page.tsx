@@ -161,6 +161,14 @@ export default function Home() {
             Release Notes
           </TrackedLink>
           <span className="mx-2">·</span>
+          <TrackedLink
+            href="https://docs.supacode.sh"
+            event="docs_clicked"
+            className="underline hover:text-foreground"
+          >
+            Docs
+          </TrackedLink>
+          <span className="mx-2">·</span>
           Made with ❤️ by{" "}
           <TrackedLink
             href="https://x.com/khoiracle"
