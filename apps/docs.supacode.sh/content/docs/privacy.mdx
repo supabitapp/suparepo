@@ -26,10 +26,6 @@ These events carry **no contextual data** — no file paths, repository names, b
 
 When enabled, Supacode sends crash and error data to [Sentry](https://sentry.io). This includes operation types and error codes when something goes wrong (for example, a failed git operation). It does not include error messages, stack traces from your code, or any repository content.
 
-## Update checks
-
-Supacode uses [Sparkle](https://sparkle-project.org) to check for updates. This sends a standard HTTP request to `supacode.sh` containing your app version and OS version. Automatic downloads are off by default.
-
 ## GitHub integration
 
 Supacode delegates all GitHub operations to the `gh` CLI installed on your machine. Supacode never stores GitHub credentials or makes direct API calls — it invokes `gh` as a subprocess and reads the output. Your GitHub authentication is managed entirely by the GitHub CLI.
@@ -41,16 +37,13 @@ All telemetry is opt-in via Settings (**⌘,**):
 - **Share analytics with Supacode** — Toggle off to stop PostHog events
 - **Share crash reports with Supacode** — Toggle off to stop Sentry reports
 - **GitHub integration** — Toggle off to disable all `gh` CLI calls
-- **Check for updates** — Toggle off to disable Sparkle
-
-Changes to analytics and crash reporting take effect after restarting the app.
+  Changes to analytics and crash reporting take effect after restarting the app.
 
 ## Third-party services
 
-| Service                                | Purpose         | What it receives             |
-| -------------------------------------- | --------------- | ---------------------------- |
-| [PostHog](https://posthog.com)         | Usage analytics | Device UUID, event names     |
-| [Sentry](https://sentry.io)            | Error tracking  | Operation types, error codes |
-| [Sparkle](https://sparkle-project.org) | App updates     | App version, OS version      |
+| Service                        | Purpose         | What it receives             |
+| ------------------------------ | --------------- | ---------------------------- |
+| [PostHog](https://posthog.com) | Usage analytics | Device UUID, event names     |
+| [Sentry](https://sentry.io)    | Error tracking  | Operation types, error codes |
 
 No session recordings, screen captures, or keylogging. Ever.
