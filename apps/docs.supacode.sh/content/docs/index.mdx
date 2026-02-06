@@ -1,25 +1,43 @@
 ---
-title: Introduction
-description: Run 50+ coding agents in parallel with Supacode
+title: Getting Started
+description: Install and set up Supacode
 ---
-
-# Supacode
-
-**Run 50+ coding agents in parallel.** Blazing fast native macOS app.
-
-Supacode is a fully native macOS application built with libghostty as the terminal engine. It's designed for developers who want to run multiple AI coding agents simultaneously without compromising on performance.
-
-## Key Features
-
-- **Fully native app** — Native macOS app with libghostty as the engine
-- **BYOA — Bring your own agents** — Run Claude Code, Codex, Opencode in terminal without any translation layer
-- **Worktree integration** — Isolated git worktree per task. Give each agent a free space to do its thing
-- **GitHub integration** — Open PRs, see CI checks, fix conflicts, and more
 
 ## Requirements
 
-- macOS 26 Tahoe or later
+Supacode requires **macOS 26 Tahoe** or later. The Liquid Glass design language makes it difficult to provide good UI/UX on older OS versions.
 
-## Get Started
+## Installation
 
-Download Supacode from [supacode.sh](https://supacode.sh) and check out the [Getting Started](/getting-started) guide.
+1. Download Supacode from [supacode.sh](https://supacode.sh)
+2. Move the app to your Applications folder
+3. Open Supacode
+
+## First Run
+
+When you first open Supacode, you'll see a terminal window. You can:
+
+1. Navigate to your project directory
+2. Start your preferred coding agent (Claude Code, Codex, Opencode, etc.)
+3. Create worktrees for parallel tasks
+
+## Setting Up Agents
+
+Supacode follows the **BYOA (Bring Your Own Agent)** philosophy. Install your preferred coding agents:
+
+```bash
+# Claude Code
+npm install -g @anthropic-ai/claude-code
+
+# Or any other agent you prefer
+```
+
+Then simply run them in Supacode's terminal — no translation layer needed.
+
+## Auto-Starting Agents
+
+You can configure Supacode to automatically start a coding agent when opening a repository:
+
+1. Open Settings with **⌘,**
+2. Add a setup script for your repo
+3. The agent will start automatically when you open that repo
