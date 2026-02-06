@@ -19,6 +19,10 @@ const features = [
     title: "GitHub integration",
     description: "Open PRs, see CI checks, fix conflicts, and more.",
   },
+  {
+    title: "Open source",
+    description: "Fully open source. Read, fork, and contribute on GitHub.",
+  },
 ];
 
 const faqs = [
@@ -68,7 +72,7 @@ export default function Home() {
                 className="supacode-reveal max-w-2xl text-sm text-muted-foreground md:text-base"
                 style={{ animationDelay: "200ms" }}
               >
-                Blazing fast native macOS app
+                Blazing fast, open source, native macOS app
               </p>
             </div>
             <div
@@ -96,7 +100,7 @@ export default function Home() {
 
         <Separator className="supacode-reveal" style={{ animationDelay: "400ms" }} />
 
-        <section className="grid shrink-0 gap-3 md:grid-cols-4">
+        <section className="grid shrink-0 gap-3 md:grid-cols-5">
           {features.map((feature, index) => (
             <Card
               key={feature.title}
@@ -142,7 +146,15 @@ export default function Home() {
           style={{ animationDelay: "940ms" }}
         >
           <TrackedLink
-            href="https://github.com/supabitapp/supacode-sh/releases"
+            href="https://github.com/supabitapp/supacode"
+            event="github_clicked"
+            className="underline hover:text-foreground"
+          >
+            GitHub
+          </TrackedLink>
+          <span className="mx-2">·</span>
+          <TrackedLink
+            href="https://github.com/supabitapp/supacode/releases"
             event="release_notes_clicked"
             className="underline hover:text-foreground"
           >
