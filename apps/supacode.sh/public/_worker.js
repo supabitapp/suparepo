@@ -1,5 +1,5 @@
-const DOWNLOADS_BASE = "https://github.com/supabitapp/supacode-sh/releases/download/";
-const LATEST_BASE = "https://github.com/supabitapp/supacode-sh/releases/latest/download/";
+const DOWNLOADS_BASE = "https://github.com/supabitapp/supacode/releases/download/";
+const LATEST_BASE = "https://github.com/supabitapp/supacode/releases/latest/download/";
 
 const methodNotAllowed = () =>
   new Response("Method Not Allowed", {
