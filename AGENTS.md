@@ -39,3 +39,7 @@ UI package exports: `@repo/ui/components/ui/button`, `@repo/ui/lib/utils`
 ## PR Descriptions
 
 When creating or updating PRs, do not add a templated Summary/Testing block unless explicitly requested. Keep the PR description to a single concise sentence or use text provided by khoi.
+
+## References
+
+- supacode app source code is in git@github.com:supabitapp/supacode.git
