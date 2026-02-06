@@ -21,8 +21,15 @@ When you first open Supacode, you'll see a terminal window. You can:
 
 ## Auto-Starting Agents
 
-You can configure Supacode to automatically start a coding agent when opening a repository:
+You can configure Supacode to automatically start a coding agent when creating a new worktree:
 
 1. Open Settings with **⌘,**
 2. Add a setup script for your repo
-3. The agent will start automatically when you open that repo
+
+For instance:
+
+```bash
+claude --dangerously-skip-permissions
+```
+
+![Setup Script](/setup-script-claude.png)
