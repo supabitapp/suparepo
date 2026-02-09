@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Supacode",
-    description: "Run 50+ coding agents in parallel. Blazing fast native macOS app.",
+    description: "Native terminal coding agents orchestrator. Run 50+ coding agents in parallel.",
     url: "https://supacode.sh",
     siteName: "Supacode",
     images: ["/screenshot.png"],
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Supacode",
-    description: "Run 50+ coding agents in parallel. Blazing fast native macOS app.",
+    description: "Native terminal coding agents orchestrator. Run 50+ coding agents in parallel.",
     images: ["/screenshot.png"],
   },
 };
