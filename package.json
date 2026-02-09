@@ -14,8 +14,6 @@
     "supaimg.app:build": "bun run --filter supaimg.app build",
     "supacode.sh:build": "bun run --filter supacode.sh build",
     "supabit.app:dev": "bun run --filter supabit.app dev",
-    "docs.supacode.sh:dev": "bun run --filter docs.supacode.sh dev",
-    "docs.supacode.sh:build": "bun run --filter docs.supacode.sh build",
     "workflows:gen": "bun scripts/generate-workflows.ts",
     "workflows:check": "bun scripts/generate-workflows.ts --check",
     "lint": "bun run workflows:check && oxlint .",
