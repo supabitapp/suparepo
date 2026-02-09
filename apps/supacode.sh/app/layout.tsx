@@ -12,7 +12,7 @@ const display = Bricolage_Grotesque({
 export const metadata: Metadata = {
   metadataBase: new URL("https://supacode.sh"),
   title: "Supacode",
-  description: "Fully native orchestration for your own agents.",
+  description: "Native terminal coding agents orchestrator. Run 50+ coding agents in parallel.",
   icons: {
     icon: "/supacode-app-icon.png",
   },

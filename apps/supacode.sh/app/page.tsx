@@ -66,13 +66,13 @@ export default function Home() {
                 </span>
               </div>
               <h1 className="text-4xl font-semibold tracking-tight md:text-5xl">
-                Run 50+ coding agents in parallel.
+                Native terminal coding agents orchestrator.
               </h1>
               <p
                 className="supacode-reveal max-w-2xl text-sm text-muted-foreground md:text-base"
                 style={{ animationDelay: "200ms" }}
               >
-                Blazing fast, open source, native macOS app
+                Run 50+ coding agents in parallel. Blazing fast, open source, native macOS app.
               </p>
             </div>
             <div
