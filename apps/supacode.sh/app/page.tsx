@@ -65,7 +65,7 @@ export default function Home() {
                   supacode
                 </span>
               </div>
-              <h1 className="text-4xl font-semibold tracking-tight md:text-5xl">
+              <h1 className="text-3xl font-semibold tracking-tight md:text-5xl lg:text-6xl">
                 Native terminal
                 <br />
                 coding agents orchestrator.
