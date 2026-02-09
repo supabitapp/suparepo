@@ -1,6 +1,6 @@
 import { Card, CardDescription, CardHeader, CardTitle } from "@repo/ui/components/ui/card";
 import { Separator } from "@repo/ui/components/ui/separator";
-import { DownloadButton, FAQItem, TrackedLink } from "./components";
+import { DownloadButton, FAQItem, GitHubStarButton, TrackedLink } from "./components";
 
 const features = [
   {
@@ -79,7 +79,10 @@ export default function Home() {
               className="supacode-reveal flex flex-col gap-1"
               style={{ animationDelay: "280ms" }}
             >
-              <DownloadButton />
+              <div className="flex items-center gap-2">
+                <DownloadButton />
+                <GitHubStarButton />
+              </div>
               <span className="text-[10px] text-muted-foreground">Requires macOS 26 Tahoe</span>
             </div>
           </div>

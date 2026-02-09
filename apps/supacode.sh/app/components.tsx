@@ -1,6 +1,6 @@
 "use client";
 
-import { AppleFinderIcon, ArrowDown01Icon } from "@hugeicons/core-free-icons";
+import { AppleFinderIcon, ArrowDown01Icon, GithubIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Button } from "@repo/ui/components/ui/button";
 import {
@@ -20,6 +20,22 @@ export function DownloadButton() {
       <Button size="lg" className="gap-2">
         <HugeiconsIcon icon={AppleFinderIcon} className="size-4" strokeWidth={2} />
         Download FREE for macOS (BETA)
+      </Button>
+    </a>
+  );
+}
+
+export function GitHubStarButton() {
+  return (
+    <a
+      href="https://github.com/supabitapp/supacode"
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={() => posthog.capture("github_star_clicked")}
+    >
+      <Button size="lg" variant="outline" className="gap-2">
+        <HugeiconsIcon icon={GithubIcon} className="size-4" strokeWidth={2} />
+        Star us on GitHub
       </Button>
     </a>
   );
