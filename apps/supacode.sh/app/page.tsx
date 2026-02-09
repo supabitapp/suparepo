@@ -79,10 +79,8 @@ export default function Home() {
               className="supacode-reveal flex flex-col gap-1"
               style={{ animationDelay: "280ms" }}
             >
-              <div className="flex items-center gap-2">
-                <GitHubStarButton />
-                <DownloadButton />
-              </div>
+              <GitHubStarButton />
+              <DownloadButton />
               <span className="text-[10px] text-muted-foreground">Requires macOS 26 Tahoe</span>
             </div>
           </div>
