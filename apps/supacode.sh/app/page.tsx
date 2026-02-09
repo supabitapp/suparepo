@@ -80,8 +80,8 @@ export default function Home() {
               style={{ animationDelay: "280ms" }}
             >
               <div className="flex items-center gap-2">
-                <DownloadButton />
                 <GitHubStarButton />
+                <DownloadButton />
               </div>
               <span className="text-[10px] text-muted-foreground">Requires macOS 26 Tahoe</span>
             </div>
