@@ -66,7 +66,7 @@ export default function Home() {
                 </span>
               </div>
               <h1 className="text-3xl font-semibold tracking-tight">
-                Native terminal coding agents orchestrator.
+                Native terminal coding agents command center.
               </h1>
               <p
                 className="supacode-reveal max-w-2xl text-sm text-muted-foreground md:text-base"
