@@ -86,9 +86,9 @@ export default function Home() {
               style={{ animationDelay: "280ms" }}
             >
               <GitHubStarButton />
-              <BrewInstallCommand />
-              <span className="text-xs text-muted-foreground">or</span>
               <DownloadButton />
+              <span className="text-xs text-muted-foreground">or</span>
+              <BrewInstallCommand />
               <span className="text-[10px] text-muted-foreground">Requires macOS 26 Tahoe</span>
             </div>
           </div>
