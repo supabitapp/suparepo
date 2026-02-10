@@ -87,7 +87,7 @@ export default function Home() {
             >
               <GitHubStarButton />
               <BrewInstallCommand />
-              <span className="text-center text-xs text-muted-foreground">or</span>
+              <span className="text-xs text-muted-foreground">or</span>
               <DownloadButton />
               <span className="text-[10px] text-muted-foreground">Requires macOS 26 Tahoe</span>
             </div>
