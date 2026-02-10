@@ -4,7 +4,6 @@ import {
   AppleFinderIcon,
   ArrowDown01Icon,
   Copy01Icon,
-  GithubIcon,
   Tick01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -55,22 +54,6 @@ export function BrewInstallCommand() {
         strokeWidth={2}
       />
     </button>
-  );
-}
-
-export function GitHubStarButton() {
-  return (
-    <a
-      href="https://github.com/supabitapp/supacode"
-      target="_blank"
-      rel="noopener noreferrer"
-      onClick={() => posthog.capture("github_star_clicked")}
-    >
-      <Button size="lg" variant="outline" className="gap-2">
-        <HugeiconsIcon icon={GithubIcon} className="size-4" strokeWidth={2} />
-        Star us on GitHub
-      </Button>
-    </a>
   );
 }
 

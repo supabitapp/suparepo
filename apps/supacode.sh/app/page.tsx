@@ -1,12 +1,6 @@
 import { Card, CardDescription, CardHeader, CardTitle } from "@repo/ui/components/ui/card";
 import { Separator } from "@repo/ui/components/ui/separator";
-import {
-  BrewInstallCommand,
-  DownloadButton,
-  FAQItem,
-  GitHubStarButton,
-  TrackedLink,
-} from "./components";
+import { BrewInstallCommand, DownloadButton, FAQItem, TrackedLink } from "./components";
 
 const features = [
   {
@@ -85,7 +79,6 @@ export default function Home() {
               className="supacode-reveal flex flex-col gap-1"
               style={{ animationDelay: "280ms" }}
             >
-              <GitHubStarButton />
               <DownloadButton />
               <span className="text-xs text-muted-foreground">or</span>
               <BrewInstallCommand />
@@ -156,10 +149,10 @@ export default function Home() {
         >
           <TrackedLink
             href="https://github.com/supabitapp/supacode"
-            event="github_clicked"
+            event="github_star_clicked"
             className="underline hover:text-foreground"
           >
-            GitHub
+            Star us on GitHub
           </TrackedLink>
           <span className="mx-2">·</span>
           <TrackedLink
