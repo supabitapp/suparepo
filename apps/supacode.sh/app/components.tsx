@@ -1,6 +1,12 @@
 "use client";
 
-import { AppleFinderIcon, ArrowDown01Icon, GithubIcon } from "@hugeicons/core-free-icons";
+import {
+  AppleFinderIcon,
+  ArrowDown01Icon,
+  Copy01Icon,
+  GithubIcon,
+  Tick01Icon,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Button } from "@repo/ui/components/ui/button";
 import {
@@ -9,7 +15,7 @@ import {
   CollapsibleTrigger,
 } from "@repo/ui/components/ui/collapsible";
 import { posthog } from "posthog-js";
-import type { ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 
 export function DownloadButton() {
   return (
@@ -22,6 +28,33 @@ export function DownloadButton() {
         Download FREE for macOS (BETA)
       </Button>
     </a>
+  );
+}
+
+export function BrewInstallCommand() {
+  const command = "brew install supacode";
+  const [copied, setCopied] = useState(false);
+
+  function copy() {
+    navigator.clipboard.writeText(command);
+    posthog.capture("brew_install_copied");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={copy}
+      className="flex items-center gap-2 rounded-md border border-border/70 px-3 py-2 font-mono text-sm text-muted-foreground transition-colors hover:text-foreground"
+    >
+      <span>$ {command}</span>
+      <HugeiconsIcon
+        icon={copied ? Tick01Icon : Copy01Icon}
+        className="size-3.5 shrink-0"
+        strokeWidth={2}
+      />
+    </button>
   );
 }
 

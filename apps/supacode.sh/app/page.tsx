@@ -1,6 +1,12 @@
 import { Card, CardDescription, CardHeader, CardTitle } from "@repo/ui/components/ui/card";
 import { Separator } from "@repo/ui/components/ui/separator";
-import { DownloadButton, FAQItem, GitHubStarButton, TrackedLink } from "./components";
+import {
+  BrewInstallCommand,
+  DownloadButton,
+  FAQItem,
+  GitHubStarButton,
+  TrackedLink,
+} from "./components";
 
 const features = [
   {
@@ -80,6 +86,8 @@ export default function Home() {
               style={{ animationDelay: "280ms" }}
             >
               <GitHubStarButton />
+              <BrewInstallCommand />
+              <span className="text-center text-xs text-muted-foreground">or</span>
               <DownloadButton />
               <span className="text-[10px] text-muted-foreground">Requires macOS 26 Tahoe</span>
             </div>
