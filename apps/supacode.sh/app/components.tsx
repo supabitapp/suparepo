@@ -46,7 +46,7 @@ export function BrewInstallCommand() {
     <button
       type="button"
       onClick={copy}
-      className="flex items-center gap-2 rounded-md border border-border/70 px-3 py-2 font-mono text-sm text-muted-foreground transition-colors hover:text-foreground"
+      className="flex w-fit items-center gap-2 rounded-md border border-border/70 px-3 py-2 font-mono text-sm text-muted-foreground transition-colors hover:text-foreground"
     >
       <span>$ {command}</span>
       <HugeiconsIcon
