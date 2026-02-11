@@ -1,6 +1,6 @@
 import { Card, CardDescription, CardHeader, CardTitle } from "@repo/ui/components/ui/card";
 import { Separator } from "@repo/ui/components/ui/separator";
-import { BrewInstallCommand, DownloadButton, FAQItem, TrackedLink } from "./components";
+import { BrewInstallCommand, DownloadButton, TrackedLink } from "./components";
 
 const features = [
   {
@@ -22,30 +22,6 @@ const features = [
   {
     title: "Open source",
     description: "Fully open source. Read, fork, and contribute on GitHub.",
-  },
-];
-
-const faqs = [
-  {
-    question: "Why macOS 26 Tahoe only?",
-    answer:
-      "Liquid Glass makes it difficult to provide good enough UI/UX on older OS versions, hence the restriction.",
-  },
-  {
-    question: "How do I get proper naming for my worktrees?",
-    answer: "Ask your agent to do it before a task.",
-  },
-  {
-    question: "How do I configure the Terminal?",
-    answer: "Supacode respects your Ghostty config, do your configurations there.",
-  },
-  {
-    question: "Where is my Git client?",
-    answer: "Opening lazygit as a split works out really well.",
-  },
-  {
-    question: "How do I start a coding agent automatically?",
-    answer: "Start it as a setup script for the repo in Settings (⌘,).",
   },
 ];
 
@@ -119,28 +95,6 @@ export default function Home() {
               </CardHeader>
             </Card>
           ))}
-        </section>
-
-        <Separator className="supacode-reveal" style={{ animationDelay: "700ms" }} />
-
-        <section className="shrink-0">
-          <h2
-            className="supacode-reveal mb-3 text-xs font-semibold uppercase tracking-[0.25em]"
-            style={{ animationDelay: "760ms" }}
-          >
-            FAQ
-          </h2>
-          <ul className="space-y-1">
-            {faqs.map((faq, index) => (
-              <li
-                key={faq.question}
-                className="supacode-reveal"
-                style={{ animationDelay: `${820 + index * 60}ms` }}
-              >
-                <FAQItem question={faq.question} answer={faq.answer} />
-              </li>
-            ))}
-          </ul>
         </section>
 
         <footer
