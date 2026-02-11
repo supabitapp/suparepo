@@ -121,7 +121,7 @@ export default function Home() {
             href="mailto:hi@supabit.app"
             className="text-primary hover:underline whitespace-nowrap"
           >
-            Say hi, we don&apos;t bite.
+            Say hi, we don&apos;t bite, we bit.
           </a>
         </p>
         <p className="text-muted-foreground/70">&copy; Supabit</p>
