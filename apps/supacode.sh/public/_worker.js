@@ -70,8 +70,9 @@ export default {
       if (!target) {
         return new Response("Not Found", { status: 404 });
       }
-      const isLatest = rawPath.split("/")[0] === "latest";
-      const cacheOptions = isLatest
+      const firstSegment = rawPath.split("/")[0];
+      const isVolatile = firstSegment === "latest" || firstSegment === "tip";
+      const cacheOptions = isVolatile
         ? {
             cacheTtl: 300,
             cacheEverything: true,
