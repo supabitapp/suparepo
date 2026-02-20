@@ -29,7 +29,7 @@ export default function Home() {
   return (
     <main>
       <div className="mx-auto flex min-h-screen max-w-[1400px] flex-col gap-8 px-8 py-10">
-        <section className="grid items-center gap-8 lg:grid-cols-[1fr_1fr] lg:gap-12">
+        <section className="grid items-center gap-8 lg:grid-cols-[2fr_3fr] lg:gap-12">
           <div className="flex flex-col gap-8">
             <div className="flex flex-col gap-4">
               <div
