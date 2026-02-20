@@ -29,7 +29,7 @@ export default function Home() {
   return (
     <main>
       <div className="mx-auto flex min-h-screen max-w-[1400px] flex-col gap-6 px-6 py-8">
-        <section className="grid flex-1 items-center gap-6 lg:grid-cols-[1fr_1fr] lg:gap-10">
+        <section className="grid items-center gap-6 lg:grid-cols-[1fr_1fr] lg:gap-10">
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-3">
               <div
@@ -76,7 +76,7 @@ export default function Home() {
           </div>
         </section>
 
-        <Separator className="supacode-reveal" style={{ animationDelay: "400ms" }} />
+        <Separator className="supacode-reveal mt-auto" style={{ animationDelay: "400ms" }} />
 
         <section className="grid shrink-0 gap-3 md:grid-cols-5">
           {features.map((feature, index) => (
