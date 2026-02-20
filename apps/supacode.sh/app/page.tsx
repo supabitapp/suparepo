@@ -76,7 +76,7 @@ export default function Home() {
           </div>
         </section>
 
-        <Separator className="supacode-reveal mt-auto" style={{ animationDelay: "400ms" }} />
+        <Separator className="supacode-reveal" style={{ animationDelay: "400ms" }} />
 
         <section className="grid shrink-0 gap-3 md:grid-cols-5">
           {features.map((feature, index) => (
@@ -98,7 +98,7 @@ export default function Home() {
         </section>
 
         <footer
-          className="supacode-reveal shrink-0 text-right text-sm text-muted-foreground"
+          className="supacode-reveal mt-auto shrink-0 text-right text-sm text-muted-foreground"
           style={{ animationDelay: "940ms" }}
         >
           <TrackedLink
