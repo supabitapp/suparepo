@@ -68,7 +68,7 @@ export default function Home() {
             <img
               src="/screenshot.png"
               alt="Supacode running multiple coding agents in parallel"
-              className="max-h-[75vh] w-full rounded-xl object-contain object-right shadow-2xl"
+              className="max-h-[85vh] w-full rounded-xl object-contain object-right shadow-2xl"
             />
             <p className="mt-3 text-center text-sm text-muted-foreground">
               Actual screenshot of using supacode to develop supacode
