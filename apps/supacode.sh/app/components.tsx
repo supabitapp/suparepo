@@ -12,8 +12,8 @@ export function DownloadButton() {
       href="https://supacode.sh/download/latest/supacode.dmg"
       onClick={() => posthog.capture("download_clicked")}
     >
-      <Button size="lg" className="gap-2">
-        <HugeiconsIcon icon={AppleFinderIcon} className="size-4" strokeWidth={2} />
+      <Button size="lg" className="gap-2.5 px-6 py-3 text-base">
+        <HugeiconsIcon icon={AppleFinderIcon} className="size-5" strokeWidth={2} />
         Download FREE for macOS (BETA)
       </Button>
     </a>
@@ -35,12 +35,12 @@ export function BrewInstallCommand() {
     <button
       type="button"
       onClick={copy}
-      className="flex w-fit items-center gap-2 rounded-md border border-border/70 px-3 py-2 font-mono text-sm text-muted-foreground transition-colors hover:text-foreground"
+      className="flex w-fit items-center gap-2.5 rounded-md border border-border/70 px-4 py-2.5 font-mono text-base text-muted-foreground transition-colors hover:text-foreground"
     >
       <span>$ {command}</span>
       <HugeiconsIcon
         icon={copied ? Tick01Icon : Copy01Icon}
-        className="size-3.5 shrink-0"
+        className="size-4 shrink-0"
         strokeWidth={2}
       />
     </button>
