@@ -1,138 +1,186 @@
-import { Card, CardDescription, CardHeader, CardTitle } from "@repo/ui/components/ui/card";
 import { Separator } from "@repo/ui/components/ui/separator";
 import { BrewInstallCommand, DownloadButton, TrackedLink } from "./components";
 
 const features = [
   {
-    title: "Fully native app",
-    description: "Native macOS app with libghostty as the engine.",
+    title: "Fully native",
+    description:
+      "Built on libghostty. No Electron, no web wrappers. Pure macOS performance you can feel in every keystroke.",
+    badge: "macOS",
   },
   {
-    title: "BYOA — Bring your own agents",
-    description: "Run Claude Code, Codex, Opencode in terminal without any translation layer.",
+    title: "Bring your own agents",
+    description:
+      "Run Claude Code, Codex, Opencode — any CLI agent, no translation layer. Your terminal, your rules.",
+    badge: "BYOA",
   },
   {
-    title: "Worktree integration",
-    description: "Isolated git worktree per task. Give each agent a free space to do its thing.",
+    title: "Worktree isolation",
+    description:
+      "Every agent gets its own git worktree. No conflicts, no stepping on toes. True parallel development.",
+    badge: "Git",
   },
   {
-    title: "GitHub integration",
-    description: "Open PRs, see CI checks, fix conflicts, and more.",
+    title: "GitHub native",
+    description:
+      "Open PRs, review CI checks, resolve conflicts — all without leaving the terminal.",
+    badge: "GitHub",
   },
   {
     title: "Open source",
-    description: "Fully open source. Read, fork, and contribute on GitHub.",
+    description: "Read every line. Fork it. Break it. Fix it. Ship it. Fully open on GitHub.",
+    badge: "OSS",
+  },
+  {
+    title: "50+ agents",
+    description:
+      "Run dozens of coding agents simultaneously. Each in its own isolated environment, all under one roof.",
+    badge: "Scale",
   },
 ];
 
 export default function Home() {
   return (
     <main>
-      <div className="mx-auto flex min-h-screen max-w-[1400px] flex-col gap-8 px-8 py-10">
-        <section className="grid items-center gap-8 lg:grid-cols-[2fr_3fr] lg:gap-12">
-          <div className="flex flex-col gap-8">
-            <div className="flex flex-col gap-4">
-              <div
-                className="supacode-reveal flex items-center gap-4"
-                style={{ animationDelay: "40ms" }}
-              >
-                <img src="/supacode-app-icon.png" alt="Supacode app icon" className="size-16" />
-                <span className="text-sm uppercase tracking-[0.35em] text-foreground">
-                  supacode
-                </span>
-              </div>
-              <h1 className="text-4xl font-semibold tracking-tight lg:text-5xl">
-                Native terminal coding agents command center.
-              </h1>
-              <p
-                className="supacode-reveal max-w-2xl text-base text-muted-foreground md:text-lg"
-                style={{ animationDelay: "200ms" }}
-              >
-                Run 50+ coding agents in parallel. Blazing fast, open source, native macOS app.
-              </p>
-            </div>
-            <div
-              className="supacode-reveal flex flex-col gap-1.5"
-              style={{ animationDelay: "280ms" }}
-            >
-              <DownloadButton />
-              <span className="text-sm text-muted-foreground">or</span>
-              <BrewInstallCommand />
-              <span className="text-xs text-muted-foreground">Requires macOS 26 Tahoe</span>
-            </div>
+      <div className="mx-auto flex min-h-screen max-w-[1200px] flex-col px-6 py-10 md:px-8">
+        <nav
+          className="supacode-reveal mb-20 flex items-center justify-between md:mb-28"
+          style={{ animationDelay: "40ms" }}
+        >
+          <div className="flex items-center gap-3">
+            <img src="/supacode-app-icon.png" alt="Supacode" className="size-9" />
+            <span className="text-sm font-medium uppercase tracking-[0.3em] text-foreground">
+              supacode
+            </span>
           </div>
-          <div
-            className="supacode-reveal flex flex-col lg:-mr-8"
-            style={{ animationDelay: "340ms" }}
+          <div className="flex items-center gap-6 text-sm text-muted-foreground">
+            <TrackedLink
+              href="https://docs.supacode.sh"
+              event="nav_docs_clicked"
+              className="transition-colors hover:text-foreground"
+            >
+              Docs
+            </TrackedLink>
+            <TrackedLink
+              href="https://github.com/supabitapp/supacode"
+              event="nav_github_clicked"
+              className="transition-colors hover:text-foreground"
+            >
+              GitHub
+            </TrackedLink>
+          </div>
+        </nav>
+
+        <section className="mb-16 flex flex-col items-center text-center md:mb-24">
+          <h1
+            className="supacode-reveal max-w-4xl text-4xl font-semibold tracking-tight md:text-6xl lg:text-7xl"
+            style={{ animationDelay: "120ms" }}
           >
+            The command center for coding agents.
+          </h1>
+          <p
+            className="supacode-reveal mt-6 max-w-xl text-base text-muted-foreground md:text-lg"
+            style={{ animationDelay: "200ms" }}
+          >
+            Run 50+ coding agents in parallel. Blazing fast, open source, native macOS app built on
+            libghostty.
+          </p>
+          <div
+            className="supacode-reveal mt-10 flex flex-col items-center gap-2"
+            style={{ animationDelay: "280ms" }}
+          >
+            <DownloadButton />
+            <span className="text-sm text-muted-foreground">or</span>
+            <BrewInstallCommand />
+            <span className="mt-1 text-xs text-muted-foreground">Requires macOS 26 Tahoe</span>
+          </div>
+        </section>
+
+        <section className="supacode-reveal mb-24 md:mb-32" style={{ animationDelay: "360ms" }}>
+          <div className="hero-glow relative overflow-hidden rounded-xl border border-border/50">
             <img
               src="/screenshot.png"
               alt="Supacode running multiple coding agents in parallel"
-              className="max-h-[85vh] w-full rounded-xl object-contain object-right shadow-2xl"
+              className="w-full"
             />
-            <p className="mt-3 text-center text-sm text-muted-foreground">
-              Actual screenshot of using supacode to develop supacode
-            </p>
+          </div>
+          <p className="mt-4 text-center text-sm text-muted-foreground">
+            Actual screenshot of using supacode to develop supacode
+          </p>
+        </section>
+
+        <Separator className="supacode-reveal mb-24 md:mb-32" style={{ animationDelay: "420ms" }} />
+
+        <section className="mb-24 md:mb-32">
+          <h2
+            className="supacode-reveal mb-12 text-center text-sm font-medium uppercase tracking-[0.3em] text-muted-foreground md:mb-16"
+            style={{ animationDelay: "480ms" }}
+          >
+            Built different
+          </h2>
+          <div className="grid gap-px overflow-hidden rounded-xl border border-border/50 bg-border/50 md:grid-cols-2 lg:grid-cols-3">
+            {features.map((feature, index) => (
+              <div
+                key={feature.title}
+                className="supacode-reveal flex flex-col gap-3 bg-background p-8"
+                style={{ animationDelay: `${540 + index * 60}ms` }}
+              >
+                <span className="w-fit rounded-full border border-border/70 px-2.5 py-0.5 text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
+                  {feature.badge}
+                </span>
+                <h3 className="text-lg font-semibold tracking-tight">{feature.title}</h3>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  {feature.description}
+                </p>
+              </div>
+            ))}
           </div>
         </section>
 
-        <Separator className="supacode-reveal" style={{ animationDelay: "400ms" }} />
-
-        <section className="grid shrink-0 gap-4 md:grid-cols-5">
-          {features.map((feature, index) => (
-            <Card
-              key={feature.title}
-              className="supacode-reveal border-border/70"
-              style={{ animationDelay: `${460 + index * 60}ms` }}
-            >
-              <CardHeader className="space-y-1.5 p-5">
-                <CardTitle className="text-sm font-semibold uppercase tracking-[0.25em]">
-                  {feature.title}
-                </CardTitle>
-                <CardDescription className="text-sm leading-relaxed">
-                  {feature.description}
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          ))}
+        <section className="supacode-reveal mb-24 flex flex-col items-center gap-6 text-center md:mb-32">
+          <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
+            Ready to run your agents?
+          </h2>
+          <DownloadButton />
         </section>
 
-        <footer
-          className="supacode-reveal mt-auto shrink-0 text-right text-sm text-muted-foreground"
-          style={{ animationDelay: "940ms" }}
-        >
-          <TrackedLink
-            href="https://github.com/supabitapp/supacode"
-            event="github_star_clicked"
-            className="underline hover:text-foreground"
-          >
-            Star us on GitHub
-          </TrackedLink>
-          <span className="mx-2">·</span>
-          <TrackedLink
-            href="https://github.com/supabitapp/supacode/releases"
-            event="release_notes_clicked"
-            className="underline hover:text-foreground"
-          >
-            Release Notes
-          </TrackedLink>
-          <span className="mx-2">·</span>
-          <TrackedLink
-            href="https://docs.supacode.sh"
-            event="docs_clicked"
-            className="underline hover:text-foreground"
-          >
-            Docs
-          </TrackedLink>
-          <span className="mx-2">·</span>
-          Made with ❤️ by{" "}
-          <TrackedLink
-            href="https://x.com/khoiracle"
-            event="twitter_clicked"
-            className="underline hover:text-foreground"
-          >
-            @khoiracle
-          </TrackedLink>
+        <Separator className="supacode-reveal" />
+
+        <footer className="supacode-reveal flex flex-col items-center gap-4 py-10 text-sm text-muted-foreground md:flex-row md:justify-between">
+          <div className="flex items-center gap-3">
+            <img src="/supacode-app-icon.png" alt="Supacode" className="size-5" />
+            <span className="font-medium text-foreground">Supacode</span>
+          </div>
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
+            <TrackedLink
+              href="https://github.com/supabitapp/supacode"
+              event="footer_github_clicked"
+              className="transition-colors hover:text-foreground"
+            >
+              GitHub
+            </TrackedLink>
+            <TrackedLink
+              href="https://github.com/supabitapp/supacode/releases"
+              event="footer_releases_clicked"
+              className="transition-colors hover:text-foreground"
+            >
+              Releases
+            </TrackedLink>
+            <TrackedLink
+              href="https://docs.supacode.sh"
+              event="footer_docs_clicked"
+              className="transition-colors hover:text-foreground"
+            >
+              Docs
+            </TrackedLink>
+            <TrackedLink
+              href="https://x.com/khoiracle"
+              event="footer_twitter_clicked"
+              className="transition-colors hover:text-foreground"
+            >
+              @khoiracle
+            </TrackedLink>
+          </div>
         </footer>
       </div>
     </main>
