@@ -1,5 +1,7 @@
 const DOWNLOADS_BASE = "https://github.com/supabitapp/supacode/releases/download/";
 const LATEST_BASE = "https://github.com/supabitapp/supacode/releases/latest/download/";
+const APPCAST_V2_PATH = "/appcast-v2.xml";
+const APPCAST_V2_TARGET = `${LATEST_BASE}appcast-v2.xml`;
 
 const methodNotAllowed = () =>
   new Response("Method Not Allowed", {
@@ -63,6 +65,14 @@ const resolveDownloadTarget = (path) => {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+
+    if (url.pathname === APPCAST_V2_PATH) {
+      return proxyRequest(request, APPCAST_V2_TARGET, {
+        cacheTtl: 300,
+        cacheEverything: true,
+        cacheControl: "public, max-age=300",
+      });
+    }
 
     if (url.pathname.startsWith("/download/")) {
       const rawPath = url.pathname.slice("/download/".length);
