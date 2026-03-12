@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FileIcon, FileTextIcon, ImageIcon } from "@repo/ui/icons/lucide";
+import { FileTextIcon, ImageIcon } from "@repo/ui/icons/lucide";
 import { Separator } from "@repo/ui/components/ui/separator";
 
 function SupacodeLogo({ className }: { className?: string }) {
@@ -40,12 +40,6 @@ const projects = [
     href: "https://supacode.sh",
     description: "Native terminal coding agents command center",
     icon: SupacodeLogo,
-  },
-  {
-    name: "SupaPDF",
-    href: "https://supapdf.app",
-    description: "A local PDF toolbox - Coming soon",
-    icon: FileIcon,
   },
 ];
 
