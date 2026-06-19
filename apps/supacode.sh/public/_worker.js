@@ -5,6 +5,7 @@ const IMMUTABLE_CACHE_CONTROL = "public, max-age=31536000, immutable";
 const VOLATILE_CACHE_CONTROL = "public, max-age=300";
 const NO_STORE_CACHE_CONTROL = "no-store";
 const CHECKSUM_GATED_ASSETS = new Set(["supacode.app.zip", "supacode.dmg"]);
+const DOWNLOAD_CACHE_VERSION = "2";
 
 const methodNotAllowed = () =>
   new Response("Method Not Allowed", {
@@ -16,6 +17,12 @@ const buildTargetUrl = (target, requestUrl) => {
   const targetUrl = new URL(target);
   targetUrl.search = requestUrl.search;
   return targetUrl.toString();
+};
+
+const downloadCacheKey = (requestUrl) => {
+  const cacheUrl = new URL(requestUrl);
+  cacheUrl.searchParams.set("__supacode_cache", DOWNLOAD_CACHE_VERSION);
+  return new Request(cacheUrl.toString(), { method: "GET" });
 };
 
 const hexDigest = (buffer) =>
@@ -231,8 +238,8 @@ const verifiedDownloadResponse = async (request, route) => {
   }
 
   const requestUrl = new URL(request.url);
-  const cacheKey = new Request(requestUrl.toString(), { method: "GET" });
-  const cached = await caches.default.match(cacheKey);
+  const cacheKey = downloadCacheKey(requestUrl);
+  const cached = await caches.default.match(cacheKey).catch(() => null);
   if (cached) {
     if (isRangeRequest) {
       return cachedRangeResponse(cached, request.headers.get("range"));
@@ -281,7 +288,7 @@ const verifiedDownloadResponse = async (request, route) => {
     statusText: response.statusText,
     headers: outHeaders,
   });
-  await caches.default.put(cacheKey, cacheResponse.clone());
+  await caches.default.put(cacheKey, cacheResponse.clone()).catch(() => {});
   return responseWithHeaders(cacheResponse, { "x-supacode-cache": "validated" });
 };
 

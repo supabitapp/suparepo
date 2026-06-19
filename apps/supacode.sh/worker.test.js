@@ -73,6 +73,68 @@ test("valid versioned download is cached after checksum validation", async () =>
   assert.equal(fetchCount, 2);
 });
 
+test("stale raw cache entries are ignored", async () => {
+  const store = installCache();
+  store.set("https://supacode.sh/download/v1.0.0/supacode.dmg", new Response("poison"));
+  const body = "verified asset";
+  const digest = await sha256(body);
+  globalThis.fetch = async (url) => {
+    if (url === releaseManifestUrl) {
+      return Response.json({
+        assets: {
+          "supacode.dmg": { sha256: digest, size: text.encode(body).byteLength },
+        },
+      });
+    }
+    assert.equal(url, releaseDMGUrl);
+    return new Response(body);
+  };
+
+  const response = await fetchWorker("/download/v1.0.0/supacode.dmg");
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("x-supacode-cache"), "validated");
+  assert.equal(await response.text(), body);
+  assert.equal(
+    await store.get("https://supacode.sh/download/v1.0.0/supacode.dmg").clone().text(),
+    "poison",
+  );
+  assert.equal(
+    await store.get("https://supacode.sh/download/v1.0.0/supacode.dmg?__supacode_cache=2").text(),
+    body,
+  );
+});
+
+test("cache API failures do not block verified downloads", async () => {
+  const body = "verified asset";
+  const digest = await sha256(body);
+  globalThis.caches = {
+    default: {
+      match: async () => {
+        throw new Error("cache failed");
+      },
+      put: async () => {
+        throw new Error("cache failed");
+      },
+    },
+  };
+  globalThis.fetch = async (url) => {
+    if (url === releaseManifestUrl) {
+      return Response.json({
+        assets: {
+          "supacode.dmg": { sha256: digest, size: text.encode(body).byteLength },
+        },
+      });
+    }
+    assert.equal(url, releaseDMGUrl);
+    return new Response(body);
+  };
+
+  const response = await fetchWorker("/download/v1.0.0/supacode.dmg");
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("x-supacode-cache"), "validated");
+  assert.equal(await response.text(), body);
+});
+
 test("range downloads are rejected until a verified asset is cached", async () => {
   const store = installCache();
   globalThis.fetch = async () => {
