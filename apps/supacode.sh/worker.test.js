@@ -12,6 +12,8 @@ const releaseManifestUrl =
   "https://github.com/supabitapp/supacode/releases/download/v1.0.0/checksums.json";
 const releaseDMGUrl =
   "https://github.com/supabitapp/supacode/releases/download/v1.0.0/supacode.dmg";
+const latestAppcastUrl =
+  "https://github.com/supabitapp/supacode/releases/latest/download/appcast.xml";
 
 const sha256 = async (value) =>
   Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", text.encode(value))))
@@ -69,6 +71,87 @@ test("valid versioned download is cached after checksum validation", async () =>
   assert.equal(second.headers.get("x-supacode-cache"), "hit");
   assert.equal(await second.text(), body);
   assert.equal(fetchCount, 2);
+});
+
+test("range downloads are rejected until a verified asset is cached", async () => {
+  const store = installCache();
+  globalThis.fetch = async () => {
+    throw new Error("range miss should not fetch");
+  };
+
+  const response = await fetchWorker("/download/v1.0.0/supacode.dmg", {
+    headers: { range: "bytes=0-" },
+  });
+  assert.equal(response.status, 416);
+  assert.equal(response.headers.get("cache-control"), "no-store");
+  assert.equal(response.headers.get("x-supacode-cache"), "range-miss");
+  assert.equal(store.size, 0);
+});
+
+test("range downloads are served from verified cache", async () => {
+  installCache();
+  const body = "verified asset";
+  const digest = await sha256(body);
+  globalThis.fetch = async (url) => {
+    if (url === releaseManifestUrl) {
+      return Response.json({
+        assets: {
+          "supacode.dmg": { sha256: digest, size: text.encode(body).byteLength },
+        },
+      });
+    }
+    assert.equal(url, releaseDMGUrl);
+    return new Response(body);
+  };
+
+  await fetchWorker("/download/v1.0.0/supacode.dmg");
+
+  globalThis.fetch = async () => {
+    throw new Error("range hit should not fetch");
+  };
+  const response = await fetchWorker("/download/v1.0.0/supacode.dmg", {
+    headers: { range: "bytes=0-7" },
+  });
+  assert.equal(response.status, 206);
+  assert.equal(response.headers.get("content-length"), "8");
+  assert.equal(response.headers.get("content-range"), `bytes 0-7/${text.encode(body).byteLength}`);
+  assert.equal(response.headers.get("x-supacode-cache"), "hit");
+  assert.equal(await response.text(), "verified");
+});
+
+test("appcast is proxied without checksum validation", async () => {
+  installCache();
+  const seen = [];
+  globalThis.fetch = async (url) => {
+    seen.push(url);
+    assert.equal(url, latestAppcastUrl);
+    return new Response("appcast");
+  };
+
+  const response = await fetchWorker("/download/latest/appcast.xml");
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("cache-control"), "public, max-age=300");
+  assert.equal(response.headers.get("x-supacode-cache"), "bypass");
+  assert.equal(await response.text(), "appcast");
+  assert.deepEqual(seen, [latestAppcastUrl]);
+});
+
+test("appcast range requests are proxied", async () => {
+  installCache();
+  const seen = [];
+  globalThis.fetch = async (url, init) => {
+    seen.push([url, init.headers.get("range")]);
+    return new Response("appcast range", { status: 206 });
+  };
+
+  const response = await fetchWorker("/download/latest/appcast.xml", {
+    headers: { range: "bytes=0-3" },
+  });
+  assert.equal(response.status, 206);
+  assert.equal(response.headers.get("cache-control"), "public, max-age=300");
+  assert.equal(response.headers.get("x-supacode-cache"), "bypass");
+  assert.equal(await response.text(), "appcast range");
+  assert.deepEqual(seen, [[latestAppcastUrl, "bytes=0-3"]]);
 });
 
 test("checksum mismatch is blocked and not cached", async () => {

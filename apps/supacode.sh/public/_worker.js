@@ -4,6 +4,7 @@ const CHECKSUMS_FILE = "checksums.json";
 const IMMUTABLE_CACHE_CONTROL = "public, max-age=31536000, immutable";
 const VOLATILE_CACHE_CONTROL = "public, max-age=300";
 const NO_STORE_CACHE_CONTROL = "no-store";
+const CHECKSUM_GATED_ASSETS = new Set(["supacode.app.zip", "supacode.dmg"]);
 
 const methodNotAllowed = () =>
   new Response("Method Not Allowed", {
@@ -37,9 +38,9 @@ const responseWithHeaders = (response, headers) => {
   });
 };
 
-const uncachedResponse = (response, cacheStatus) =>
+const uncachedResponse = (response, cacheStatus, cacheControl = NO_STORE_CACHE_CONTROL) =>
   responseWithHeaders(response, {
-    "cache-control": NO_STORE_CACHE_CONTROL,
+    "cache-control": cacheControl,
     "x-supacode-cache": cacheStatus,
   });
 
@@ -52,6 +53,81 @@ const upstreamFailureResponse = () =>
     },
   });
 
+const rangeNotSatisfiableResponse = (size) => {
+  const headers = new Headers({
+    "accept-ranges": "bytes",
+    "cache-control": NO_STORE_CACHE_CONTROL,
+    "x-supacode-cache": "range-miss",
+  });
+  if (Number.isSafeInteger(size)) {
+    headers.set("content-range", `bytes */${size}`);
+  }
+  return new Response("Range Not Satisfiable", {
+    status: 416,
+    headers,
+  });
+};
+
+const rangeBounds = (rangeHeader, size) => {
+  const match = /^bytes=(\d*)-(\d*)$/.exec(rangeHeader ?? "");
+  if (!match || size < 0) {
+    return null;
+  }
+
+  const startText = match[1];
+  const endText = match[2];
+  if (!startText && !endText) {
+    return null;
+  }
+
+  if (!startText) {
+    const suffixLength = Number(endText);
+    if (!Number.isSafeInteger(suffixLength) || suffixLength <= 0) {
+      return null;
+    }
+    return {
+      end: size - 1,
+      start: Math.max(size - suffixLength, 0),
+    };
+  }
+
+  const start = Number(startText);
+  const end = endText ? Number(endText) : size - 1;
+  if (
+    !Number.isSafeInteger(start) ||
+    !Number.isSafeInteger(end) ||
+    start < 0 ||
+    end < start ||
+    start >= size
+  ) {
+    return null;
+  }
+
+  return {
+    end: Math.min(end, size - 1),
+    start,
+  };
+};
+
+const cachedRangeResponse = async (cached, rangeHeader) => {
+  const buffer = await cached.arrayBuffer();
+  const range = rangeBounds(rangeHeader, buffer.byteLength);
+  if (!range) {
+    return rangeNotSatisfiableResponse(buffer.byteLength);
+  }
+
+  const body = buffer.slice(range.start, range.end + 1);
+  const headers = new Headers(cached.headers);
+  headers.set("accept-ranges", "bytes");
+  headers.set("content-length", String(body.byteLength));
+  headers.set("content-range", `bytes ${range.start}-${range.end}/${buffer.byteLength}`);
+  headers.set("x-supacode-cache", "hit");
+  return new Response(body, {
+    status: 206,
+    headers,
+  });
+};
+
 const resolveDownload = (path) => {
   if (!path) {
     return null;
@@ -63,12 +139,14 @@ const resolveDownload = (path) => {
 
   const tag = segments[0];
   const assetName = segments.slice(1).join("/");
+  const verifiesChecksum = CHECKSUM_GATED_ASSETS.has(assetName) || assetName.endsWith(".delta");
   if (tag === "latest") {
     return {
       assetName,
       cacheControl: VOLATILE_CACHE_CONTROL,
       manifestTarget: `${LATEST_BASE}${CHECKSUMS_FILE}`,
       target: `${LATEST_BASE}${assetName}`,
+      verifiesChecksum,
     };
   }
 
@@ -78,10 +156,11 @@ const resolveDownload = (path) => {
     cacheControl,
     manifestTarget: `${DOWNLOADS_BASE}${tag}/${CHECKSUMS_FILE}`,
     target: `${DOWNLOADS_BASE}${segments.join("/")}`,
+    verifiesChecksum,
   };
 };
 
-const proxyUncachedRequest = async (request, target) => {
+const proxyUncachedRequest = async (request, target, cacheControl = NO_STORE_CACHE_CONTROL) => {
   if (request.method !== "GET" && request.method !== "HEAD") {
     return methodNotAllowed();
   }
@@ -101,7 +180,7 @@ const proxyUncachedRequest = async (request, target) => {
   } catch {
     return upstreamFailureResponse();
   }
-  return uncachedResponse(response, "bypass");
+  return uncachedResponse(response, "bypass", cacheControl);
 };
 
 const checksumEntry = async (route) => {
@@ -136,15 +215,32 @@ const verifiedDownloadResponse = async (request, route) => {
     return methodNotAllowed();
   }
 
-  if (request.method === "HEAD" || request.headers.has("range") || !globalThis.caches?.default) {
+  if (request.method === "HEAD") {
     return proxyUncachedRequest(request, route.target);
+  }
+
+  if (!route.verifiesChecksum) {
+    return proxyUncachedRequest(request, route.target, route.cacheControl);
+  }
+
+  const isRangeRequest = request.headers.has("range");
+  if (!globalThis.caches?.default) {
+    return isRangeRequest
+      ? rangeNotSatisfiableResponse()
+      : proxyUncachedRequest(request, route.target);
   }
 
   const requestUrl = new URL(request.url);
   const cacheKey = new Request(requestUrl.toString(), { method: "GET" });
   const cached = await caches.default.match(cacheKey);
   if (cached) {
+    if (isRangeRequest) {
+      return cachedRangeResponse(cached, request.headers.get("range"));
+    }
     return responseWithHeaders(cached, { "x-supacode-cache": "hit" });
+  }
+  if (isRangeRequest) {
+    return rangeNotSatisfiableResponse();
   }
 
   const entry = await checksumEntry(route);

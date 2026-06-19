@@ -23,6 +23,8 @@ jobs:
             command: bun run fmt:check
           - name: Types
             command: bun run check-types
+          - name: Test
+            command: bun run --filter supacode.sh test
           - name: Build
             command: bun run build
     steps:
