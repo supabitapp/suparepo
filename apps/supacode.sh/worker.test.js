@@ -8,6 +8,10 @@ if (!globalThis.crypto) {
 }
 
 const text = new TextEncoder();
+const releaseManifestUrl =
+  "https://github.com/supabitapp/supacode/releases/download/v1.0.0/checksums.json";
+const releaseDMGUrl =
+  "https://github.com/supabitapp/supacode/releases/download/v1.0.0/supacode.dmg";
 
 const sha256 = async (value) =>
   Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", text.encode(value))))
@@ -41,17 +45,14 @@ test("valid versioned download is cached after checksum validation", async () =>
   let fetchCount = 0;
   globalThis.fetch = async (url) => {
     fetchCount += 1;
-    if (url === "https://github.com/supabitapp/supacode/releases/download/v1.0.0/checksums.json") {
+    if (url === releaseManifestUrl) {
       return Response.json({
         assets: {
           "supacode.dmg": { sha256: digest, size: text.encode(body).byteLength },
         },
       });
     }
-    assert.equal(
-      url,
-      "https://github.com/supabitapp/supacode/releases/download/v1.0.0/supacode.dmg",
-    );
+    assert.equal(url, releaseDMGUrl);
     return new Response(body);
   };
 
@@ -73,7 +74,7 @@ test("valid versioned download is cached after checksum validation", async () =>
 test("checksum mismatch is blocked and not cached", async () => {
   const store = installCache();
   globalThis.fetch = async (url) => {
-    if (url === "https://github.com/supabitapp/supacode/releases/download/v1.0.0/checksums.json") {
+    if (url === releaseManifestUrl) {
       return Response.json({
         assets: {
           "supacode.dmg": { sha256: "0".repeat(64), size: 5 },
@@ -93,7 +94,7 @@ test("checksum mismatch is blocked and not cached", async () => {
 test("upstream failures are passed through without caching", async () => {
   const store = installCache();
   globalThis.fetch = async (url) => {
-    if (url === "https://github.com/supabitapp/supacode/releases/download/v1.0.0/checksums.json") {
+    if (url === releaseManifestUrl) {
       return Response.json({
         assets: {
           "supacode.dmg": { sha256: "0".repeat(64), size: 5 },
@@ -113,7 +114,7 @@ test("upstream failures are passed through without caching", async () => {
 test("upstream fetch errors are blocked without caching", async () => {
   const store = installCache();
   globalThis.fetch = async (url) => {
-    if (url === "https://github.com/supabitapp/supacode/releases/download/v1.0.0/checksums.json") {
+    if (url === releaseManifestUrl) {
       return Response.json({
         assets: {
           "supacode.dmg": { sha256: "0".repeat(64), size: 5 },
@@ -133,7 +134,7 @@ test("upstream fetch errors are blocked without caching", async () => {
 test("missing manifest entry is served without caching", async () => {
   const store = installCache();
   globalThis.fetch = async (url) => {
-    if (url === "https://github.com/supabitapp/supacode/releases/download/v1.0.0/checksums.json") {
+    if (url === releaseManifestUrl) {
       return Response.json({ assets: {} });
     }
     return new Response("available");

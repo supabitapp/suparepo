@@ -81,7 +81,7 @@ const resolveDownload = (path) => {
   };
 };
 
-const proxyHeadRequest = async (request, target) => {
+const proxyUncachedRequest = async (request, target) => {
   if (request.method !== "GET" && request.method !== "HEAD") {
     return methodNotAllowed();
   }
@@ -137,7 +137,7 @@ const verifiedDownloadResponse = async (request, route) => {
   }
 
   if (request.method === "HEAD" || request.headers.has("range") || !globalThis.caches?.default) {
-    return proxyHeadRequest(request, route.target);
+    return proxyUncachedRequest(request, route.target);
   }
 
   const requestUrl = new URL(request.url);
