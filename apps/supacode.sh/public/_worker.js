@@ -6,6 +6,9 @@ const VOLATILE_CACHE_CONTROL = "public, max-age=300";
 const NO_STORE_CACHE_CONTROL = "no-store";
 const CHECKSUM_GATED_ASSETS = new Set(["supacode.app.zip", "supacode.dmg"]);
 const DOWNLOAD_CACHE_VERSION = "2";
+const DOWNLOAD_REDIRECTS = new Map([
+  ["/download/v0.10.2/supacode.dmg", `${DOWNLOADS_BASE}v0.10.2/supacode.dmg`],
+]);
 
 const methodNotAllowed = () =>
   new Response("Method Not Allowed", {
@@ -17,6 +20,17 @@ const buildTargetUrl = (target, requestUrl) => {
   const targetUrl = new URL(target);
   targetUrl.search = requestUrl.search;
   return targetUrl.toString();
+};
+
+const redirectDownload = (request, requestUrl) => {
+  const target = DOWNLOAD_REDIRECTS.get(requestUrl.pathname);
+  if (!target) {
+    return null;
+  }
+  if (request.method !== "GET" && request.method !== "HEAD") {
+    return methodNotAllowed();
+  }
+  return Response.redirect(buildTargetUrl(target, requestUrl), 302);
 };
 
 const downloadCacheKey = (requestUrl) => {
@@ -297,6 +311,11 @@ export default {
     const url = new URL(request.url);
 
     if (url.pathname.startsWith("/download/")) {
+      const redirect = redirectDownload(request, url);
+      if (redirect) {
+        return redirect;
+      }
+
       const rawPath = url.pathname.slice("/download/".length);
       const route = resolveDownload(rawPath);
       if (!route) {

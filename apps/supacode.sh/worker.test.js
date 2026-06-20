@@ -14,6 +14,7 @@ const releaseDMGUrl =
   "https://github.com/supabitapp/supacode/releases/download/v1.0.0/supacode.dmg";
 const latestAppcastUrl =
   "https://github.com/supabitapp/supacode/releases/latest/download/appcast.xml";
+const v0102DMGUrl = "https://github.com/supabitapp/supacode/releases/download/v0.10.2/supacode.dmg";
 
 const sha256 = async (value) =>
   Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", text.encode(value))))
@@ -71,6 +72,16 @@ test("valid versioned download is cached after checksum validation", async () =>
   assert.equal(second.headers.get("x-supacode-cache"), "hit");
   assert.equal(await second.text(), body);
   assert.equal(fetchCount, 2);
+});
+
+test("v0.10.2 dmg redirects to GitHub", async () => {
+  globalThis.fetch = async () => {
+    throw new Error("redirect should not fetch");
+  };
+
+  const response = await fetchWorker("/download/v0.10.2/supacode.dmg?source=brew");
+  assert.equal(response.status, 302);
+  assert.equal(response.headers.get("location"), `${v0102DMGUrl}?source=brew`);
 });
 
 test("stale raw cache entries are ignored", async () => {
