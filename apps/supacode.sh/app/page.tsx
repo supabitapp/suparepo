@@ -27,15 +27,43 @@ const features = [
     badge: "GitHub",
   },
   {
-    title: "Open source",
-    description: "Read every line. Fork it. Break it. Fix it. Ship it. Fully open on GitHub.",
-    badge: "OSS",
+    title: "Source available",
+    description: "Read the code, report issues, and contribute on GitHub.",
+    badge: "Source",
   },
   {
     title: "50+ agents",
     description:
       "Run dozens of coding agents simultaneously. Each in its own isolated environment, all under one roof.",
     badge: "Scale",
+  },
+];
+
+const licenseQuestions = [
+  {
+    question: "What counts toward the free trial?",
+    answer:
+      "Your first five successful local worktree creations across all repositories on this Mac. Deleting a worktree does not reset the count. Failed creations do not count, and SSH worktree creation stays free.",
+  },
+  {
+    question: "What happens after five creations?",
+    answer:
+      "Supacode asks for a license before creating another local worktree. Your existing worktrees and terminals remain usable. If you already use Supacode, you get five additional local creations when you first install the licensed version.",
+  },
+  {
+    question: "How do I activate or move my license?",
+    answer:
+      "After checkout, we email your license key. Paste it into Settings → License. One Mac can be active at a time. Deactivate in those settings before activating another Mac; contact support if the old Mac is unavailable.",
+  },
+  {
+    question: "Do I have to renew?",
+    answer:
+      "No. Your purchase includes updates released during the next 365 days, and you can keep using those versions. An optional $59 USD renewal adds 365 days of updates. Nothing renews automatically. The license portal has downloads for versions you own.",
+  },
+  {
+    question: "Can I work offline?",
+    answer:
+      "Activation needs an internet connection. After activation, your Mac can use its saved license offline. License changes take effect when the app next connects successfully.",
   },
 ];
 
@@ -53,7 +81,21 @@ export default function Home() {
               supacode
             </span>
           </div>
-          <div className="flex items-center gap-6 text-sm text-muted-foreground">
+          <div className="flex flex-wrap items-center justify-end gap-x-6 gap-y-2 text-sm text-muted-foreground">
+            <TrackedLink
+              href="#pricing"
+              event="nav_pricing_clicked"
+              className="transition-colors hover:text-foreground"
+            >
+              Pricing
+            </TrackedLink>
+            <TrackedLink
+              href="https://license.supacode.sh/login"
+              event="nav_license_clicked"
+              className="transition-colors hover:text-foreground"
+            >
+              My license
+            </TrackedLink>
             <TrackedLink
               href="https://docs.supacode.sh"
               event="nav_docs_clicked"
@@ -82,14 +124,17 @@ export default function Home() {
             className="supacode-reveal mt-6 max-w-xl text-base text-muted-foreground md:text-lg"
             style={{ animationDelay: "200ms" }}
           >
-            Run 50+ coding agents in parallel. Blazing fast, open source, native macOS app built on
-            libghostty.
+            Run 50+ coding agents in parallel. Blazing fast, source available, native macOS app
+            built on libghostty.
           </p>
           <div
             className="supacode-reveal mt-10 flex flex-col items-center gap-2"
             style={{ animationDelay: "280ms" }}
           >
             <DownloadButton />
+            <span className="max-w-sm text-sm text-muted-foreground">
+              Try five local worktree creations free. Then $99 USD for a license.
+            </span>
             <span className="text-sm text-muted-foreground">or</span>
             <BrewInstallCommand />
             <span className="mt-1 text-xs text-muted-foreground">Requires macOS 26 Tahoe</span>
@@ -137,11 +182,71 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="supacode-reveal mb-24 flex flex-col items-center gap-6 text-center md:mb-32">
-          <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
-            Ready to run your agents?
-          </h2>
-          <DownloadButton />
+        <section id="pricing" className="mb-24 scroll-mt-10 md:mb-32">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
+              Buy once. Keep the versions you own.
+            </h2>
+            <p className="mt-4 text-muted-foreground">
+              Try five local worktree creations free, with no card required. SSH worktree creation
+              stays free.
+            </p>
+          </div>
+          <div className="mx-auto mt-10 max-w-2xl rounded-xl border border-border bg-background p-6 md:p-10">
+            <p className="text-sm font-medium text-muted-foreground">Supacode license · One Mac</p>
+            <p className="mt-3 text-5xl font-semibold tracking-tight">
+              $99 <span className="text-base font-normal text-muted-foreground">USD</span>
+            </p>
+            <p className="mt-3 text-muted-foreground">One-time payment. Taxes added at checkout.</p>
+            <ul className="mt-6 space-y-3 text-sm leading-relaxed">
+              <li>Unlimited local worktree creations on your activated Mac</li>
+              <li>365 days of updates, with continued use of the versions you own</li>
+              <li>Move your license by deactivating your previous Mac</li>
+              <li>Optional $59 USD renewal for another 365 days of updates</li>
+            </ul>
+            <div className="mt-8 flex flex-wrap items-center gap-5">
+              <TrackedLink
+                href="https://license.supacode.sh/buy"
+                event="purchase_clicked"
+                className="inline-flex min-h-11 items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+              >
+                Buy a license
+              </TrackedLink>
+              <TrackedLink
+                href="https://license.supacode.sh/login"
+                event="pricing_license_clicked"
+                className="text-sm underline underline-offset-4"
+              >
+                Manage an existing license
+              </TrackedLink>
+            </div>
+            <p className="mt-6 text-sm text-muted-foreground">
+              Sold by SUPATERM LIMITED. Initial purchase refund requests accepted within seven days.
+              See the{" "}
+              <a
+                className="underline underline-offset-4"
+                href="https://license.supacode.sh/refunds"
+              >
+                refund policy
+              </a>
+              .
+            </p>
+          </div>
+          <div className="mx-auto mt-12 max-w-2xl">
+            <h3 className="mb-6 text-xl font-semibold tracking-tight">Licensing questions</h3>
+            {licenseQuestions.map(({ question, answer }) => (
+              <details key={question} className="border-b border-border py-5">
+                <summary className="cursor-pointer font-medium">{question}</summary>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{answer}</p>
+              </details>
+            ))}
+            <p className="mt-6 text-sm text-muted-foreground">
+              Need help?{" "}
+              <a className="underline underline-offset-4" href="mailto:license@supacode.sh">
+                license@supacode.sh
+              </a>
+            </p>
+          </div>
         </section>
 
         <Separator className="supacode-reveal" />
@@ -152,6 +257,15 @@ export default function Home() {
             <span className="font-medium text-foreground">Supacode</span>
           </div>
           <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
+            <a href="https://license.supacode.sh/terms" className="hover:text-foreground">
+              Terms
+            </a>
+            <a href="https://license.supacode.sh/refunds" className="hover:text-foreground">
+              Refunds
+            </a>
+            <a href="https://license.supacode.sh/privacy" className="hover:text-foreground">
+              Privacy
+            </a>
             <TrackedLink
               href="https://github.com/supabitapp/supacode"
               event="footer_github_clicked"
