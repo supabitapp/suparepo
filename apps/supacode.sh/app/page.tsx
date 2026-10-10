@@ -232,21 +232,10 @@ export default function Home() {
             ))}
           </div>
           <div className="mx-auto mt-7 max-w-3xl text-center text-sm text-muted-foreground">
-            <p>One-time payment. Taxes added at checkout. Both plans are for one person.</p>
-            <p className="mt-3">
-              Sold by SUPATERM LIMITED. Initial purchase refunds within seven days. See the{" "}
-              <a
-                className="underline underline-offset-4"
-                href="https://license.supacode.sh/refunds"
-              >
-                refund policy
-              </a>
-              .
-            </p>
             <TrackedLink
               href="https://license.supacode.sh/login"
               event="pricing_license_clicked"
-              className="mt-4 inline-block underline underline-offset-4"
+              className="inline-block underline underline-offset-4"
             >
               Manage an existing license
             </TrackedLink>
