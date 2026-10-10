@@ -14,7 +14,7 @@ export function DownloadButton() {
     >
       <Button size="lg" className="gap-2.5 px-6 py-3 text-base">
         <HugeiconsIcon icon={AppleFinderIcon} className="size-5" strokeWidth={2} />
-        Try Supacode for macOS
+        Download for macOS
       </Button>
     </a>
   );

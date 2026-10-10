@@ -58,7 +58,7 @@ const licenseQuestions = [
   {
     question: "Do I have to renew?",
     answer:
-      "No. Your purchase includes updates released during the next 365 days, and you can keep using those versions. An optional $59 USD renewal adds 365 days of updates. Nothing renews automatically. The license portal has downloads for versions you own.",
+      "No. Keep using the versions you own forever. Your purchase includes one year of updates. Renew only if you want more updates: $59 USD for another year, with no automatic renewal. Download your included versions from the license portal.",
   },
   {
     question: "Can I work offline?",
@@ -182,24 +182,24 @@ export default function Home() {
         <section id="pricing" className="mb-24 scroll-mt-10 md:mb-32">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
-              Buy once. Keep the versions you own.
+              Buy once. Use forever.
             </h2>
             <p className="mt-4 text-muted-foreground">
-              Try five local worktree creations free, with no card required. SSH worktree creation
-              stays free.
+              A lifetime license with one year of updates. No subscription, no automatic renewal.
             </p>
           </div>
           <div className="mx-auto mt-10 max-w-2xl rounded-xl border border-border bg-background p-6 md:p-10">
-            <p className="text-sm font-medium text-muted-foreground">Supacode license · One Mac</p>
+            <p className="text-sm font-medium text-muted-foreground">Lifetime license · One Mac</p>
             <p className="mt-3 text-5xl font-semibold tracking-tight">
               $99 <span className="text-base font-normal text-muted-foreground">USD</span>
             </p>
             <p className="mt-3 text-muted-foreground">One-time payment. Taxes added at checkout.</p>
             <ul className="mt-6 space-y-3 text-sm leading-relaxed">
-              <li>Unlimited local worktree creations on your activated Mac</li>
-              <li>365 days of updates, with continued use of the versions you own</li>
-              <li>Move your license by deactivating your previous Mac</li>
-              <li>Optional $59 USD renewal for another 365 days of updates</li>
+              <li>Unlimited local worktree creation on one Mac</li>
+              <li>One year of updates included</li>
+              <li>Keep using the versions you own forever</li>
+              <li>Transfer your license to a new Mac</li>
+              <li>Optional $59 USD renewal for another year of updates</li>
             </ul>
             <div className="mt-8 flex flex-wrap items-center gap-5">
               <TrackedLink
