@@ -132,9 +132,6 @@ export default function Home() {
             style={{ animationDelay: "280ms" }}
           >
             <DownloadButton />
-            <span className="max-w-sm text-sm text-muted-foreground">
-              Try five local worktree creations free. Then $99 USD for a license.
-            </span>
             <span className="text-sm text-muted-foreground">or</span>
             <BrewInstallCommand />
             <span className="mt-1 text-xs text-muted-foreground">Requires macOS 26 Tahoe</span>
