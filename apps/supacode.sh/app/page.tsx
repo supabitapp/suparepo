@@ -1,7 +1,7 @@
 import { ArrowDown01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Separator } from "@repo/ui/components/ui/separator";
-import type { ReactNode } from "react";
+import { type ReactNode, useId } from "react";
 import { BrewInstallCommand, DownloadButton, TrackedLink } from "./components";
 
 const navLinkClass =
@@ -9,6 +9,8 @@ const navLinkClass =
 
 const textLinkClass =
   "inline-flex min-h-11 items-center underline decoration-rule-strong underline-offset-4 transition-colors hover:text-foreground hover:decoration-foreground";
+
+const cellInset = "px-7 md:px-9";
 
 const features = [
   {
@@ -76,69 +78,82 @@ const licenseQuestions = [
   },
 ];
 
-const personalPlans = [
-  { id: "basic", name: "Basic", price: 99, summary: "One person on one Mac." },
-  { id: "standard", name: "Standard", price: 129, summary: "One person on two Macs." },
-];
+type PlanId = "basic" | "standard" | "team";
 
-const personalTerms = [
-  "Move between Macs by deactivating a previous Mac",
-  "Optional $59 renewal for the whole license",
-];
-
-const teamFeatures = [
-  "Team portal for seat assignment and reassignment",
-  "Each seat gets its own license key",
-];
-
-function PlanSummary({
+function Plan({
+  plan,
   name,
   price,
   unit,
+  primary = false,
   children,
 }: {
+  plan: PlanId;
   name: string;
   price: number;
   unit: string;
-  children: ReactNode;
-}) {
-  return (
-    <div className="flex flex-col gap-6">
-      <h3 className="text-2xl font-semibold tracking-tight">{name}</h3>
-      <div className="flex flex-col gap-2">
-        <p className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-          <span className="text-price font-semibold tabular-nums">${price}</span>
-          <span className="text-sm whitespace-nowrap text-muted-foreground">USD / {unit}</span>
-        </p>
-        <div className="text-sm leading-relaxed text-pretty text-muted-foreground">{children}</div>
-      </div>
-    </div>
-  );
-}
-
-function PurchaseLink({
-  plan,
-  name,
-  primary = false,
-  className = "",
-}: {
-  plan: string;
-  name: string;
   primary?: boolean;
-  className?: string;
+  children: ReactNode;
 }) {
   const tone = primary
     ? "border-primary bg-primary text-primary-foreground hover:border-foreground hover:bg-foreground"
     : "border-rule-strong text-foreground hover:bg-muted";
 
   return (
-    <TrackedLink
-      href={`https://license.supacode.sh/buy?plan=${plan}`}
-      event={`purchase_${plan}_clicked`}
-      className={`inline-flex min-h-11 items-center justify-center rounded-md border px-6 text-sm font-medium transition-[background-color,border-color,scale] duration-150 ease-out active:scale-[0.96] motion-reduce:transition-none ${tone} ${className}`}
-    >
-      Buy {name}
-    </TrackedLink>
+    <div className={`flex flex-col gap-8 py-7 md:py-9 ${cellInset}`}>
+      <div className="flex flex-col gap-6">
+        <h3 className="text-2xl font-semibold tracking-tight">{name}</h3>
+        <div className="flex flex-col gap-2">
+          <p className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+            <span className="text-price font-semibold tabular-nums">${price}</span>
+            <span className="text-sm whitespace-nowrap text-muted-foreground">USD / {unit}</span>
+          </p>
+          <div className="text-sm leading-relaxed text-pretty text-muted-foreground">
+            {children}
+          </div>
+        </div>
+      </div>
+      <TrackedLink
+        href={`https://license.supacode.sh/buy?plan=${plan}`}
+        event={`purchase_${plan}_clicked`}
+        className={`mt-auto inline-flex min-h-11 items-center justify-center rounded-md border px-6 text-sm font-medium transition-[background-color,border-color,scale] duration-150 ease-out active:scale-[0.96] motion-reduce:transition-none ${tone}`}
+      >
+        Buy {name}
+      </TrackedLink>
+    </div>
+  );
+}
+
+function PlanBox({
+  terms,
+  children,
+}: {
+  terms?: { label: string; items: string[] };
+  children: ReactNode;
+}) {
+  const termsLabelId = useId();
+
+  return (
+    <div className="rounded-xl border border-rule bg-background">
+      <div className="grid divide-y divide-rule md:grid-cols-2 md:divide-x md:divide-y-0">
+        {children}
+      </div>
+      {terms && (
+        <div className="grid gap-y-2 border-t border-rule py-5 text-sm text-pretty md:grid-cols-2">
+          <p id={termsLabelId} className={`font-medium ${cellInset}`}>
+            {terms.label}
+          </p>
+          <ul
+            aria-labelledby={termsLabelId}
+            className={`flex flex-col gap-2 text-muted-foreground ${cellInset}`}
+          >
+            {terms.items.map((term) => (
+              <li key={term}>{term}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -271,47 +286,40 @@ export default function Home() {
           </div>
 
           <div className="mt-12 flex flex-col gap-6">
-            <div className="rounded-xl border border-rule bg-background">
-              <div className="grid divide-y divide-rule md:grid-cols-2 md:divide-x md:divide-y-0">
-                {personalPlans.map((plan) => (
-                  <div key={plan.id} className="flex flex-col gap-8 p-7 md:p-9">
-                    <PlanSummary name={plan.name} price={plan.price} unit="license">
-                      <p>{plan.summary}</p>
-                      {plan.id === "standard" && (
-                        <p>
-                          <s className="tabular-nums">$198</s>{" "}
-                          <span className="font-medium text-foreground">Save 35%</span> compared
-                          with two Basic licenses.
-                        </p>
-                      )}
-                    </PlanSummary>
-                    <PurchaseLink
-                      plan={plan.id}
-                      name={plan.name}
-                      primary={plan.id === "standard"}
-                      className="mt-auto"
-                    />
-                  </div>
-                ))}
-              </div>
-              <ul className="grid gap-2 border-t border-rule px-7 py-5 text-sm text-pretty text-muted-foreground md:grid-cols-2 md:gap-x-18 md:px-9">
-                {personalTerms.map((term) => (
-                  <li key={term}>{term}</li>
-                ))}
-              </ul>
-            </div>
+            <PlanBox
+              terms={{
+                label: "Basic and Standard",
+                items: [
+                  "Move between Macs by deactivating a previous Mac",
+                  "Optional $59 renewal for the whole license",
+                ],
+              }}
+            >
+              <Plan plan="basic" name="Basic" price={99} unit="license">
+                <p>One person on one Mac.</p>
+              </Plan>
+              <Plan plan="standard" name="Standard" price={129} unit="license" primary>
+                <p>One person on two Macs.</p>
+                <p>
+                  <s className="tabular-nums">$198</s>{" "}
+                  <span className="font-medium text-foreground">Save 35%</span> compared with two
+                  Basic licenses.
+                </p>
+              </Plan>
+            </PlanBox>
 
-            <div className="grid gap-8 rounded-xl border border-rule bg-background p-7 md:grid-cols-2 md:gap-x-18 md:p-9">
-              <PlanSummary name="Team" price={79} unit="seat">
-                <p>One Mac per person, minimum 3 seats.</p>
-              </PlanSummary>
-              <ul className="flex flex-col gap-2 text-sm text-pretty text-muted-foreground md:col-start-2 md:row-span-2 md:row-start-1 md:pt-2">
-                {teamFeatures.map((feature) => (
-                  <li key={feature}>{feature}</li>
-                ))}
+            <PlanBox>
+              <Plan plan="team" name="Team" price={79} unit="seat">
+                <p>One Mac per seat, minimum 3 seats.</p>
+              </Plan>
+              <ul
+                className={`flex flex-col gap-2 py-7 text-sm text-pretty text-muted-foreground md:py-9 ${cellInset}`}
+              >
+                <li>Team portal for seat assignment and reassignment</li>
+                <li>Each seat gets its own license key</li>
+                <li>Optional renewal through support</li>
               </ul>
-              <PurchaseLink plan="team" name="Team" className="md:col-start-1" />
-            </div>
+            </PlanBox>
           </div>
 
           <div className="mt-20 grid gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] md:gap-x-12">
