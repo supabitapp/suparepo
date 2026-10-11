@@ -63,7 +63,7 @@ const licenseQuestions = [
   {
     question: "Can I work offline?",
     answer:
-      "Activation needs an internet connection. Basic and Standard can use their saved licenses offline. Team seats need an online refresh at least every seven days so owners can revoke or reassign access. License changes take effect when the app next connects.",
+      "Activation needs an internet connection. Every plan can use its saved license offline for versions it owns. Transfers, refunds, and other license changes take effect on a Mac after its next successful license refresh.",
   },
 ];
 
