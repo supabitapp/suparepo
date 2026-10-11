@@ -53,7 +53,7 @@ const licenseQuestions = [
   {
     question: "How do I activate or move my license?",
     answer:
-      "After checkout, we email your license key. Paste it into Settings → License. One Mac can be active at a time. Deactivate in those settings before activating another Mac; contact support if the old Mac is unavailable.",
+      "After checkout, we email your license key. Paste it into Settings → License. Basic allows one active Mac and Standard allows two, both for one person. Deactivate a Mac in those settings to free its place; contact support if the old Mac is unavailable.",
   },
   {
     question: "Do I have to renew?",
@@ -188,46 +188,57 @@ export default function Home() {
               A lifetime license with one year of updates. No subscription, no automatic renewal.
             </p>
           </div>
-          <div className="mx-auto mt-10 max-w-2xl rounded-xl border border-border bg-background p-6 md:p-10">
-            <p className="text-sm font-medium text-muted-foreground">Lifetime license · One Mac</p>
-            <p className="mt-3 text-5xl font-semibold tracking-tight">
-              $99 <span className="text-base font-normal text-muted-foreground">USD</span>
-            </p>
-            <p className="mt-3 text-muted-foreground">One-time payment. Taxes added at checkout.</p>
-            <ul className="mt-6 space-y-3 text-sm leading-relaxed">
-              <li>Unlimited local worktree creation on one Mac</li>
-              <li>One year of updates included</li>
-              <li>Keep using the versions you own forever</li>
-              <li>Transfer your license to a new Mac</li>
-              <li>Optional $59 USD renewal for another year of updates</li>
-            </ul>
-            <div className="mt-8 flex flex-wrap items-center gap-5">
-              <TrackedLink
-                href="https://license.supacode.sh/buy"
-                event="purchase_clicked"
-                className="inline-flex min-h-11 items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+          <div className="mx-auto mt-12 grid max-w-4xl gap-6 md:grid-cols-2">
+            {[
+              { id: "basic", name: "Basic", price: 99, devices: "One Mac" },
+              { id: "standard", name: "Standard", price: 129, devices: "Two Macs" },
+            ].map((plan) => (
+              <div
+                key={plan.id}
+                className={`relative flex flex-col rounded-xl border bg-background p-7 md:p-9 ${plan.id === "standard" ? "border-primary" : "border-border"}`}
               >
-                Buy a license
-              </TrackedLink>
-              <TrackedLink
-                href="https://license.supacode.sh/login"
-                event="pricing_license_clicked"
-                className="text-sm underline underline-offset-4"
-              >
-                Manage an existing license
-              </TrackedLink>
-            </div>
-            <p className="mt-6 text-sm text-muted-foreground">
-              Sold by SUPATERM LIMITED. Initial purchase refund requests accepted within seven days.
-              See the{" "}
-              <a
-                className="underline underline-offset-4"
-                href="https://license.supacode.sh/refunds"
-              >
-                refund policy
-              </a>
-              .
-            </p>
+                {plan.id === "standard" && (
+                  <span className="absolute -top-4 right-6 rounded-full bg-primary px-4 py-1.5 text-sm font-semibold text-primary-foreground">
+                    Save 35%
+                  </span>
+                )}
+                <h3 className="text-2xl font-semibold tracking-tight">{plan.name}</h3>
+                <p className="mt-6 flex flex-wrap items-baseline gap-3">
+                  {plan.id === "standard" && <s className="text-2xl text-muted-foreground">$198</s>}
+                  <span className="text-5xl font-semibold tracking-tight">${plan.price}</span>
+                  <span className="text-sm text-muted-foreground">USD / license</span>
+                </p>
+                <p className="mt-3 text-sm text-muted-foreground">
+                  {plan.id === "standard"
+                    ? "Compared with two Basic licenses."
+                    : "One-time payment. No subscription."}
+                </p>
+                <ul className="my-8 space-y-4 border-t border-border pt-7 text-sm leading-relaxed">
+                  <li className="font-semibold">{plan.devices} for one person</li>
+                  <li>Unlimited local worktree creations</li>
+                  <li>Buy once, keep the versions you own</li>
+                  <li>365 days of updates included</li>
+                  <li>Move between Macs by deactivating a previous Mac</li>
+                  <li>Optional $59 renewal for the whole license</li>
+                </ul>
+                <TrackedLink
+                  href={`https://license.supacode.sh/buy?plan=${plan.id}`}
+                  event={`purchase_${plan.id}_clicked`}
+                  className={`mt-auto inline-flex min-h-11 items-center justify-center rounded-md px-6 py-3 text-sm font-medium transition-opacity hover:opacity-90 ${plan.id === "standard" ? "bg-primary text-primary-foreground" : "border border-border text-foreground"}`}
+                >
+                  Buy {plan.name}
+                </TrackedLink>
+              </div>
+            ))}
+          </div>
+          <div className="mx-auto mt-7 max-w-3xl text-center text-sm text-muted-foreground">
+            <TrackedLink
+              href="https://license.supacode.sh/login"
+              event="pricing_license_clicked"
+              className="inline-block underline underline-offset-4"
+            >
+              Manage an existing license
+            </TrackedLink>
           </div>
           <div className="mx-auto mt-12 max-w-2xl">
             <h3 className="mb-6 text-xl font-semibold tracking-tight">Licensing questions</h3>
