@@ -53,17 +53,17 @@ const licenseQuestions = [
   {
     question: "How do I activate or move my license?",
     answer:
-      "After checkout, we email your license key. Paste it into Settings → License. Basic allows one active Mac and Standard allows two, both for one person. Team gives each assigned person one Mac and lets the team owner reassign seats in the license portal. Deactivate a Mac in those settings to free its place; contact support if the old Mac is unavailable.",
+      "For Basic and Standard, we email your license key after checkout. Paste it into Settings → License. Basic allows one active Mac and Standard allows two, both for one person. Team buyers use the license portal to assign seats and email each person their own key for one Mac. Deactivate a Mac in Settings → License to free its place; Team owners can also reassign seats in the portal.",
   },
   {
     question: "Do I have to renew?",
     answer:
-      "No. Keep using the versions you own forever. Your purchase includes one year of updates. Renew only if you want more updates: $59 USD for another year, with no automatic renewal. Download your included versions from the license portal.",
+      "No. Keep using the versions you own forever. Your purchase includes one year of updates. Basic and Standard can renew for $59 USD per license for another year, with no automatic renewal. Contact support for Team update renewals. Basic and Standard owners can download included versions from the license portal.",
   },
   {
     question: "Can I work offline?",
     answer:
-      "Activation needs an internet connection. Basic and Standard can use their saved licenses offline. Team seats periodically check in so an owner can revoke or reassign access; changes take effect when the app next connects.",
+      "Activation needs an internet connection. Basic and Standard can use their saved licenses offline. Team seats need an online refresh at least every seven days so owners can revoke or reassign access. License changes take effect when the app next connects.",
   },
 ];
 

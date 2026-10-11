@@ -1,5 +1,6 @@
 name: Deploy supacode.sh (Pages)
 on:
+  workflow_dispatch: {}
   push:
     branches:
       - main
