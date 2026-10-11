@@ -1,5 +1,6 @@
 name: Deploy supacode.sh (Pages)
 on:
+  workflow_dispatch: {}
   push:
     branches:
       - main
@@ -31,14 +32,31 @@ jobs:
     permissions:
       contents: read
       deployments: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       - uses: oven-sh/setup-bun@735343b667d3e6f658f44d0eca948eb6282f2b76
       - run: bun install --frozen-lockfile
       - run: bun run --filter supacode.sh test
       - run: bun run supacode.sh:build
-      - uses: cloudflare/wrangler-action@da0e0dfe58b7a431659754fdf3f186c529afbe65
+      - name: Deploy production
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        uses: cloudflare/wrangler-action@da0e0dfe58b7a431659754fdf3f186c529afbe65
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy apps/supacode.sh/out --project-name=supacode
+      - name: Deploy staging preview
+        if: github.event_name == 'pull_request'
+        id: staging
+        uses: cloudflare/wrangler-action@da0e0dfe58b7a431659754fdf3f186c529afbe65
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy apps/supacode.sh/out --project-name=supacode --branch pr-${{ github.event.pull_request.number }}
+      - name: Comment staging URL
+        if: github.event_name == 'pull_request' && steps.staging.outputs.pages-deployment-alias-url != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr comment "${{ github.event.pull_request.number }}" --body "Supacode staging preview (uses the production license checkout): ${{ steps.staging.outputs.pages-deployment-alias-url }}"

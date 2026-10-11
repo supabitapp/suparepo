@@ -53,17 +53,17 @@ const licenseQuestions = [
   {
     question: "How do I activate or move my license?",
     answer:
-      "After checkout, we email your license key. Paste it into Settings → License. Basic allows one active Mac and Standard allows two, both for one person. Deactivate a Mac in those settings to free its place; contact support if the old Mac is unavailable.",
+      "For Basic and Standard, we email your license key after checkout. Paste it into Settings → License. Basic allows one active Mac and Standard allows two, both for one person. Team buyers use the license portal to assign seats and email each person their own key for one Mac. Deactivate a Mac in Settings → License to free its place; Team owners can also reassign seats in the portal.",
   },
   {
     question: "Do I have to renew?",
     answer:
-      "No. Keep using the versions you own forever. Your purchase includes one year of updates. Renew only if you want more updates: $59 USD for another year, with no automatic renewal. Download your included versions from the license portal.",
+      "No. Keep using the versions you own forever. Your purchase includes one year of updates. Basic and Standard can renew for $59 USD per license for another year, with no automatic renewal. Contact support for Team update renewals. Basic and Standard owners can download included versions from the license portal.",
   },
   {
     question: "Can I work offline?",
     answer:
-      "Activation needs an internet connection. After activation, your Mac can use its saved license offline. License changes take effect when the app next connects successfully.",
+      "Activation needs an internet connection. Every plan can use its saved license offline for versions it owns. Transfers, refunds, and other license changes take effect on a Mac after its next successful license refresh.",
   },
 ];
 
@@ -188,10 +188,32 @@ export default function Home() {
               A lifetime license with one year of updates. No subscription, no automatic renewal.
             </p>
           </div>
-          <div className="mx-auto mt-12 grid max-w-4xl gap-6 md:grid-cols-2">
+          <div className="mx-auto mt-12 grid max-w-6xl gap-6 md:grid-cols-2 lg:grid-cols-3">
             {[
-              { id: "basic", name: "Basic", price: 99, devices: "One Mac" },
-              { id: "standard", name: "Standard", price: 129, devices: "Two Macs" },
+              {
+                id: "basic",
+                name: "Basic",
+                price: 99,
+                devices: "One Mac",
+                audience: "One person",
+                summary: "One-time payment. No subscription.",
+              },
+              {
+                id: "standard",
+                name: "Standard",
+                price: 129,
+                devices: "Two Macs",
+                audience: "One person",
+                summary: "Compared with two Basic licenses.",
+              },
+              {
+                id: "team",
+                name: "Team",
+                price: 79,
+                devices: "One Mac / seat",
+                audience: "Starts at 3 seats",
+                summary: "One-time payment. No subscription.",
+              },
             ].map((plan) => (
               <div
                 key={plan.id}
@@ -202,24 +224,37 @@ export default function Home() {
                     Save 35%
                   </span>
                 )}
+                {plan.id === "team" && (
+                  <span className="absolute -top-4 right-6 rounded-full bg-foreground px-4 py-1.5 text-sm font-semibold text-background">
+                    For teams
+                  </span>
+                )}
                 <h3 className="text-2xl font-semibold tracking-tight">{plan.name}</h3>
                 <p className="mt-6 flex flex-wrap items-baseline gap-3">
                   {plan.id === "standard" && <s className="text-2xl text-muted-foreground">$198</s>}
                   <span className="text-5xl font-semibold tracking-tight">${plan.price}</span>
-                  <span className="text-sm text-muted-foreground">USD / license</span>
+                  <span className="text-sm text-muted-foreground">
+                    USD / {plan.id === "team" ? "seat" : "license"}
+                  </span>
                 </p>
-                <p className="mt-3 text-sm text-muted-foreground">
-                  {plan.id === "standard"
-                    ? "Compared with two Basic licenses."
-                    : "One-time payment. No subscription."}
-                </p>
+                <p className="mt-3 text-sm text-muted-foreground">{plan.summary}</p>
                 <ul className="my-8 space-y-4 border-t border-border pt-7 text-sm leading-relaxed">
-                  <li className="font-semibold">{plan.devices} for one person</li>
+                  <li className="font-semibold">{plan.devices}</li>
+                  <li>{plan.audience}</li>
                   <li>Unlimited local worktree creations</li>
                   <li>Buy once, keep the versions you own</li>
                   <li>365 days of updates included</li>
-                  <li>Move between Macs by deactivating a previous Mac</li>
-                  <li>Optional $59 renewal for the whole license</li>
+                  {plan.id === "team" ? (
+                    <>
+                      <li>Team portal for seat assignment and reassignment</li>
+                      <li>Each seat gets its own license key</li>
+                    </>
+                  ) : (
+                    <>
+                      <li>Move between Macs by deactivating a previous Mac</li>
+                      <li>Optional $59 renewal for the whole license</li>
+                    </>
+                  )}
                 </ul>
                 <TrackedLink
                   href={`https://license.supacode.sh/buy?plan=${plan.id}`}
