@@ -1,5 +1,16 @@
+import { ArrowDown01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { Separator } from "@repo/ui/components/ui/separator";
+import { type ReactNode, useId } from "react";
 import { BrewInstallCommand, DownloadButton, TrackedLink } from "./components";
+
+const navLinkClass =
+  "inline-flex min-h-11 items-center px-2 transition-colors hover:text-foreground";
+
+const textLinkClass =
+  "inline-flex min-h-11 items-center underline decoration-rule-strong underline-offset-4 transition-colors hover:text-foreground hover:decoration-foreground";
+
+const cellInset = "px-7 md:px-9";
 
 const features = [
   {
@@ -67,46 +78,121 @@ const licenseQuestions = [
   },
 ];
 
+type PlanId = "basic" | "standard" | "team";
+
+function Plan({
+  plan,
+  name,
+  price,
+  unit,
+  primary = false,
+  children,
+}: {
+  plan: PlanId;
+  name: string;
+  price: number;
+  unit: string;
+  primary?: boolean;
+  children: ReactNode;
+}) {
+  const tone = primary
+    ? "border-primary bg-primary text-primary-foreground hover:border-foreground hover:bg-foreground"
+    : "border-rule-strong text-foreground hover:bg-muted";
+
+  return (
+    <div className={`flex flex-col gap-8 py-7 md:py-9 ${cellInset}`}>
+      <div className="flex flex-col gap-6">
+        <h3 className="text-2xl font-semibold tracking-tight">{name}</h3>
+        <div className="flex flex-col gap-2">
+          <p className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+            <span className="text-price font-semibold tabular-nums">${price}</span>
+            <span className="text-sm whitespace-nowrap text-muted-foreground">USD / {unit}</span>
+          </p>
+          <div className="text-sm leading-relaxed text-pretty text-muted-foreground">
+            {children}
+          </div>
+        </div>
+      </div>
+      <TrackedLink
+        href={`https://license.supacode.sh/buy?plan=${plan}`}
+        event={`purchase_${plan}_clicked`}
+        className={`mt-auto inline-flex min-h-11 items-center justify-center rounded-md border px-6 text-sm font-medium transition-[background-color,border-color,scale] duration-150 ease-out active:scale-[0.96] motion-reduce:transition-none ${tone}`}
+      >
+        Buy {name}
+      </TrackedLink>
+    </div>
+  );
+}
+
+function PlanBox({
+  terms,
+  children,
+}: {
+  terms?: { label: string; items: string[] };
+  children: ReactNode;
+}) {
+  const termsLabelId = useId();
+
+  return (
+    <div className="rounded-xl border border-rule bg-background">
+      <div className="grid divide-y divide-rule md:grid-cols-2 md:divide-x md:divide-y-0">
+        {children}
+      </div>
+      {terms && (
+        <div className="grid gap-y-2 border-t border-rule py-5 text-sm text-pretty md:grid-cols-2">
+          <p id={termsLabelId} className={`font-medium ${cellInset}`}>
+            {terms.label}
+          </p>
+          <ul
+            aria-labelledby={termsLabelId}
+            className={`flex flex-col gap-2 text-muted-foreground ${cellInset}`}
+          >
+            {terms.items.map((term) => (
+              <li key={term}>{term}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Home() {
   return (
     <main>
       <div className="mx-auto flex min-h-screen max-w-[1200px] flex-col px-6 py-10 md:px-8">
         <nav
-          className="supacode-reveal mb-20 flex items-center justify-between md:mb-28"
+          className="supacode-reveal mb-20 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between md:mb-28"
           style={{ animationDelay: "40ms" }}
         >
           <div className="flex items-center gap-3">
-            <img src="/supacode-app-icon.png" alt="Supacode" className="size-9" />
+            <img src="/supacode-app-icon.png" alt="" className="size-9" />
             <span className="text-sm font-medium uppercase tracking-[0.3em] text-foreground">
               supacode
             </span>
           </div>
-          <div className="flex flex-wrap items-center justify-end gap-x-6 gap-y-2 text-sm text-muted-foreground">
-            <TrackedLink
-              href="#pricing"
-              event="nav_pricing_clicked"
-              className="transition-colors hover:text-foreground"
-            >
+          <div className="-mx-2 flex flex-wrap items-center gap-x-1 text-sm text-muted-foreground sm:justify-end sm:gap-x-2">
+            <TrackedLink href="#pricing" event="nav_pricing_clicked" className={navLinkClass}>
               Pricing
             </TrackedLink>
             <TrackedLink
               href="https://license.supacode.sh/login"
               event="nav_license_clicked"
-              className="transition-colors hover:text-foreground"
+              className={navLinkClass}
             >
               My license
             </TrackedLink>
             <TrackedLink
               href="https://docs.supacode.sh"
               event="nav_docs_clicked"
-              className="transition-colors hover:text-foreground"
+              className={navLinkClass}
             >
               Docs
             </TrackedLink>
             <TrackedLink
               href="https://github.com/supabitapp/supacode"
               event="nav_github_clicked"
-              className="transition-colors hover:text-foreground"
+              className={navLinkClass}
             >
               GitHub
             </TrackedLink>
@@ -143,6 +229,8 @@ export default function Home() {
             <img
               src="/screenshot.png"
               alt="Supacode running multiple coding agents in parallel"
+              width={3600}
+              height={2210}
               className="w-full"
             />
           </div>
@@ -179,116 +267,97 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="pricing" className="mb-24 scroll-mt-10 md:mb-32">
+        <section
+          id="pricing"
+          aria-labelledby="pricing-heading"
+          className="mx-auto mb-24 w-full max-w-4xl scroll-mt-10 md:mb-32"
+        >
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
+            <h2
+              id="pricing-heading"
+              className="text-3xl font-semibold tracking-tight text-balance md:text-4xl"
+            >
               Buy once. Use forever.
             </h2>
-            <p className="mt-4 text-muted-foreground">
-              A lifetime license with one year of updates. No subscription, no automatic renewal.
+            <p className="mt-4 text-pretty text-muted-foreground">
+              A lifetime license with unlimited local worktree creations and one year of updates. No
+              subscription, no automatic renewal.
             </p>
           </div>
-          <div className="mx-auto mt-12 grid max-w-6xl gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {[
-              {
-                id: "basic",
-                name: "Basic",
-                price: 99,
-                devices: "One Mac",
-                audience: "One person",
-                summary: "One-time payment. No subscription.",
-              },
-              {
-                id: "standard",
-                name: "Standard",
-                price: 129,
-                devices: "Two Macs",
-                audience: "One person",
-                summary: "Compared with two Basic licenses.",
-              },
-              {
-                id: "team",
-                name: "Team",
-                price: 79,
-                devices: "One Mac / seat",
-                audience: "Starts at 3 seats",
-                summary: "One-time payment. No subscription.",
-              },
-            ].map((plan) => (
-              <div
-                key={plan.id}
-                className={`relative flex flex-col rounded-xl border bg-background p-7 md:p-9 ${plan.id === "standard" ? "border-primary" : "border-border"}`}
-              >
-                {plan.id === "standard" && (
-                  <span className="absolute -top-4 right-6 rounded-full bg-primary px-4 py-1.5 text-sm font-semibold text-primary-foreground">
-                    Save 35%
-                  </span>
-                )}
-                {plan.id === "team" && (
-                  <span className="absolute -top-4 right-6 rounded-full bg-foreground px-4 py-1.5 text-sm font-semibold text-background">
-                    For teams
-                  </span>
-                )}
-                <h3 className="text-2xl font-semibold tracking-tight">{plan.name}</h3>
-                <p className="mt-6 flex flex-wrap items-baseline gap-3">
-                  {plan.id === "standard" && <s className="text-2xl text-muted-foreground">$198</s>}
-                  <span className="text-5xl font-semibold tracking-tight">${plan.price}</span>
-                  <span className="text-sm text-muted-foreground">
-                    USD / {plan.id === "team" ? "seat" : "license"}
-                  </span>
-                </p>
-                <p className="mt-3 text-sm text-muted-foreground">{plan.summary}</p>
-                <ul className="my-8 space-y-4 border-t border-border pt-7 text-sm leading-relaxed">
-                  <li className="font-semibold">{plan.devices}</li>
-                  <li>{plan.audience}</li>
-                  <li>Unlimited local worktree creations</li>
-                  <li>Buy once, keep the versions you own</li>
-                  <li>365 days of updates included</li>
-                  {plan.id === "team" ? (
-                    <>
-                      <li>Team portal for seat assignment and reassignment</li>
-                      <li>Each seat gets its own license key</li>
-                    </>
-                  ) : (
-                    <>
-                      <li>Move between Macs by deactivating a previous Mac</li>
-                      <li>Optional $59 renewal for the whole license</li>
-                    </>
-                  )}
-                </ul>
-                <TrackedLink
-                  href={`https://license.supacode.sh/buy?plan=${plan.id}`}
-                  event={`purchase_${plan.id}_clicked`}
-                  className={`mt-auto inline-flex min-h-11 items-center justify-center rounded-md px-6 py-3 text-sm font-medium transition-opacity hover:opacity-90 ${plan.id === "standard" ? "bg-primary text-primary-foreground" : "border border-border text-foreground"}`}
-                >
-                  Buy {plan.name}
-                </TrackedLink>
-              </div>
-            ))}
-          </div>
-          <div className="mx-auto mt-7 max-w-3xl text-center text-sm text-muted-foreground">
-            <TrackedLink
-              href="https://license.supacode.sh/login"
-              event="pricing_license_clicked"
-              className="inline-block underline underline-offset-4"
+
+          <div className="mt-12 flex flex-col gap-6">
+            <PlanBox
+              terms={{
+                label: "Basic and Standard",
+                items: [
+                  "Move between Macs by deactivating a previous Mac",
+                  "Optional $59 renewal for the whole license",
+                ],
+              }}
             >
-              Manage an existing license
-            </TrackedLink>
+              <Plan plan="basic" name="Basic" price={99} unit="license">
+                <p>One person on one Mac.</p>
+              </Plan>
+              <Plan plan="standard" name="Standard" price={129} unit="license" primary>
+                <p>One person on two Macs.</p>
+                <p>
+                  <s className="tabular-nums">$198</s>{" "}
+                  <span className="font-medium text-foreground">Save 35%</span> compared with two
+                  Basic licenses.
+                </p>
+              </Plan>
+            </PlanBox>
+
+            <PlanBox>
+              <Plan plan="team" name="Team" price={79} unit="seat">
+                <p>One Mac per seat, minimum 3 seats.</p>
+              </Plan>
+              <ul
+                className={`flex flex-col gap-2 py-7 text-sm text-pretty text-muted-foreground md:py-9 ${cellInset}`}
+              >
+                <li>Team portal for seat assignment and reassignment</li>
+                <li>Each seat gets its own license key</li>
+                <li>Optional renewal through support</li>
+              </ul>
+            </PlanBox>
           </div>
-          <div className="mx-auto mt-12 max-w-2xl">
-            <h3 className="mb-6 text-xl font-semibold tracking-tight">Licensing questions</h3>
-            {licenseQuestions.map(({ question, answer }) => (
-              <details key={question} className="border-b border-border py-5">
-                <summary className="cursor-pointer font-medium">{question}</summary>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{answer}</p>
-              </details>
-            ))}
-            <p className="mt-6 text-sm text-muted-foreground">
-              Need help?{" "}
-              <a className="underline underline-offset-4" href="mailto:license@supacode.sh">
-                license@supacode.sh
-              </a>
-            </p>
+
+          <div className="mt-20 grid gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] md:gap-x-12">
+            <div className="flex flex-col items-start gap-1 text-sm text-muted-foreground">
+              <h3 className="mb-2 text-xl font-semibold tracking-tight text-foreground">
+                Licensing questions
+              </h3>
+              <p className="flex flex-wrap items-center gap-x-2">
+                Need help?
+                <a href="mailto:license@supacode.sh" className={textLinkClass}>
+                  license@supacode.sh
+                </a>
+              </p>
+              <TrackedLink
+                href="https://license.supacode.sh/login"
+                event="pricing_license_clicked"
+                className={textLinkClass}
+              >
+                Manage an existing license
+              </TrackedLink>
+            </div>
+            <div className="border-t border-rule">
+              {licenseQuestions.map(({ question, answer }) => (
+                <details key={question} className="group border-b border-rule">
+                  <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-6 py-4 font-medium text-pretty [&::-webkit-details-marker]:hidden">
+                    {question}
+                    <HugeiconsIcon
+                      icon={ArrowDown01Icon}
+                      strokeWidth={2}
+                      className="size-4 shrink-0 text-muted-foreground transition-[rotate,color] duration-150 ease-out group-hover:text-foreground group-open:rotate-180 motion-reduce:transition-none"
+                    />
+                  </summary>
+                  <p className="max-w-[65ch] pb-6 text-sm leading-relaxed text-pretty text-muted-foreground">
+                    {answer}
+                  </p>
+                </details>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -296,44 +365,44 @@ export default function Home() {
 
         <footer className="supacode-reveal flex flex-col items-center gap-4 py-10 text-sm text-muted-foreground md:flex-row md:justify-between">
           <div className="flex items-center gap-3">
-            <img src="/supacode-app-icon.png" alt="Supacode" className="size-5" />
+            <img src="/supacode-app-icon.png" alt="" className="size-5" />
             <span className="font-medium text-foreground">Supacode</span>
           </div>
-          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
-            <a href="https://license.supacode.sh/terms" className="hover:text-foreground">
+          <div className="-mx-2 flex flex-wrap justify-center gap-x-2">
+            <a href="https://license.supacode.sh/terms" className={navLinkClass}>
               Terms
             </a>
-            <a href="https://license.supacode.sh/refunds" className="hover:text-foreground">
+            <a href="https://license.supacode.sh/refunds" className={navLinkClass}>
               Refunds
             </a>
-            <a href="https://license.supacode.sh/privacy" className="hover:text-foreground">
+            <a href="https://license.supacode.sh/privacy" className={navLinkClass}>
               Privacy
             </a>
             <TrackedLink
               href="https://github.com/supabitapp/supacode"
               event="footer_github_clicked"
-              className="transition-colors hover:text-foreground"
+              className={navLinkClass}
             >
               GitHub
             </TrackedLink>
             <TrackedLink
               href="https://github.com/supabitapp/supacode/releases"
               event="footer_releases_clicked"
-              className="transition-colors hover:text-foreground"
+              className={navLinkClass}
             >
               Releases
             </TrackedLink>
             <TrackedLink
               href="https://docs.supacode.sh"
               event="footer_docs_clicked"
-              className="transition-colors hover:text-foreground"
+              className={navLinkClass}
             >
               Docs
             </TrackedLink>
             <TrackedLink
               href="https://x.com/khoiracle"
               event="footer_twitter_clicked"
-              className="transition-colors hover:text-foreground"
+              className={navLinkClass}
             >
               @khoiracle
             </TrackedLink>
