@@ -9,8 +9,13 @@ const navLinkClass =
 
 const textLinkClass =
   "inline-flex min-h-11 items-center underline decoration-rule-strong underline-offset-4 transition-colors hover:text-foreground hover:decoration-foreground";
+const policyLinkClass =
+  "underline decoration-rule-strong underline-offset-4 transition-colors hover:text-foreground hover:decoration-foreground";
 
 const cellInset = "px-7 md:px-9";
+
+const finalSalePolicy =
+  "All sales are final, except as our refund policy or the law provides. Email license@supacode.sh to request a refund required by law or to get payment help.";
 
 const features = [
   {
@@ -75,6 +80,10 @@ const licenseQuestions = [
     question: "Can I work offline?",
     answer:
       "Activation needs an internet connection. Every plan can use its saved license offline for versions it owns. Transfers, refunds, and other license changes take effect on a Mac after its next successful license refresh.",
+  },
+  {
+    question: "Can I get a refund?",
+    answer: `${finalSalePolicy} Purchases made before 12 October 2026 remain subject to the refund terms shown at checkout.`,
   },
 ];
 
@@ -321,6 +330,14 @@ export default function Home() {
               </ul>
             </PlanBox>
           </div>
+
+          <p className="mx-auto mt-8 max-w-3xl text-center text-sm leading-relaxed text-pretty text-muted-foreground">
+            Sold by SUPATERM LIMITED. {finalSalePolicy} See our{" "}
+            <a href="https://license.supacode.sh/refunds" className={policyLinkClass}>
+              refund policy
+            </a>
+            .
+          </p>
 
           <div className="mt-20 grid gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] md:gap-x-12">
             <div className="flex flex-col items-start gap-1 text-sm text-muted-foreground">
