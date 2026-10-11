@@ -40,6 +40,12 @@ UI package exports: `@repo/ui/components/ui/button`, `@repo/ui/lib/utils`
 
 When creating or updating PRs, do not add a templated Summary/Testing block unless explicitly requested. Keep the PR description to a single concise sentence or use text provided by khoi.
 
+## Test behavior, not page copy
+
+Keep tests focused on business behavior and security boundaries. Test data flow, navigation outcomes, form submission, accessibility contracts, and authorization when they affect behavior.
+
+Do not add tests that read rendered page source only to assert that it contains or omits a sentence, heading, price label, legal paragraph, or other presentation copy. Static wording belongs in the implementation and review process. A page assertion is appropriate only when the markup itself is the behavior under test, such as a form control required for a workflow, a security attribute, an escaped value, or a link that is part of a protocol contract.
+
 ## References
 
 - supacode app source code is in git@github.com:supabitapp/supacode.git
